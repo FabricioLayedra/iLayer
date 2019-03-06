@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  
+
+  <!-- Custom styles-->
+
+    <!-- Custom fonts for this template-->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="css/sb-admin-2.css" rel="stylesheet">
+  <link href="css/graphs_style.css" rel="stylesheet">
+
+  <!-- Custom styles for civerse-->
+  <link href="css/table_style.css" rel="stylesheet">
+  
+  <!-- Custom styles for ui-->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+  <!-- Icon for the title-->
+  <link rel="shortcut icon" type="image/png" href="img/logo.png" />
+
+  <title>iLayer</title>
+
+</head>
+
+<body id="page-top">
+    
+    
+    <!-- Templates -->
+    <template id="li-element">
+      <li class="nav-item">
+
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-auto pr-0">
+              <!--CHANGE THE NAME-->
+              <input class="form-check-input my-auto" type="checkbox"  checked="true" layer="untitled">
+            </div>
+            <!--CHANGE THE NAME-->
+            <div class="col-2-auto mr-1" id = "color-untitled"  style="background-color:orange; height: auto; width: 5px">
+            </div> 
+            <div class="col-8 my-auto">
+              <!--CHANGE THE NAME-->
+              <input type="text"  class="form-control-plaintext text-white" readonly="true">
+            </div>
+            <div class="col-2">
+              <!--CHANGE THE NAME-->
+              <button class="btn btn-light-outline stop-drag" type="button" data-toggle="collapse" data-target="#collapse_untitled" aria-expanded="false" aria-controls="collapse_untitled" >
+                <i class="fas fa-arrow-down" style="fill: white;"></i>
+              </button> 
+            </div>
+          </div>
+            <!--CHANGE THE NAME-->
+
+          <div class="row collapse" id="collapse_untitled">
+            <div class="bg-white py-2 collapse-inner rounded">
+              <div class="row">
+                <h6 class="collapse-header">Opacity</h6>
+                <!--CHANGE THE NAME-->
+                <h6 class="collapse-header" id="opacity-untitled">100</h6>
+              </div>
+              <div class="collapse-item slidecontainer">
+                <!--CHANGE THE NAME-->
+                <input type="range" min="1" max="100" value="100" class="slider" id="range-untitled">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </li>
+    </template>
+
+  <!-- Page Wrapper -->
+  <div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="navbar-nav  bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+      <!-- Sidebar - Brand -->
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <div class="sidebar-brand-icon rotate-n-15">
+          <i class="fas fa-network-wired"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">iLayer</div>
+      </a>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider my-0">
+
+      
+
+      <!-- Nav Item - Dashboard -->
+      <li class="nav-item active">
+        <a class="nav-link" href="index.html">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Dashboard</span></a>
+      </li>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+
+      <!-- Heading -->
+      <div class="sidebar-heading">
+        LAYERS
+      </div>
+      <ul class="navbar-nav space2x" id ="layers-table">
+      <!-- Nav Item - Pages Collapse Menu -->
+
+      <li class="nav-item">
+
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-auto pr-0">
+              <input class="form-check-input my-auto" type="checkbox"  checked="true" layer="untitled">
+            </div>
+            <div class="col-2-auto mr-1" id = "color-nodes"  style="background-color:orange; height: auto; width: 5px">
+            </div> 
+            <div class="col-8 my-auto">
+              <input type="text" id="p-nodes" class="form-control-plaintext text-white" readonly="true" id="staticEmail" value="Untitled">
+            </div>
+            <div class="col-2">
+              <button class="btn btn-light-outline stop-drag" type="button" data-toggle="collapse" data-target="#collapse_nodes" aria-expanded="false" aria-controls="collapse_nodes" >
+                <i class="fas fa-arrow-down" style="fill: white;"></i>
+              </button> 
+            </div>
+          </div>
+          <div class="row collapse" id="collapse_nodes">
+            <div class="bg-white py-2 collapse-inner rounded">
+              <div class="row">
+                <h6 class="collapse-header">Opacity</h6>
+                <h6 class="collapse-header" id="opacity_nodes">100</h6>
+              </div>
+              <div class="collapse-item slidecontainer">
+                <input type="range" min="1" max="100" value="100" class="slider" id="range_nodes">
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+      </ul>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider my-0">
+
+      
+
+      <!-- Nav Item - Dashboard -->
+      <li class="nav-item active mx-auto">
+          <a id="new-layer" class="btn btn-success btn-icon-split m-2 ">
+            <span class="icon text-white-50">
+              <i class="fas fa-check"></i>
+            </span>
+            <span class="text">New Layer</span>
+          </a>
+      </li>
+
+
+
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+
+      <!-- Sidebar Toggler (Sidebar) -->
+      <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
+
+    </ul>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider d-none d-md-block">
+
+      <!-- Sidebar Toggler (Sidebar) -->
+<!--       <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div> -->
+
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+          <!-- Sidebar Toggle (Topbar) -->
+          <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+            <i class="fa fa-bars"></i>
+          </button>
+
+          <!-- Topbar Search -->
+          <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+            <div class="input-group">
+              <input id="search-bar" type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search"
+ aria-describedby="basic-addon2" >
+              <div class="input-group-append">
+                <button class="btn btn-primary" type="button">
+                  <i class="fas fa-search fa-sm"></i>
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <!-- Topbar Navbar -->
+          <ul class="navbar-nav ml-auto">
+
+            <!--a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-upload fa-sm text-white-50"></i>  Upload data</a-->
+
+          </ul>
+
+        </nav>
+        <!-- End of Topbar -->
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid" id = "container">
+          <div class="set-canvases" style ="position: relative">
+            <!--GET THE RIGHT DIMENSIONS-->
+              <div id= "canvas-untitled" width="1200" height="800" style ="position: absolute">
+            </div>
+<!--            <div id= "canvas-layer1" style ="position: absolute">
+                <canvas id="canvas2" width="1200" height="800" style="background-color: transparent; position: absolute; left: 0; top: 0"></canvas>        
+            </div>-->
+            
+          </div>
+ 
+
+
+        </div>
+    <!-- End of Content Wrapper -->
+
+  </div>
+  <!-- End of Page Wrapper -->
+
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+  
+  <!--  plugin-->
+  <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script> 
+
+  <!-- context menu plugin -->
+
+ <!-- <script src="js/d3-context-menu.js" charset="utf-8"></script>  -->
+  
+  
+  <!-- Sorting plugin-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable.js"></script> 
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+  <!-- Civerse core -->
+  <script src="js/utils.js"></script>
+  <script src="js/layers.js" charset="utf-8"></script> 
+  <script src="js/search-bar.js" charset="utf-8"></script> 
+
+
+<script src="lib/fabricjs/dist/fabric.min.js"></script>
+<script src="lib/matterjs/build/matter.min.js"></script>
+<script src="lib/matter_attractors/build/matter-attractors.js"></script>
+<script src="lib/graphlib/dist/graphlib.min.js"></script>
+
+  <!--<script src="js/fbmatter.js" charset="utf-8"></script>--> 
+  <script src="https://cdn.rawgit.com/svgdotjs/svg.js/ceaf24d5/dist/svg.min.js"></script>
+
+  <script src="js/mattergraph.js" charset="utf-8"></script> 
+
+
+
+  <!-- Custom scripts for all pages-->
+  <script src="js/sb-admin-2.js"></script>
+
+  <!-- search plugin-->
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+</body>
+
+</html>
