@@ -6,7 +6,7 @@
 
 
 
-var draw = SVG('canvas-untitled').size(1200,800);
+var draw = SVG('canvas-untitled').size(1200, 800);
 
 Matter.use('matter-attractors');
 
@@ -34,7 +34,7 @@ world.gravity.scale = 0.001;
 
     bodies = Composite.allBodies(engine.world);
 
-    
+
     window.requestAnimationFrame(render);
 
 //    if (drawVertices) {
@@ -47,14 +47,14 @@ world.gravity.scale = 0.001;
 
         let currentBody = bodies[i];
         let fabricObject = currentBody.svg;
-        
-        
+
+
         if (fabricObject) {
             let newX = currentBody.position.x;
             let newY = currentBody.position.y;
-            fabricObject.attr("cx",newX);
-            fabricObject.attr("cy",newY);
-            
+            fabricObject.attr("cx", newX);
+            fabricObject.attr("cy", newY);
+
 //            fabricObject.setPositionByOrigin({x: newX, y: newY}, 'center', 'center');
 //            fabricObject.setCoords();
         }
@@ -86,20 +86,23 @@ function drawGraph(g) {
         nodeData.inEdges = new Array();
         nodeData.outEdges = new Array();
 
-        var radius = 20;
+        var radius = 80;
         var y = getRandomBetween(50, 800);
         var x = getRandomBetween(50, 1000);
 
         var matterObject = Bodies.circle(x, y, radius);
-        
+
         // NOTE THAT I AM NOT ADDING THE ELEMENTS OF THIS GRAPH TO THE PHYSICS WORLD IN THIS EXAMPLE
 //                    World.add(world, matterObject);
 
         var fabricObject = draw.circle(radius).attr({
-        cx: x,
-        cy: y,
-        fill: 'purple'
-        }).move(x,y);
+            cx: x,
+            cy: y,
+            fill: 'purple'
+        }).move(x, y);
+        
+        fabricObject.draggable();
+        
         //addMouseEvents(fabricObject);
 
         nodeData.matter = matterObject;
@@ -150,8 +153,8 @@ function drawGraph(g) {
 
 }
 
-function readDataColab(filename){
-    $.getJSON(filename).done(function(json){
+function readDataColab(filename) {
+    $.getJSON(filename).done(function (json) {
         // Create a new directed graph
         var g = new graphlib.Graph({directed: false});
 
@@ -160,18 +163,18 @@ function readDataColab(filename){
 
         nodes.forEach(function (data) {
             // console.log(data);
-            g.setNode(data["id"], {authorInfo: {name: data["id"], group:data["group"]}});
+            g.setNode(data["id"], {authorInfo: {name: data["id"], group: data["group"]}});
         });
 
         edges.forEach(function (data) {
-            g.setEdge(data["source"], data["target"], {colabInfo: {value: data["value"],id: data["id"]}});
+            g.setEdge(data["source"], data["target"], {colabInfo: {value: data["value"], id: data["id"]}});
         });
         drawGraph(g);
 
-    }).fail(function( jqxhr, textStatus, error ) {
+    }).fail(function (jqxhr, textStatus, error) {
         var err = textStatus + ", " + error;
-        console.log( "Request Failed: " + err );
+        console.log("Request Failed: " + err);
     });
-    
+
 }
 readDataColab(datafile);
