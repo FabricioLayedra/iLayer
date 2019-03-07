@@ -75,7 +75,30 @@
                 <input type="range" min="1" max="100" value="100" class="slider" id="range-untitled">
               </div>
             </div>
+            <div class="bg-white py-2 collapse-inner rounded">
+              <div class="row">
+                <h6 class="collapse-header">Physics</h6>
+<!--                CHANGE THE NAME
+                <h6 class="collapse-header" id="opacity-untitled">100</h6>-->
+              </div>
+              <div class="collapse-item slidecontainer">
+                <!--CHANGE THE NAME-->
+                <div class="row">
+                    <div class="col-8">
+                        <h6> Add gravity </h6>                
+                    </div>
+                    <div class="col-4">
+                        <!--CHANGE THE NAME-->
+
+                        <input class="form-check-input my-auto physics-creator" type="checkbox" >
+                    </div>
+                    
+                </div>
+              </div>
+            </div>
           </div>
+            
+           
         </div>
 
       </li>
@@ -117,7 +140,7 @@
       <ul class="navbar-nav space2x" id ="layers-table">
       <!-- Nav Item - Pages Collapse Menu -->
 
-      <li class="nav-item">
+<!--      <li class="nav-item">
 
         <div class="container">
           <div class="row">
@@ -147,7 +170,7 @@
             </div>
           </div>
         </div>
-      </li>
+      </li>-->
       </ul>
 
       <!-- Divider -->
@@ -226,10 +249,10 @@
 
         <!-- Begin Page Content -->
         <div class="container-fluid" id = "container">
-          <div class="set-canvases" style ="position: relative">
+          <div id="set-canvases" style ="position: relative">
             <!--GET THE RIGHT DIMENSIONS-->
-              <div id= "canvas-untitled" width="1200" height="800" style ="position: absolute">
-            </div>
+    <!--              <div id= "canvas-default" width="1200" height="800" style ="position: absolute">
+                </div>-->
 <!--            <div id= "canvas-layer1" style ="position: absolute">
                 <canvas id="canvas2" width="1200" height="800" style="background-color: transparent; position: absolute; left: 0; top: 0"></canvas>        
             </div>-->
@@ -272,19 +295,21 @@
 
   <!-- Civerse core -->
   <script src="js/utils.js"></script>
+  <script src="lib/graphlib/dist/graphlib.min.js"></script>
+  <script src="https://cdn.rawgit.com/svgdotjs/svg.js/ceaf24d5/dist/svg.min.js"></script>
+  <script src="lib/matterjs/build/matter.min.js"></script>
+  <script src="lib/matter_attractors/build/matter-attractors.js"></script>
+
   <script src="js/layers.js" charset="utf-8"></script> 
   <script src="js/search-bar.js" charset="utf-8"></script> 
 
 
 <script src="lib/fabricjs/dist/fabric.min.js"></script>
-<script src="lib/matterjs/build/matter.min.js"></script>
-<script src="lib/matter_attractors/build/matter-attractors.js"></script>
-<script src="lib/graphlib/dist/graphlib.min.js"></script>
 
   <!--<script src="js/fbmatter.js" charset="utf-8"></script>--> 
-  <script src="https://cdn.rawgit.com/svgdotjs/svg.js/ceaf24d5/dist/svg.min.js"></script>
+  <script src="lib/draggable/src/svg.draggable.js"></script>
 
-  <script src="js/mattergraph.js" charset="utf-8"></script> 
+<!--  <script src="js/mattergraph.js" charset="utf-8"></script> -->
 
 
 
