@@ -41,7 +41,6 @@ function run_physics(engine){
 
 function add_gravity(engine){
     if (engine.world.gravity.scale > 0){   
-        
 //        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Add gravity" ;
         engine.world.gravity.scale = 0;
     } else{
@@ -49,10 +48,6 @@ function add_gravity(engine){
         engine.world.gravity.scale = 0.000001;
     }
 }
-
-$("#add-gravity").click(function (){
-
-    });
 
 var bodies = [];
 var Composite = Matter.Composite;
@@ -166,9 +161,6 @@ function drawGraph(draw,g,layer) {
 
         var nodeData = g.node(nodeKey);
 
-        // console.log("nodeData");
-        // console.log(nodeData);
-
         nodeData.inEdges = new Array();
         nodeData.outEdges = new Array();
 
@@ -176,10 +168,6 @@ function drawGraph(draw,g,layer) {
         var y = getRandomBetween(50, 800);
         var x = getRandomBetween(50, 1000);
 
-//        var matterObject = Bodies.circle(x, y, radius);
-        
-        // NOTE THAT I AM NOT ADDING THE ELEMENTS OF THIS GRAPH TO THE PHYSICS WORLD IN THIS EXAMPLE
-//                    World.add(world, matterObject);
 
         var fabricObject = draw.circle(radius).attr({
         cx: x,
@@ -187,24 +175,10 @@ function drawGraph(draw,g,layer) {
         //Fill
         fill: 'purple'
         }).move(x,y);
-        addMouseEvents(fabricObject);
+        fabricObject.draggable();
 
-//DO THIS WHEN ADD PHYSICS
-//        nodeData.matter = matterObject;
+
         nodeData.svg = fabricObject;
-//
-//        matterObject.svg = fabricObject;
-//        fabricObject.matter = matterObject;
-//        matterObject.layer = "default";
-//
-//        fabricObject.layer = "default";
-
-        //canvas.add(fabricObject);
-
-//        addMouseEvents(fabricObject);
-
-        //addMovingEvents(fabricObject, nodeData);
-
     });
 
 //    edges.forEach(function (edge) {
@@ -266,8 +240,7 @@ function readDataColab(filename,layer_name){
         console.log(LAYERS[layer_name].layer);
         drawGraph(LAYERS[layer_name].layer,g,layer_name);
         var svg_id = $("#"+layer_name).children("svg").attr("id");
-        console.log(color);
-        console.log(SVG.get(svg_id).select("circle").fill(color));
+        SVG.get(svg_id).select("circle").fill(color);
 
         
 
@@ -295,11 +268,11 @@ var sortable = new Sortable(el,{
     //get the actual order
     // run a for loop to render things
     var list = document.getElementById("layers-table").getElementsByTagName("li");
-    order_layers(list);
+    sort_layers(list);
 }});
 
-function order_layers(list){
-    
+function sort_layers(list){
+    console.log("SORTING...");
     for (var element of Array.prototype.slice.apply(list)){
        var layer = element.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input:nth-child(1)').getAttribute("value").toLowerCase().split(" ")[1];
       // render the layers
@@ -510,15 +483,17 @@ function add_new_layer(layer_name){
     var layer = create_layer(layer_name);
     var color = Math.floor(Math.random()*16777215).toString(16);
     $(layer.querySelector(' div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("style","background-color:#"+color+"; height: auto; width: 5px"); 
-
     $("#layers-table").append(layer);
+    sort_layers(el);
 //            .select("circle").attr("fill",color));
     return color;
 }
 
 $("#new-layer").click(function(){
 //    add_new_layer(random_id());
+    
     readDataColab(datafile,random_id());
+    sort_layers(el);
 });
 
 function show_hide_layer(checkbox){
@@ -788,31 +763,7 @@ $("input[id|='p']").on('keypress',function(e) {
     $(this).attr("readonly",true);
     d3.select("."+$(this).attr("previous-layer-name")).attr("class",className);
 });
-    // //$("."+value).css("box-shadow","10px 10px 5px red");
-    // //$("."+value).css("stroke","10px 10px 5px red");
-
-    // if (active_color=== value){
-    //     //console.log("COLOR");
-    //     //console.log(active_color);
-    //     $("."+value).css("box-shadow","10px 10px 5px red");
-    // }
-    // console.log(this);
-    // //   var value = evt.item.childNodes[1].innerText.trimRight().trimLeft().toLowerCase();
-
-    // // console.log(value);
-    // // reset_color(active_color);
-    // active_color = $(this).attr("id").split("-")[1];
-    // let color = "red";
-    // console.log("COLOR");
-    // console.log(active_color);
-    // console.log(color);
-    // if (color === active_color){
-        
-
-    //     console.log("IGUAL");
-    // }
     
-
 readDataColab(datafile,"graph");
 
 
