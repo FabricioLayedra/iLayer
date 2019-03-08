@@ -10,26 +10,16 @@ function getRandomBetween(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-function addMouseEvents(object) {
-    object.mousedown(function(){
-        object.mousedown = true;  
-    });
-    
-    object.mousemove(function(){  
-        console.log(object);
-        if (!object.mousedown)
-            return;
-//        var pointer = canvas.getPointer(options.e);
-//        Body.translate(object.matter, {
-//            x: (pointer.x - object.matter.position.x) * 0.25,
-//            y: (pointer.y - object.matter.position.y) * 0.25
-//        });
-    });
-    
-    object.mouseup(function(){
-        object.mousedown = false;
-    });
+function format_id(string){
+    return string.replace(/\./g,' ').split(" ").join('');
 }
+
+function random_id() {
+  // Math.random should be unique because of its seeding algorithm.
+  // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+  // after the decimal.
+  return Math.random().toString(36).substr(2, 5);
+};
 
 function addMovingEvents(fabricObject, nodeData) {
     fabricObject.on({
@@ -45,5 +35,32 @@ function addMovingEvents(fabricObject, nodeData) {
                 outEdge.path[0][2] = center.y;
             });
         }
+    });
+}
+
+function addMouseEvents(object) {
+//    object.draggable();
+    
+    object.mousedown(function(){
+        object.mousedown = true;  
+    });
+    
+    object.touchmove(function(event){  
+        console.log("moving");
+        if (!object.mousedown)
+            return;
+        var pointer = showCoords(event);
+//        var pointer = canvas.getPointer(options.e);
+//        console.log(object.matter);
+
+//        Body.translate(object.matter, {
+//            x: (pointer[0] - object.matter.position.x) * 0.25,
+//            y: (pointer[1] - object.matter.position.y) * 0.25
+//        });
+        
+    });
+    
+    object.mouseup(function(){
+        object.mousedown = false;
     });
 }
