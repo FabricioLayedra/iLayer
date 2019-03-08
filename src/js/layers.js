@@ -1,6 +1,12 @@
-var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_2016.json";
+var datafile = "./data/authors_relations_2016.json";
 
 var LAYERS = {};
+
+var GRAPHS = {};
+
+function get_layers_names(dict){
+    return Object.keys(dict);
+}
 
 function create_svg(layer_name,width,height){
     var draw = SVG(layer_name).size(width,height);
@@ -152,17 +158,20 @@ function addMouseEvents(object) {
 }
 
 function drawGraph(draw,g,layer) {
-
+    var directed = g.directed;
     var nodeKeys = g.nodes();
     var edges = g.edges();
-
+    
     // adding to the nodes objects of the graph both the fabric and the matter associated objects
     nodeKeys.forEach(function (nodeKey) {
-
+        
         var nodeData = g.node(nodeKey);
-
-        nodeData.inEdges = new Array();
-        nodeData.outEdges = new Array();
+        if (directed){
+            nodeData.inEdges = new Array();
+            nodeData.outEdges = new Array();
+        }else{
+            nodeData.edges = new Array();
+        }
 
         var radius = 20;
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
@@ -172,49 +181,59 @@ function drawGraph(draw,g,layer) {
         var fabricObject = draw.circle(radius).attr({
         cx: x,
         cy: y,
+        id: nodeKey,
         //Fill
         fill: 'purple'
-        }).move(x,y);
+        }).move(x,y)
+                .click(function(){
+                    
+                    get_spanning_tree(this,1);
+                    
+
+        });
+        //Add context_menu to the element using the selector, in this case the id
+        add_context_menu("#"+nodeKey);
         fabricObject.draggable();
 
         nodeData.svg = fabricObject;
     });
+    
+    edges.forEach(function (edge) {
 
-//    edges.forEach(function (edge) {
-//
-//        var from = g.node(edge.v);
-//        var to = g.node(edge.w);
-////        console.log("FROM-TO");
-////        console.log(from);
-////        console.log(to);
-//
-//        var fromCenterX = from.svg.cx();
-//        var fromCenterY = from.svg.cy();
-//
-//        var toCenterX = to.svg.cx();
-//        var toCenterY = to.svg.cy();
-//
-//        // creating a QUADRATIC CURVE. See https://www.sitepoint.com/html5-svg-quadratic-curves/ and http://fabricjs.com/quadratic-curve
-//        var path = "M" + fromCenterX + "," + fromCenterY + " Q" + (fromCenterX + (toCenterX - fromCenterX) / 2) + "," + (fromCenterY + (toCenterY - fromCenterY) / 2) + " " + toCenterX + "," + toCenterY;
-//
-//        var edgePath = draw.path(path).attr({
-//            stroke: 'white',
-//            fill: 'transparent',
-//            strokeWidth: 1
-////            lockMovementX: true,
-////            lockMovementY: true,
-////            hasControls: false,
-////            hasBorders: false,
-////            perPixelTargetFind: true,
-////            objectCaching: false
-//        });
-////        canvas.add(edgePath);
-////        edgePath.layer = "default";
-//
-//        to.inEdges.push(edgePath);
-//        from.outEdges.push(edgePath);
-//
-//    });
+        var from = g.node(edge.v);
+        var to = g.node(edge.w);
+
+        var fromCenterX = from.svg.cx();
+        var fromCenterY = from.svg.cy();
+
+        var toCenterX = to.svg.cx();
+        var toCenterY = to.svg.cy();
+
+        // creating a QUADRATIC CURVE. See https://www.sitepoint.com/html5-svg-quadratic-curves/ and http://fabricjs.com/quadratic-curve
+        var path = "M" + fromCenterX + "," + fromCenterY + " Q" + (fromCenterX + (toCenterX - fromCenterX) / 2) + "," + (fromCenterY + (toCenterY - fromCenterY) / 2) + " " + toCenterX + "," + toCenterY;
+
+        var edgePath = draw.path(path).attr({
+            stroke: 'gray',
+            fill: 'transparent',
+            strokeWidth: 1
+//            lockMovementX: true,
+//            lockMovementY: true,
+//            hasControls: false,
+//            hasBorders: false,
+//            perPixelTargetFind: true,
+//            objectCaching: false
+        });
+//        canvas.add(edgePath);
+//        edgePath.layer = "default";
+        if (directed){
+            to.inEdges.push(edgePath);
+            from.outEdges.push(edgePath);
+        }else{
+            to.edges.push(edgePath);
+            from.edges.push(edgePath);
+        }
+
+    });
     LAYERS[layer]["graph"] = g;
 }
 
@@ -229,14 +248,14 @@ function readDataColab(filename,layer_name){
 
         nodes.forEach(function (data) {
             // console.log(data);
-            g.setNode(data["id"], {authorInfo: {name: data["id"], group:data["group"]}});
+            
+            g.setNode(format_id(data["id"]), {authorInfo: {name: data["id"], group:data["group"]}});
         });
 
         edges.forEach(function (data) {
-            g.setEdge(data["source"], data["target"], {colabInfo: {value: data["value"],id: data["id"]}});
+            g.setEdge(format_id(data["source"]), format_id(data["target"]), {colabInfo: {value: data["value"],id: data["id"]}});
         });
         var color = "#"+ add_new_layer(layer_name);
-        console.log(LAYERS[layer_name].layer);
         drawGraph(LAYERS[layer_name].layer,g,layer_name);
         var svg_id = $("#"+layer_name).children("svg").attr("id");
         SVG.get(svg_id).select("circle").fill(color);
@@ -251,15 +270,18 @@ function readDataColab(filename,layer_name){
     
 }
 
+function format_id(string){
+    return string.replace(/\./g,' ').split(" ").join('');
+}
+
+
 function sort_layers(list){
-    console.log("SORTING...");
     for (var element of Array.prototype.slice.apply(list)){
        var layer = element.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input:nth-child(1)').getAttribute("value").toLowerCase().split(" ")[1];
       // render the layers
 //      console.log(layer);
       $("#set-canvases").prepend($("#"+layer).detach());
-    }
-    
+    }    
 }
 
 function reset_color(color) {
@@ -282,7 +304,6 @@ function random_id() {
 function create_layer(layer){
     var canvas = document.createElement("div");
     var container = document.getElementById("set-canvases");
-    console.log(container);
     canvas.setAttribute("id",layer);
     canvas.setAttribute("style","position: absolute");
     container.appendChild(canvas);
@@ -316,7 +337,6 @@ function change_layer_names(item,id){
 function add_events(item){
     //checkbox opacity
     $(item.querySelector('div > div:nth-child(1) > div.col-sm-auto.pr-0 > input')).change(function(){show_hide_layer(this);});
-    console.log("ADDING EVENTS");
     //checkbox physics
     $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div > div.col-4 > input')).change(function(){gravity_handler(this);});
     //button
@@ -470,8 +490,8 @@ function add_new_layer(layer_name){
 }
 
 $("#new-layer").click(function(){
-//    add_new_layer(random_id());
-    readDataColab(datafile,random_id());
+    add_new_layer(random_id());
+//    readDataColab(datafile,random_id());
     sort_layers(el);
 });
 
@@ -623,6 +643,74 @@ function get_svg_id(layer_name){
     return $("#"+layer_name).children("svg").attr("id");
 }
 
+function getGraphFromSVGElement(svgElement){
+   var layer_name = $(svgElement.parent().parent()).attr("id");
+   var graph = LAYERS[layer_name]["graph"];
+   return graph;
+};
+
+function sendNodeToLayer(svgElement,layerOrigin,layerDestination){
+   var layer_name = $(svgElement.parent().parent()).attr("id");
+   var graph = LAYERS[layer]["graph"];
+   
+   return graph;
+};
+
+function get_spanning_tree(svgElement,n_levels){
+    var graph = getGraphFromSVGElement(svgElement);
+    var edges = graph.edges();
+//    var limit;
+//    if (graph.directed){
+//        limit = source.inEdges.length + source.outEdges.length;
+//    }else{
+//        limit = source.edges.length;
+//    }
+//    console.log(limit);
+    var count = 0;
+    edges.forEach(function (edge){
+        if (graph.directed){
+//            if (edge.v === svgElement.attr("id")){
+//                console.log("YEIH!")
+//            }
+        }else{
+            var neighbour;
+            if (edge.v === svgElement.attr("id")){
+                neighbour = edge.w;
+                count++;
+
+            }else if(edge.w === svgElement.attr("id")){
+                neighbour = edge.v;
+                count++;
+            }
+        }
+//        console.log(count);
+//        console.log(limit);
+//
+//        if (count>=limit){
+//            return;
+//        }
+    });
+//    svgElement.attr("id");
+//    if (n_levels === 1){
+//        
+//        for (var i = 0 ; i < node.inEdges.length; i++){
+////            node.clone().putIn(svgElement.parent());
+////            node.remove();
+//            console.log(node.inEdges[i].v);
+////            console.log(node.inEdges[i].clone());
+//
+//            /* REMOVE AND ADD TO OTHER LAYER*/
+////            var collected = node.inEdges[i].remove();
+////            
+////            svgElement.parent().put(collected);
+//        }
+//    }else{
+//        //recursive
+//    }
+    
+    
+}
+
 $("p[id|='p']").click(function () {
   // body...
     console.log("clickeando");
@@ -657,37 +745,64 @@ $("p[id|='p']").click(function () {
     
 });
 
-/* FILLING DOWN THE NAME OF THE LAYER */
+function generate_menu_layers_names(list,callback){
+    var items = {};
+    var count = list.length;
 
-$("input[id|='p']").click(function () {
-  // body...
-    console.log("clickeando");
-    console.log("cambia color");
-
-    let value = $(this).attr("id").split("-")[1];
-    let color = $("#color-"+value).css("background-color");
-    if (d3.selectAll("."+value).attr("filter") != null){
-        d3.selectAll("."+value).attr("filter",null);
-    }else{
-        d3.selectAll("."+value).attr("filter",function(d){return getFilter(color,value);});
-
+    for(var i = 0; i < count; i++) {
+        var text = list[i];
+       var item = {};
+       item["name"] =  text;
+       item["callback"] = callback;
+       items[text] = item;
+       
     }
-});
+    return items;
+}
 
-$("input[id|='p']").dblclick(function () {
-  // body...
-    console.log("Doble_Clickeando");
-    // console.log();
-    $(this).attr("previous-layer-name",$(this).val().toLowerCase());
-    $(this).attr("readonly",false);
-    // console.log(this);
+function send_element_to_layer(selector){
+    console.log($(selector));
+}
 
-});
+function send_adjacents_to_layer(){
+    console.log("HEY");
+}
 
-$("input[id|='p']").on('keypress',function(e) {
-    $(this).attr("readonly",true);
-    d3.select("."+$(this).attr("previous-layer-name")).attr("class",className);
-});
+function add_context_menu(sel){
+    $.contextMenu({
+        selector: sel,         
+        build: function($trigger, e) {
+            var data = get_layers_names(LAYERS);
+            // this callback is executed every time the menu is to be shown
+            // its results are destroyed every time the menu is hidden
+            // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
+            return {
+                callback: function(key, options) {
+                },
+                items: {
+                    "send":{
+                        "name":"Send to...",
+                        "items":generate_menu_layers_names(
+                                    data,
+                                    function(){
+                                        send_element_to_layer(sel);
+                                    })
+                    },
+                    "ego":{
+                        "name":"Send adjacents to...",
+                        "items":generate_menu_layers_names(
+                                    data,
+                                    function(){
+                                        send_adjacents_to_layer(sel);
+                                    })
+                    },
+                    "select":{"name":"Select .."}
+                }    
+            };
+        }
+    });
+};
+
 
 var el = document.getElementById("layers-table");
 
@@ -700,6 +815,38 @@ var sortable = new Sortable(el,{
     sort_layers(list);
 }});
     
-readDataColab(datafile,"graph");
+readDataColab(datafile,"Colab");
 
 
+
+///* FILLING DOWN THE NAME OF THE LAYER */
+//
+//$("input[id|='p']").click(function () {
+//  // body...
+//    console.log("clickeando");
+//    console.log("cambia color");
+//
+//    let value = $(this).attr("id").split("-")[1];
+//    let color = $("#color-"+value).css("background-color");
+//    if (d3.selectAll("."+value).attr("filter") != null){
+//        d3.selectAll("."+value).attr("filter",null);
+//    }else{
+//        d3.selectAll("."+value).attr("filter",function(d){return getFilter(color,value);});
+//
+//    }
+//});
+//
+//$("input[id|='p']").dblclick(function () {
+//  // body...
+//    console.log("Doble_Clickeando");
+//    // console.log();
+//    $(this).attr("previous-layer-name",$(this).val().toLowerCase());
+//    $(this).attr("readonly",false);
+//    // console.log(this);
+//
+//});
+//
+//$("input[id|='p']").on('keypress',function(e) {
+//    $(this).attr("readonly",true);
+//    d3.select("."+$(this).attr("previous-layer-name")).attr("class",className);
+//});
