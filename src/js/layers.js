@@ -180,41 +180,42 @@ function drawGraph(draw,g,layer) {
         nodeData.svg = fabricObject;
     });
 
-//    edges.forEach(function (edge) {
-//
-//        var from = g.node(edge.v);
-//        var to = g.node(edge.w);
-////        console.log("FROM-TO");
-////        console.log(from);
-////        console.log(to);
-//
-//        var fromCenterX = from.svg.cx();
-//        var fromCenterY = from.svg.cy();
-//
-//        var toCenterX = to.svg.cx();
-//        var toCenterY = to.svg.cy();
-//
-//        // creating a QUADRATIC CURVE. See https://www.sitepoint.com/html5-svg-quadratic-curves/ and http://fabricjs.com/quadratic-curve
-//        var path = "M" + fromCenterX + "," + fromCenterY + " Q" + (fromCenterX + (toCenterX - fromCenterX) / 2) + "," + (fromCenterY + (toCenterY - fromCenterY) / 2) + " " + toCenterX + "," + toCenterY;
-//
-//        var edgePath = draw.path(path).attr({
-//            stroke: 'white',
-//            fill: 'transparent',
-//            strokeWidth: 1
-////            lockMovementX: true,
-////            lockMovementY: true,
-////            hasControls: false,
-////            hasBorders: false,
-////            perPixelTargetFind: true,
-////            objectCaching: false
-//        });
-////        canvas.add(edgePath);
-////        edgePath.layer = "default";
-//
-//        to.inEdges.push(edgePath);
-//        from.outEdges.push(edgePath);
-//
-//    });
+    edges.forEach(function (edge) {
+
+        var from = g.node(edge.v);
+        var to = g.node(edge.w);
+//        console.log("FROM-TO");
+//        console.log(from);
+//        console.log(to);
+
+        var fromCenterX = from.svg.cx();
+        var fromCenterY = from.svg.cy();
+
+        var toCenterX = to.svg.cx();
+        var toCenterY = to.svg.cy();
+
+        // creating a QUADRATIC CURVE. See https://www.sitepoint.com/html5-svg-quadratic-curves/ and http://fabricjs.com/quadratic-curve
+        var path = "M" + fromCenterX + "," + fromCenterY + " Q" + (fromCenterX + (toCenterX - fromCenterX) / 2) + "," + (fromCenterY + (toCenterY - fromCenterY) / 2) + " " + toCenterX + "," + toCenterY;
+
+        var edgePath = draw.path(path).attr({
+            stroke: 'white',
+            fill: 'transparent',
+            strokeWidth: 1
+//            lockMovementX: true,
+//            lockMovementY: true,
+//            hasControls: false,
+//            hasBorders: false,
+//            perPixelTargetFind: true,
+//            objectCaching: false
+        });
+//        canvas.add(edgePath);
+//        edgePath.layer = "default";
+
+        to.inEdges.push(edgePath);
+        from.outEdges.push(edgePath);
+
+    });
+
     LAYERS[layer]["graph"] = g;
 }
 
