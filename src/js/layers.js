@@ -165,9 +165,9 @@ function drawGraph(draw,g,layer) {
         nodeData.outEdges = new Array();
 
         var radius = 20;
+        //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
         var y = getRandomBetween(50, 800);
         var x = getRandomBetween(50, 1000);
-
 
         var fabricObject = draw.circle(radius).attr({
         cx: x,
@@ -176,7 +176,6 @@ function drawGraph(draw,g,layer) {
         fill: 'purple'
         }).move(x,y);
         fabricObject.draggable();
-
 
         nodeData.svg = fabricObject;
     });
@@ -251,25 +250,6 @@ function readDataColab(filename,layer_name){
     });
     
 }
-//readDataColab(datafile);
-
-
-
-//----- List -----
-
-var active_color = null;
-
-
-var el = document.getElementById("layers-table");
-
-var sortable = new Sortable(el,{
-
-  onEnd: function (evt) {
-    //get the actual order
-    // run a for loop to render things
-    var list = document.getElementById("layers-table").getElementsByTagName("li");
-    sort_layers(list);
-}});
 
 function sort_layers(list){
     console.log("SORTING...");
@@ -281,6 +261,7 @@ function sort_layers(list){
     }
     
 }
+
 function reset_color(color) {
 
   $(".color-active").css("stroke",color);
@@ -297,7 +278,6 @@ function random_id() {
   // after the decimal.
   return Math.random().toString(36).substr(2, 5);
 };
-
 
 function create_layer(layer){
     var canvas = document.createElement("div");
@@ -491,7 +471,6 @@ function add_new_layer(layer_name){
 
 $("#new-layer").click(function(){
 //    add_new_layer(random_id());
-    
     readDataColab(datafile,random_id());
     sort_layers(el);
 });
@@ -509,21 +488,6 @@ function show_hide_layer(checkbox){
     // }
 };
 
-$(":checkbox").change(function(){
-    //console.log(this);
-    //console.log(this.checked)
-    var layer = "#canvas-" + $(this).attr("layer").toLowerCase().split(" ");
-    console.log(layer);
-    if (this.checked){
-        $(layer).css("display","block")
-    }else{
-        $(layer).css("display","none")
-    }
-    // else{
-    //     // d3.selectAll(layer).style("opacity",0);
-    // }
-});
-
 function opacity_changer(range){
 //   sortable["options"]["disabled"] = false;
    console.log(sortable["options"]["disabled"]);
@@ -535,7 +499,6 @@ function opacity_changer(range){
     //d3.selectAll("."+layer_name).style("opacity",this.value/100);
     //CHANGE TO NEW LIBRARY
 };
-//document.querySelector('#collapse-pfk6r > div > div.collapse-item.slidecontainer > input')
 
 function add_elements_to_world(world,layer){
     var Bodies = Matter.Bodies;
@@ -613,6 +576,7 @@ function add_elements_to_world(world,layer){
 //    });
 
 }
+
 function gravity_handler(checkbox){
     var layer = checkbox.id.split("-")[2];
 
@@ -646,36 +610,6 @@ function gravity_handler(checkbox){
     }   
 }
 
-$("[type='range']").on("input",function(){
-    var layer_name = this.id.split("-")[1];
-    $("#opacity-"+layer_name).html(this.value);
-    //d3.selectAll("."+layer_name).style("opacity",this.value/100);
-    //CHANGE TO NEW LIBRARY
-});
-
-// var slider = document.getElementById("myRange");
-// var output = document.getElementById("demo");
-// output.innerHTML = slider.value;
-
-// slider.oninput = function() {
-//   output.innerHTML = this.value;
-//   console.log(output.innerHTML);
-  
-//   console.log(sortable["options"]["disabled"]);
-
-
-//   //update the opacity of the thing
-// }
-
-
-//  $("#layers-table").find("a").click(function(){
-//     if (sortable["options"]["disabled"] === true){
-//         sortable["options"]["disabled"] = false;
-//     }else{
-//         sortable["options"]["disabled"] = true;
-//     }
-// });
-
 function stop_drag(){
     console.log(sortable["options"]["disabled"]);
     if (sortable["options"]["disabled"] === true){
@@ -684,15 +618,11 @@ function stop_drag(){
         sortable["options"]["disabled"] = true;
     }
 }
-$(".stop-drag").click(function(){
-    if (sortable["options"]["disabled"] === true){
-        sortable["options"]["disabled"] = false;
-    }else{
-        sortable["options"]["disabled"] = true;
-    }
-});
 
-//FIX THIS 
+function get_svg_id(layer_name){
+    return $("#"+layer_name).children("svg").attr("id");
+}
+
 $("p[id|='p']").click(function () {
   // body...
     console.log("clickeando");
@@ -727,7 +657,6 @@ $("p[id|='p']").click(function () {
     
 });
 
-
 /* FILLING DOWN THE NAME OF THE LAYER */
 
 $("input[id|='p']").click(function () {
@@ -755,14 +684,21 @@ $("input[id|='p']").dblclick(function () {
 
 });
 
-
-function get_svg_id(layer_name){
-    return $("#"+layer_name).children("svg").attr("id");
-}
 $("input[id|='p']").on('keypress',function(e) {
     $(this).attr("readonly",true);
     d3.select("."+$(this).attr("previous-layer-name")).attr("class",className);
 });
+
+var el = document.getElementById("layers-table");
+
+var sortable = new Sortable(el,{
+
+  onEnd: function (evt) {
+    //get the actual order
+    // run a for loop to render things
+    var list = document.getElementById("layers-table").getElementsByTagName("li");
+    sort_layers(list);
+}});
     
 readDataColab(datafile,"graph");
 
