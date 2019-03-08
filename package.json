@@ -1,8 +1,16 @@
 {
     "name": "project",
     "version": "1.0.0",
-    "keywords": ["util", "functional", "server", "client", "browser"],
+    "keywords": [
+        "util",
+        "functional",
+        "server",
+        "client",
+        "browser"
+    ],
     "author": "fabricio",
     "contributors": [],
-    "dependencies": {}
+    "dependencies": {
+        "@svgdotjs/svg.draggable.js": "^3.0.2"
+    }
 }
