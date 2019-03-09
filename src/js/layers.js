@@ -2,6 +2,8 @@
 
 
 var datafile = "./data/authors_relations_2016.json";
+var datafile2 = "./data/authors_relations_2015.json";
+
 
 var LAYERS = {};
 
@@ -81,15 +83,11 @@ function add_events(item){
 
 function show_hide_layer(checkbox){
     var layer = "#" + $(checkbox).attr("layer").toLowerCase().split(" ");
-    console.log(layer);
     if (checkbox.checked){
         $(layer).css("display","block");
     }else{
         $(layer).css("display","none");
     }
-    // else{
-    //     // d3.selectAll(layer).style("opacity",0);
-    // }
 };
 
 function gravity_handler(checkbox){
@@ -286,17 +284,16 @@ function showCoords(event) {
   return [x,y];
 }
 
-//loads the JSON file and creates the graph using graphLib and returns it.
-function loadGraph(filename,key){
-    $.getJSON(filename).done(function(json){
-        // Create a new directed graph
-        var g = new graphlib.Graph({directed: false});
-
+//loads the JSON file and creates the graph using graphLib and adds it to GRAPHS
+function loadGraph(filename,key,directed){
+    return $.getJSON(filename).done(function(json){
+        // Creates a new directed graph
+        var g = new graphlib.Graph({directed: directed});
+        g._label=key;
         var edges = json.links;
         var nodes = json.nodes;
 
         nodes.forEach(function (data) {
-            // console.log(data);
             g.setNode(format_id(data["id"]), {authorInfo: {name: data["id"], group:data["group"]}});
         });
 
@@ -309,75 +306,28 @@ function loadGraph(filename,key){
 //        drawGraph(LAYERS[layer_name].layer,g,layer_name);
 //        var svg_id = $("#"+layer_name).children("svg").attr("id");
 //        SVG.get(svg_id).select("circle").fill(color);
-        return g;
-    }).fail(function( jqxhr, textStatus, error ) {
+        if (Object.keys(GRAPHS).includes(key)){
+            console.log( "Request Failed: " + "Data Already Loaded");
+        }else{
+            GRAPHS[key] = g;
+        }
+    }).fail(function(jqxhr, textStatus, error ) {
         var err = textStatus + ", " + error;
         console.log( "Request Failed: " + err );
         return null;
     });
     
 }
-
-//Receives a node or an edge and add it to the elements of the layer
-//Type N--> node E --> edge
-//Add types as you want
-function drawElementInLayer (drawer,element,type){
-    
-        var nodeData = element;
-        if (directed){
-            nodeData.inEdges = new Array();
-            nodeData.outEdges = new Array();
-        }else{
-            nodeData.edges = new Array();
-        }
-
-        var radius = 20;
-        //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
-        var y = getRandomBetween(50, 800);
-        var x = getRandomBetween(50, 1000);
-
-        var fabricObject = draw.circle(radius).attr({
-        cx: x,
-        cy: y,
-        id: nodeKey,
-        //Fill
-        fill: 'purple'
-        }).move(x,y)
-                .click(function(){
-                    
-                    get_spanning_tree(this,1);
-                    
-
-        });
-        //Add context_menu to the element using the selector, in this case the id
-        add_context_menu("#"+nodeKey);
-        fabricObject.draggable();
-
-        nodeData.svg = fabricObject;
-    if (type==="N"){
-        var radius = 20;
-        //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
-        var y = getRandomBetween(50, 800);
-        var x = getRandomBetween(50, 1000);
-        
-        var fabricObject = drawer.circle(radius).attr({
-            cx: x,
-            cy: y,
-            id: nodeKey,
-            //Fill
-            fill: 'purple'
-            }).move(x,y)
-//            .click(function(){
-//
-//                        get_spanning_tree(this,1);
-//
-//
-//            })
-            
-    }
+// Adds a graph as a layer in the tool
+function addGraphAsLayer(g, layer_name){
+    var color = "#"+ add_new_layer(layer_name);
+    drawGraph(LAYERS[layer_name].layer,g);
+    var svg_id = $("#"+layer_name).children("svg").attr("id");
+    SVG.get(svg_id).select("circle").fill(color);
 }
 
-function drawGraph(draw,g,layer) {
+function drawGraph(draw,g) {
+    var graphId = g._label;
     var directed = g.directed;
     var nodeKeys = g.nodes();
     var edges = g.edges();
@@ -397,27 +347,12 @@ function drawGraph(draw,g,layer) {
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
         var y = getRandomBetween(50, 800);
         var x = getRandomBetween(50, 1000);
-
-        var fabricObject = draw.circle(radius).attr({
-        cx: x,
-        cy: y,
-        id: nodeKey,
-        //Fill
-        fill: 'purple'
-        }).move(x,y)
-                .click(function(){
-                    
-                    get_spanning_tree(this,1);
-                    
-
-        });
-        //Add context_menu to the element using the selector, in this case the id
-        add_context_menu("#"+nodeKey);
-        fabricObject.draggable();
-
+        
+        var fabricObject = drawCircleInLayer(draw,radius,x,y,nodeKey);
+        
         nodeData.svg = fabricObject;
     });
-    
+
     edges.forEach(function (edge) {
 
         var from = g.node(edge.v);
@@ -432,19 +367,8 @@ function drawGraph(draw,g,layer) {
         // creating a QUADRATIC CURVE. See https://www.sitepoint.com/html5-svg-quadratic-curves/ and http://fabricjs.com/quadratic-curve
         var path = "M" + fromCenterX + "," + fromCenterY + " Q" + (fromCenterX + (toCenterX - fromCenterX) / 2) + "," + (fromCenterY + (toCenterY - fromCenterY) / 2) + " " + toCenterX + "," + toCenterY;
 
-        var edgePath = draw.path(path).attr({
-            stroke: 'gray',
-            fill: 'transparent',
-            strokeWidth: 1
-//            lockMovementX: true,
-//            lockMovementY: true,
-//            hasControls: false,
-//            hasBorders: false,
-//            perPixelTargetFind: true,
-//            objectCaching: false
-        });
-//        canvas.add(edgePath);
-//        edgePath.layer = "default";
+        var edgePath = drawPathInLayer(draw,path);
+
         if (directed){
             to.inEdges.push(edgePath);
             from.outEdges.push(edgePath);
@@ -454,45 +378,40 @@ function drawGraph(draw,g,layer) {
         }
 
     });
-    LAYERS[layer]["graph"] = g;
 }
 
-// Adds a graph as a layer in the graph 
-function addGraphAsLayer(g, layer_name){
-    
-}
-
-//loads the JSON file and draws the graph in a layer named after the parameter.
-function readDataColab(filename,layer_name){
-    $.getJSON(filename).done(function(json){
-        // Create a new directed graph
-        var g = new graphlib.Graph({directed: false});
-
-        var edges = json.links;
-        var nodes = json.nodes;
-
-        nodes.forEach(function (data) {
-            // console.log(data);
-            
-            g.setNode(format_id(data["id"]), {authorInfo: {name: data["id"], group:data["group"]}});
-        });
-
-        edges.forEach(function (data) {
-            g.setEdge(format_id(data["source"]), format_id(data["target"]), {colabInfo: {value: data["value"],id: data["id"]}});
-        });
-        var color = "#"+ add_new_layer(layer_name);
-        drawGraph(LAYERS[layer_name].layer,g,layer_name);
-        var svg_id = $("#"+layer_name).children("svg").attr("id");
-        SVG.get(svg_id).select("circle").fill(color);
-
-        
-
-
-    }).fail(function( jqxhr, textStatus, error ) {
-        var err = textStatus + ", " + error;
-        console.log( "Request Failed: " + err );
+function drawPathInLayer (drawer,path){
+    var edgePath = drawer.path(path).attr({
+        stroke: 'gray',
+        fill: 'transparent',
+        strokeWidth: 1
+        //,
+        //id:id
+//            lockMovementX: true,
+//            lockMovementY: true,
+//            hasControls: false,
+//            hasBorders: false,
+//            perPixelTargetFind: true,
+//            objectCaching: false
     });
-    
+}
+
+function drawCircleInLayer (drawer,radius,cx,cy,id){
+    var fabricObject = drawer.circle(radius)
+                            .attr({ cx: cx,
+                                    cy: cy,
+                                    id: id,
+                                    //Fill
+                                    fill: 'purple'
+                                    })
+                            .move(cx,cy)
+                            .click(function(){
+                                get_spanning_tree(this,1);
+                            });
+    //Add context_menu to the element using the selector, in this case the id
+    add_context_menu("#"+id);
+    fabricObject.draggable();
+    return fabricObject;
 }
 
 function get_svg_id(layer_name){
@@ -686,9 +605,16 @@ function main(){
 
     })();
 
-
-
-    readDataColab(datafile,"collaborations");
+    //readDataColab(datafile,"collaborations");
+    
+    loadGraph(datafile,"authors2016",false).then(function(){
+        addGraphAsLayer(GRAPHS["authors2016"],"colab");
+    });
+    
+//    loadGraph(datafile2,"authors2015",false).then(function(){
+//        console.log(GRAPHS);
+//        addGraphAsLayer(GRAPHS["authors2015"],"colab2");
+//    });
     
     $("#new-layer").click(function(){
         add_new_layer(random_id());
