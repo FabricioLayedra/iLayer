@@ -202,79 +202,55 @@ function add_elements_to_world(world,layer){
     var Bodies = Matter.Bodies;
     var World = Matter.World;
     
-    var g = LAYERS[layer]["graph"];
-    var nodeKeys = g.nodes();
-    var edges = g.edges();
+    var elements = LAYERS[layer].layer.children();
+    
+    for (var i =0; i<elements.length; i++){
+        var element = elements[i];
+        if (element.type==="circle"){
+           
+            var x = element.cx();     
+            var y = element.cy();
+            var radius = element.attr("r");
+            
+            var matterObject = Bodies.circle(x, y, radius);
+            //nodeData.matter = matterObject;
+            matterObject.svg = element;
+            element.matter = matterObject;
 
-    // adding to the nodes objects of the graph both the fabric and the matter associated objects
-    nodeKeys.forEach(function (nodeKey) {
-
-        var nodeData = g.node(nodeKey);
-        var fabricObject = nodeData.svg;
-        var x = fabricObject.cx();     
-        var y = fabricObject.cy();
-        var radius = fabricObject.attr("r");
-        console.log(fabricObject);        
-        console.log(x,y,radius);
-
-
-        var matterObject = Bodies.circle(x, y, radius);
-        nodeData.matter = matterObject;
-        matterObject.svg = fabricObject;
-        fabricObject.matter = matterObject;
+            World.add(world,matterObject);
+        }else if(element.type==="path"){
+            // Edges
+        }
         
-        World.add(world,matterObject);
-        
-//        matterObject.layer = "default";
-//
-//        fabricObject.layer = "default";
-
-        //canvas.add(fabricObject);
-
-//        addMouseEvents(fabricObject);
-
-        //addMovingEvents(fabricObject, nodeData);
-
-    });
-//
-//    edges.forEach(function (edge) {
-//
-//        var from = g.node(edge.v);
-//        var to = g.node(edge.w);
-////        console.log("FROM-TO");
-////        console.log(from);
-////        console.log(to);
-//
-//        var fromCenterX = from.svg.cx();
-//        var fromCenterY = from.svg.cy();
-//
-//        var toCenterX = to.svg.cx();
-//        var toCenterY = to.svg.cy();
-//
-//        // creating a QUADRATIC CURVE. See https://www.sitepoint.com/html5-svg-quadratic-curves/ and http://fabricjs.com/quadratic-curve
-//        var path = "M" + fromCenterX + "," + fromCenterY + " Q" + (fromCenterX + (toCenterX - fromCenterX) / 2) + "," + (fromCenterY + (toCenterY - fromCenterY) / 2) + " " + toCenterX + "," + toCenterY;
-//
-//        var edgePath = draw.path(path).attr({
-//            stroke: 'black',
-//            fill: 'transparent',
-//            strokeWidth: 1
-////            lockMovementX: true,
-////            lockMovementY: true,
-////            hasControls: false,
-////            hasBorders: false,
-////            perPixelTargetFind: true,
-////            objectCaching: false
-//        });
-////        canvas.add(edgePath);
-////        edgePath.layer = "default";
-//
-//        to.inEdges.push(edgePath);
-//        from.outEdges.push(edgePath);
-//
-//    });
-
+    }
 }
 
+function add_element_to_world(world,layer,element){
+    var Bodies = Matter.Bodies;
+    var World = Matter.World;
+    
+    var elements = LAYERS[layer].layer.children();
+    
+    for (var i =0; i<elements.length; i++){
+        var element = elements[i];
+        if (element.type==="circle"){
+           
+            var x = element.cx();     
+            var y = element.cy();
+            var radius = element.attr("r");
+            
+            var matterObject = Bodies.circle(x, y, radius);
+            //nodeData.matter = matterObject;
+            matterObject.svg = element;
+            element.matter = matterObject;
+
+            World.add(world,matterObject);
+        }else if(element.type==="path"){
+            // Edges
+        }
+        
+    }
+}
 
 /*----------------------------GRAPHS' ACTIONS-----------------------------------*/
 
