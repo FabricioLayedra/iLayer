@@ -4441,7 +4441,8 @@ SVG.Path = SVG.invent({
   , plot: function(d) {
       return (d == null) ?
         this.array() :
-        this.clear().attr('d', typeof d == 'string' ? d : (this._array = new SVG.PathArray(d)))
+//        this.clear().attr('d', typeof d == 'string' ? d : (this._array = new SVG.PathArray(d))) GONZALO
+        this.attr('d', typeof d == 'string' ? d : (this._array = new SVG.PathArray(d)))
     }
     // Clear array cache
   , clear: function() {
@@ -5598,4 +5599,4 @@ if (typeof window.CustomEvent !== 'function') {
 
 return SVG
 
-}));
+}));
