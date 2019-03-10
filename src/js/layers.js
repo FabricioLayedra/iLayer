@@ -1,3 +1,4 @@
+
 /*--------------------------------CONSTANTS-------------------------------------*/
 
 
@@ -312,21 +313,24 @@ function drawGraph(draw,g) {
     nodeKeys.forEach(function (nodeKey) {
         
         var nodeData = g.node(nodeKey);
-        if (directed){
+//        if (directed){
             nodeData.inEdges = new Array();
             nodeData.outEdges = new Array();
-        }else{
-            nodeData.edges = new Array();
-        }
+//        }else{
+//            nodeData.edges = new Array();
+//        }
 
         var radius = 20;
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
         var y = getRandomBetween(50, 800);
         var x = getRandomBetween(50, 1000);
         
-        var fabricObject = drawCircleInLayer(draw,radius,x,y,nodeKey);
+        var fabricObject = drawCircleInLayer(draw,radius,x,y,nodeKey,directed,graphId);
         
         nodeData.svg = fabricObject;
+
+        fabricObject.nodeData = nodeData;
+
     });
 
     edges.forEach(function (edge) {
@@ -340,43 +344,46 @@ function drawGraph(draw,g) {
         var toCenterX = to.svg.cx();
         var toCenterY = to.svg.cy();
 
+        let controlX = (fromCenterX + (toCenterX - fromCenterX) / 2);
+        let controlY = (fromCenterY + (toCenterY - fromCenterY) / 2);
+
         // creating a QUADRATIC CURVE. See https://www.sitepoint.com/html5-svg-quadratic-curves/ and http://fabricjs.com/quadratic-curve
-        var path = "M" + fromCenterX + "," + fromCenterY + " Q" + (fromCenterX + (toCenterX - fromCenterX) / 2) + "," + (fromCenterY + (toCenterY - fromCenterY) / 2) + " " + toCenterX + "," + toCenterY;
+//        var path = "M" + fromCenterX + "," + fromCenterY + " Q" + controlX + "," + controlY + " " + toCenterX + "," + toCenterY;
 
-        var edgePath = drawPathInLayer(draw,path);
+        var edgePath = drawPathInLayer(draw,fromCenterX,fromCenterY,
+                                        controlX,controlY,toCenterX,toCenterY,graphId);
 
-        if (directed){
+//        if (directed){
             to.inEdges.push(edgePath);
             from.outEdges.push(edgePath);
-        }else{
-            to.edges.push(edgePath);
-            from.edges.push(edgePath);
-        }
+//        }else{
+//            to.edges.push(edgePath);
+//            from.edges.push(edgePath);
+//        }
 
     });
 }
 
-function drawPathInLayer (drawer,path){
-    var edgePath = drawer.path(path).attr({
-        stroke: 'gray',
-        fill: 'transparent',
-        strokeWidth: 1
-        //,
-        //id:id
-//            lockMovementX: true,
-//            lockMovementY: true,
-//            hasControls: false,
-//            hasBorders: false,
-//            perPixelTargetFind: true,
-//            objectCaching: false
-    });
+
+function drawPathInLayer (drawer,fromCenterX,fromCenterY,
+                            controlX,controlY,toCenterX,toCenterY,graphId){
+    var edgePath = drawer.path()
+            .M({x: fromCenterX, y: fromCenterY})
+            .Q({x: controlX, y: controlY}, {x: toCenterX, y: toCenterY})
+            .attr({
+                stroke: 'gray',
+                fill: 'transparent',
+                strokeWidth: 1
+            });
+    return edgePath;
 }
 
-function drawCircleInLayer (drawer,radius,cx,cy,id){
+function drawCircleInLayer (drawer,radius,cx,cy,id,directed,graphId){
     var fabricObject = drawer.circle(radius)
                             .attr({ cx: cx,
                                     cy: cy,
                                     id: id,
+                                    graph: graphId,
                                     //Fill
                                     fill: 'purple'
                                     })
@@ -386,8 +393,51 @@ function drawCircleInLayer (drawer,radius,cx,cy,id){
                             });
     //Add context_menu to the element using the selector, in this case the id
     add_context_menu("#"+id);
-    fabricObject.draggable();
+    addMouseEvents(fabricObject,directed);
+    addMovingEvents(fabricObject);
     return fabricObject;
+}
+
+
+function updateEdgesEnds(nodeGraphics,directed) {
+    let x = nodeGraphics.cx();
+    let y = nodeGraphics.cy();
+    let segment;
+//    if (directed){
+        nodeGraphics.nodeData.inEdges.forEach(function (inEdge) {
+            segment = inEdge.getSegment(1);
+            segment.coords[2] = x;
+            segment.coords[3] = y;
+            inEdge.replaceSegment(1, segment);
+        });
+        nodeGraphics.nodeData.outEdges.forEach(function (outEdge) {
+            segment = outEdge.getSegment(0);
+            segment.coords[0] = x;
+            segment.coords[1] = y;
+            outEdge.replaceSegment(0, segment);
+        });
+//    }else{
+//       nodeGraphics.nodeData.edges.forEach(function(edge){
+//            segment = edge.getSegment(1);
+//            segment.coords[2] = x;
+//            segment.coords[3] = y;
+//            edge.replaceSegment(1, segment);
+//            segment = edge.getSegment(0);
+//            segment.coords[0] = x;
+//            segment.coords[1] = y;
+//            edge.replaceSegment(0, segment);
+//       });
+//    }
+}
+
+function addMovingEvents(nodeGraphics,directed) {
+    nodeGraphics.on('dragmove', function event() {
+        updateEdgesEnds(nodeGraphics,directed);
+    });
+}
+
+function addMouseEvents(object) {
+    object.draggable();
 }
 
 function get_svg_id(layer_name){
@@ -395,8 +445,8 @@ function get_svg_id(layer_name){
 }
 
 function getGraphFromSVGElement(svgElement){
-   var layer_name = $(svgElement.parent().parent()).attr("id");
-   var graph = LAYERS[layer_name]["graph"];
+   var graph_name = $("#"+svgElement.node.id).attr("graph");
+   var graph = GRAPHS[graph_name];
    return graph;
 };
 
@@ -418,47 +468,29 @@ function get_spanning_tree(svgElement,n_levels){
 //    }
 //    console.log(limit);
     var count = 0;
+    var ego = [];
     edges.forEach(function (edge){
-        if (graph.directed){
-//            if (edge.v === svgElement.attr("id")){
-//                console.log("YEIH!")
-//            }
-        }else{
+//        if (graph.directed){
+////            if (edge.v === svgElement.attr("id")){
+////                console.log("YEIH!")
+////            }
+//        }else{
             var neighbour;
             if (edge.v === svgElement.attr("id")){
                 neighbour = edge.w;
                 count++;
+                            ego.push(neighbour);
 
             }else if(edge.w === svgElement.attr("id")){
                 neighbour = edge.v;
                 count++;
+                            ego.push(neighbour);
+
             }
-        }
-//        console.log(count);
-//        console.log(limit);
-//
-//        if (count>=limit){
-//            return;
 //        }
     });
-//    svgElement.attr("id");
-//    if (n_levels === 1){
-//        
-//        for (var i = 0 ; i < node.inEdges.length; i++){
-////            node.clone().putIn(svgElement.parent());
-////            node.remove();
-//            console.log(node.inEdges[i].v);
-////            console.log(node.inEdges[i].clone());
-//
-//            /* REMOVE AND ADD TO OTHER LAYER*/
-////            var collected = node.inEdges[i].remove();
-////            
-////            svgElement.parent().put(collected);
-//        }
-//    }else{
-//        //recursive
-//    }
     
+ 
     
 }
 
@@ -542,14 +574,17 @@ function main(){
                 for (let i = 0; i < bodies.length; i += 1) {
 
                     let currentBody = bodies[i];
-                    let fabricObject = currentBody.svg;
+                    let nodeGraphics = currentBody.svg;
 
 
-                    if (fabricObject) {
+                    if (nodeGraphics) {
                         let newX = currentBody.position.x;
                         let newY = currentBody.position.y;
-                        fabricObject.attr("cx",newX);
-                        fabricObject.attr("cy",newY);
+                        nodeGraphics.attr("cx",newX);
+                        nodeGraphics.attr("cy",newY);
+                        
+                        updateEdgesEnds(nodeGraphics);
+
 
             //            fabricObject.setPositionByOrigin({x: newX, y: newY}, 'center', 'center');
             //            fabricObject.setCoords();
@@ -557,31 +592,8 @@ function main(){
                 }
             }
         }
-
-
         window.requestAnimationFrame(render);
-
-    //
-    //    
-    //    
-    //
-    ////    if (drawVertices) {
-    ////        context.fillStyle = '#fff';
-    ////        context.fillRect(0, 0, canvas.width, canvas.height);
-    ////        context.beginPath();
-    ////    }
-    //
-
-    //
-    //    if (drawVertices) {
-    //        context.lineWidth = 1;
-    //        context.strokeStyle = '#999';
-    //        context.stroke();
-    //    }
-
     })();
-
-    //readDataColab(datafile,"collaborations");
     
     loadGraph(datafile,"authors2016",false).then(function(){
         addGraphAsLayer(GRAPHS["authors2016"],"colab");
