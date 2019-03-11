@@ -140,7 +140,7 @@ function opacity_changer(range){
     $("#opacity-"+layer_name).html(range.value);
     //SEARCH FOR SELLECT ALL THE ELEMENTS OF THE LAYERS
     SVG.get(get_svg_id(layer_name)).select("circle").attr("fill-opacity",range.value/100);
-//    SVG.get(get_svg_id(layer_name)).select("path").attr("fill-opacity",range.value/100);
+    SVG.get(get_svg_id(layer_name)).select("path").attr("opacity",range.value/100);
 
     //
     //d3.selectAll("."+layer_name).style("opacity",this.value/100);
@@ -391,10 +391,7 @@ function drawCircleInLayer (drawer,radius,cx,cy,id,directed,graphId){
                                     //Fill
                                     fill: 'purple'
                                     })
-                            .move(cx,cy)
-                            .click(function(){
-                                get_spanning_tree(this,1);
-                            });
+                            .move(cx,cy);
     //Add context_menu to the element using the selector, in this case the id
     add_context_menu("#"+id);
     addMouseEvents(fabricObject,directed);
