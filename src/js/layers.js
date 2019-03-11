@@ -140,6 +140,8 @@ function opacity_changer(range){
     $("#opacity-"+layer_name).html(range.value);
     //SEARCH FOR SELLECT ALL THE ELEMENTS OF THE LAYERS
     SVG.get(get_svg_id(layer_name)).select("circle").attr("fill-opacity",range.value/100);
+    SVG.get(get_svg_id(layer_name)).select("path").attr("opacity",range.value/100);
+
     //
     //d3.selectAll("."+layer_name).style("opacity",this.value/100);
     //CHANGE TO NEW LIBRARY
@@ -163,7 +165,12 @@ function create_physics_worlds(layer_name){
     // module aliases
     var Engine = Matter.Engine,
             World = Matter.World,
+//            Render = Matter.Render,
             Bodies = Matter.Bodies;
+    
+
+            
+            
 
     // create an engine
     var engine = Engine.create();
@@ -174,8 +181,17 @@ function create_physics_worlds(layer_name){
 
     var ground = Bodies.rectangle(400, 610, 810, 60, {isStatic: true});
     World.add(world, ground);
+    
+//         var render = Render.create({
+//      element: document.body,
+//      engine: engine
+//  });
+    
     //Add more boundaries
     Engine.run(engine);
+    
+//      Render.run(render);
+
     LAYERS[layer_name]["physics-engine"] = engine;
 }
 
@@ -226,14 +242,10 @@ function add_elements_to_world(world,layer){
     }
 }
 
-function add_element_to_world(world,layer,element){
+function add_element_to_world(world,element){
     var Bodies = Matter.Bodies;
     var World = Matter.World;
-    
-    var elements = LAYERS[layer].layer.children();
-    
-    for (var i =0; i<elements.length; i++){
-        var element = elements[i];
+       
         if (element.type==="circle"){
            
             var x = element.cx();     
@@ -248,9 +260,49 @@ function add_element_to_world(world,layer,element){
             World.add(world,matterObject);
         }else if(element.type==="path"){
             // Edges
-        }
+        }   
+}
+
+function add_attractor_to_world(world,element){
+    var Bodies = Matter.Bodies;
+    var World = Matter.World;
+    
+    var matterObject;
+    
+    console.log(element.attr());
+       
+    if (element.type==="circle"){
+
+        var x = element.cx();     
+        var y = element.cy();
+        var radius = element.attr("r");
+
+        matterObject = Bodies.circle(x, y, radius,{
+            isStatic:true,
+            plugin: {
+                attractors: [
+                    function (bodyA, bodyB) {
+                        var x = 0, y = 0;
+                        if (bodyB.attractedTo && bodyB.attractedTo.includes(bodyA)) {
+                            x = (bodyA.position.x - bodyB.position.x) * 1e-5;
+                            y = (bodyA.position.y - bodyB.position.y) * 1e-5;
+                        }
+                        return {x: x, y: y};
+                    }
+                ]
+            }
+        });
+        //nodeData.matter = matterObject;
+        matterObject.svg = element;
+        element.matter = matterObject;
+
+        World.add(world,matterObject);
+        console.log(matterObject);
         
+    }else if(element.type==="path"){
+        // Edges
     }
+    return matterObject;
 }
 
 /*----------------------------GRAPHS' ACTIONS-----------------------------------*/
@@ -338,6 +390,7 @@ function drawGraph(draw,g) {
         var from = g.node(edge.v);
         var to = g.node(edge.w);
 
+        var id = edge.v + edge.w;
         var fromCenterX = from.svg.cx();
         var fromCenterY = from.svg.cy();
 
@@ -351,7 +404,7 @@ function drawGraph(draw,g) {
 //        var path = "M" + fromCenterX + "," + fromCenterY + " Q" + controlX + "," + controlY + " " + toCenterX + "," + toCenterY;
 
         var edgePath = drawPathInLayer(draw,fromCenterX,fromCenterY,
-                                        controlX,controlY,toCenterX,toCenterY,graphId);
+                                        controlX,controlY,toCenterX,toCenterY,id,graphId);
 
 //        if (directed){
             to.inEdges.push(edgePath);
@@ -366,14 +419,15 @@ function drawGraph(draw,g) {
 
 
 function drawPathInLayer (drawer,fromCenterX,fromCenterY,
-                            controlX,controlY,toCenterX,toCenterY,graphId){
+                            controlX,controlY,toCenterX,toCenterY,id,graphId){
     var edgePath = drawer.path()
             .M({x: fromCenterX, y: fromCenterY})
             .Q({x: controlX, y: controlY}, {x: toCenterX, y: toCenterY})
             .attr({
                 stroke: 'gray',
                 fill: 'transparent',
-                strokeWidth: 1
+                strokeWidth: 1,
+                id: id
             });
     return edgePath;
 }
@@ -387,10 +441,7 @@ function drawCircleInLayer (drawer,radius,cx,cy,id,directed,graphId){
                                     //Fill
                                     fill: 'purple'
                                     })
-                            .move(cx,cy)
-                            .click(function(){
-                                get_spanning_tree(this,1);
-                            });
+                            .move(cx,cy);
     //Add context_menu to the element using the selector, in this case the id
     add_context_menu("#"+id);
     addMouseEvents(fabricObject,directed);
@@ -446,20 +497,23 @@ function get_svg_id(layer_name){
 
 function getGraphFromSVGElement(svgElement){
    var graph_name = $("#"+svgElement.node.id).attr("graph");
-   var graph = GRAPHS[graph_name];
-   return graph;
+   return GRAPHS[graph_name]; 
 };
 
-function sendNodeToLayer(svgElement,layerOrigin,layerDestination){
-   var layer_name = $(svgElement.parent().parent()).attr("id");
-   var graph = LAYERS[layer]["graph"];
-   
-   return graph;
+function getGraphFromSelector(selector){
+   var graph_name = $(selector).attr("graph");
+   return GRAPHS[graph_name]; 
 };
 
-function get_spanning_tree(svgElement,n_levels){
-    var graph = getGraphFromSVGElement(svgElement);
+function sendElementToLayer(svgElement,layerOrigin,layerDestination){
+   console.log(svgElement);
+};
+
+function get_spanning_tree(selector,n_levels){
+    var graph = getGraphFromSelector(selector);
     var edges = graph.edges();
+    //This substring is just the name without the # of the selector
+    var idNode = selector.substring(1,selector.length);
 //    var limit;
 //    if (graph.directed){
 //        limit = source.inEdges.length + source.outEdges.length;
@@ -476,25 +530,29 @@ function get_spanning_tree(svgElement,n_levels){
 ////            }
 //        }else{
             var neighbour;
-            if (edge.v === svgElement.attr("id")){
+            if (edge.v === idNode){
                 neighbour = edge.w;
                 count++;
-                            ego.push(neighbour);
+                ego.push(neighbour);
 
-            }else if(edge.w === svgElement.attr("id")){
+            }else if(edge.w === idNode){
                 neighbour = edge.v;
                 count++;
-                            ego.push(neighbour);
+                ego.push(neighbour);
 
             }
 //        }
     });
-    
- 
-    
+    return [idNode,ego];    
 }
 
+function send_ego_network_to_layer(svgElement,n_levels){
+    console.log(svgElement);
+}
 
+function get_parent_layer_name(svgElement){
+    return $(svgElement).parent().parent().attr("id");
+}
 /*-----------------------------CONTEXT MENU-------------------------------------*/
 
 function add_context_menu(sel){
@@ -513,18 +571,23 @@ function add_context_menu(sel){
                         "name":"Send to...",
                         "items":generate_menu_layers_names(
                                     data,
-                                    function(){
-                                        send_element_to_layer(sel);
+                                    function(destination){
+                                        console.log(sel);
+                                        send_element_to_layer(sel,destination);
                                     })
                     },
                     "ego":{
                         "name":"Send adjacents to...",
                         "items":generate_menu_layers_names(
                                     data,
-                                    function(){
-                                        send_adjacents_to_layer(sel);
+                                    function(destination){
+                                        send_adjacents_to_layer(sel,destination);
                                     })
                     },
+                    "transform":{
+                        "name":"Attract my neighbours",
+                        
+                                 "callback":function(){makeAttractor(this);}},
                     "select":{"name":"Select .."}
                 }    
             };
@@ -551,15 +614,67 @@ function get_layers_names(dict){
     return Object.keys(dict);
 }
 
-function send_element_to_layer(selector){
-    console.log($(selector));
+function send_element_to_layer(selector,destination){
+    var svg_destination = get_svg_id(destination);
+    SVG.get(svg_destination).put(SVG.get(selector).remove());
 }
 
-function send_adjacents_to_layer(){
+function send_adjacents_to_layer(selector,destination){
+    var spanning_tree = get_spanning_tree(selector,1);
+    var source = spanning_tree[0];
+    var targets = spanning_tree[1];
+    //send the center
+    send_element_to_layer(source,destination);
+    //send the target nodes and edges
+    for (var i = 0; i<targets.length; i++){
+        // target nodes
+        send_element_to_layer(targets[i],destination);
+        try {
+            send_element_to_layer(source+targets[i],destination);
+
+          }
+          catch(error) {
+            try {
+                send_element_to_layer(targets[i]+source,destination);
+              }
+              catch(error) {
+                console.error(error);
+                // expected output: ReferenceError: nonExistentFunction is not defined
+                // Note - error messages will vary depending on browser
+              }
+            // expected output: ReferenceError: nonExistentFunction is not defined
+            // Note - error messages will vary depending on browser
+          }
+        //edges
+        //send_element_to_layer(source+targets[i],destination);
+    }
+    
+    console.log(spanning_tree);
     
 }
 
-
+function makeAttractor(svgElement){
+    //get spanning tree correr mundo y anadir propiedades al matter de los svgs diciendo que son atraidos por
+//    console.log(svgElement);
+//    console.log(getGraphFromSelector("#"+svgElement.attr("id")))
+    var spanning_tree = get_spanning_tree("#"+svgElement.attr("id"),1);
+    var layer_name = get_parent_layer_name(svgElement);
+    if (LAYERS[layer_name]["physics-engine"]===""){
+        create_physics_worlds(layer_name);
+    }
+    var world = LAYERS[layer_name]["physics-engine"].world;
+    add_attractor_to_world(world,SVG.get(svgElement.attr("id")));
+    var attractor = SVG.get(svgElement.attr("id")).matter;
+//    console.log(attractor);
+    for (var i = 0; i<spanning_tree[1].length; i++){
+//            console.log(SVG.get(spanning_tree[1][i]));
+        add_element_to_world(world,SVG.get(spanning_tree[1][i]));
+        var body = SVG.get(spanning_tree[1][i]).matter;
+        body.attractedTo = new Array();
+        body.attractedTo.push(attractor);
+        
+    }
+}
 /*-----------------------------------MAIN---------------------------------------*/
 
 function main(){
