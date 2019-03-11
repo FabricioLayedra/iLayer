@@ -165,7 +165,12 @@ function create_physics_worlds(layer_name){
     // module aliases
     var Engine = Matter.Engine,
             World = Matter.World,
+//            Render = Matter.Render,
             Bodies = Matter.Bodies;
+    
+
+            
+            
 
     // create an engine
     var engine = Engine.create();
@@ -176,8 +181,17 @@ function create_physics_worlds(layer_name){
 
     var ground = Bodies.rectangle(400, 610, 810, 60, {isStatic: true});
     World.add(world, ground);
+    
+//         var render = Render.create({
+//      element: document.body,
+//      engine: engine
+//  });
+    
     //Add more boundaries
     Engine.run(engine);
+    
+//      Render.run(render);
+
     LAYERS[layer_name]["physics-engine"] = engine;
 }
 
@@ -228,14 +242,10 @@ function add_elements_to_world(world,layer){
     }
 }
 
-function add_element_to_world(world,layer,element){
+function add_element_to_world(world,element){
     var Bodies = Matter.Bodies;
     var World = Matter.World;
-    
-    var elements = LAYERS[layer].layer.children();
-    
-    for (var i =0; i<elements.length; i++){
-        var element = elements[i];
+       
         if (element.type==="circle"){
            
             var x = element.cx();     
@@ -250,9 +260,49 @@ function add_element_to_world(world,layer,element){
             World.add(world,matterObject);
         }else if(element.type==="path"){
             // Edges
-        }
+        }   
+}
+
+function add_attractor_to_world(world,element){
+    var Bodies = Matter.Bodies;
+    var World = Matter.World;
+    
+    var matterObject;
+    
+    console.log(element.attr());
+       
+    if (element.type==="circle"){
+
+        var x = element.cx();     
+        var y = element.cy();
+        var radius = element.attr("r");
+
+        matterObject = Bodies.circle(x, y, radius,{
+            isStatic:true,
+            plugin: {
+                attractors: [
+                    function (bodyA, bodyB) {
+                        var x = 0, y = 0;
+                        if (bodyB.attractedTo && bodyB.attractedTo.includes(bodyA)) {
+                            x = (bodyA.position.x - bodyB.position.x) * 1e-5;
+                            y = (bodyA.position.y - bodyB.position.y) * 1e-5;
+                        }
+                        return {x: x, y: y};
+                    }
+                ]
+            }
+        });
+        //nodeData.matter = matterObject;
+        matterObject.svg = element;
+        element.matter = matterObject;
+
+        World.add(world,matterObject);
+        console.log(matterObject);
         
+    }else if(element.type==="path"){
+        // Edges
     }
+    return matterObject;
 }
 
 /*----------------------------GRAPHS' ACTIONS-----------------------------------*/
@@ -534,6 +584,10 @@ function add_context_menu(sel){
                                         send_adjacents_to_layer(sel,destination);
                                     })
                     },
+                    "transform":{
+                        "name":"Attract my neighbours",
+                        
+                                 "callback":function(){makeAttractor(this);}},
                     "select":{"name":"Select .."}
                 }    
             };
@@ -599,7 +653,28 @@ function send_adjacents_to_layer(selector,destination){
     
 }
 
-
+function makeAttractor(svgElement){
+    //get spanning tree correr mundo y anadir propiedades al matter de los svgs diciendo que son atraidos por
+//    console.log(svgElement);
+//    console.log(getGraphFromSelector("#"+svgElement.attr("id")))
+    var spanning_tree = get_spanning_tree("#"+svgElement.attr("id"),1);
+    var layer_name = get_parent_layer_name(svgElement);
+    if (LAYERS[layer_name]["physics-engine"]===""){
+        create_physics_worlds(layer_name);
+    }
+    var world = LAYERS[layer_name]["physics-engine"].world;
+    add_attractor_to_world(world,SVG.get(svgElement.attr("id")));
+    var attractor = SVG.get(svgElement.attr("id")).matter;
+//    console.log(attractor);
+    for (var i = 0; i<spanning_tree[1].length; i++){
+//            console.log(SVG.get(spanning_tree[1][i]));
+        add_element_to_world(world,SVG.get(spanning_tree[1][i]));
+        var body = SVG.get(spanning_tree[1][i]).matter;
+        body.attractedTo = new Array();
+        body.attractedTo.push(attractor);
+        
+    }
+}
 /*-----------------------------------MAIN---------------------------------------*/
 
 function main(){
