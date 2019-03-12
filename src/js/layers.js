@@ -585,26 +585,16 @@ function addHoveringEvents(nodeGraphics, directed) {
 
 function addMovingEvents(nodeGraphics, directed) {
     nodeGraphics.on('dragmove', function event(e) {
-
         let theBody = nodeGraphics.matter;
-
         if (theBody) {
-
             let event = e.detail.event;
             var x = event.offsetX;
             var y = event.offsetY;
-
-            console.log(x);
-            console.log(y);
-
             Body.translate(nodeGraphics.matter, {
                 x: (x - theBody.position.x) * 0.25,
                 y: (y - theBody.position.y) * 0.25
             });
-
         }
-
-
         updateEdgesEnds(nodeGraphics, directed);
     });
 }
