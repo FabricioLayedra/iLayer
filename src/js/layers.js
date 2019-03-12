@@ -12,6 +12,8 @@ var LAYERS = {};
 
 var GRAPHS = {};
 
+var SELECTION = {};
+
 var el = document.getElementById("layers-table");
 
 
@@ -119,12 +121,13 @@ function gravity_handler(checkbox) {
         console.log(checkbox.id)
         //Initialize the engine if it is not created
         var engine;
-        if (LAYERS[layer]["physics-engine"].length === 0) {
+        if (!LAYERS[layer]["physics-engine"]) {
             create_physics_worlds(layer);
             engine = LAYERS[layer]["physics-engine"];
             console.log(LAYERS[layer]["physics-engine"]);
             //add elements to physics world
             add_elements_to_world(engine.world, layer);
+            addGravity(engine);
         } else {
             engine = LAYERS[layer]["physics-engine"];
         }
@@ -132,13 +135,12 @@ function gravity_handler(checkbox) {
 
         console.log("Adding physics...");
     } else {
-        if (LAYERS[layer]["physics-engine"].length === 0) {
+        if (!LAYERS[layer]["physics-engine"]) {
             console.log("No engine");
         } else {
             console.log("Stoping engine...");
 //            stop_physics(LAYERS[layer]["physics-engine"]);
-            LAYERS[layer]["physics-engine"] = "";
-
+            LAYERS[layer]["physics-engine"] = null;
         }
         console.log("Removing physics...");
     }
@@ -159,7 +161,7 @@ function opacity_changer(range) {
     var layer_name = range.id.split("-")[1];
     $("#opacity-" + layer_name).html(range.value);
     //SEARCH FOR SELLECT ALL THE ELEMENTS OF THE LAYERS
-    SVG.get(get_svg_id(layer_name)).select("circle").attr("fill-opacity", range.value / 100);
+    SVG.get(get_svg_id(layer_name)).select("circle").attr({"fill-opacity": range.value / 100,"stroke-opacity": range.value / 100});
     SVG.get(get_svg_id(layer_name)).select("path").attr("opacity", range.value / 100);
 
     //
@@ -219,13 +221,13 @@ function stop_physics(engine) {
     engine.enabled = false;
 }
 
-function add_gravity(engine) {
+function addGravity(engine) {
     if (engine.world.gravity.scale > 0) {
 //        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Add gravity" ;
         engine.world.gravity.scale = 0;
     } else {
 //        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Remove gravity" ;
-        engine.world.gravity.scale = 0.000001;
+        engine.world.gravity.scale = 0.01;
     }
 }
 
@@ -293,7 +295,6 @@ function add_attractor_to_world(world, element) {
         var y = element.cy();
         var radius = element.attr("r");
 
-        element.attr("fill", 'black');
 
         matterObject = Bodies.circle(x, y, radius, {
             isStatic: true,
@@ -434,12 +435,16 @@ function drawGraph(draw, g) {
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
         var y = getRandomBetween(50, 600);
         var x = getRandomBetween(50, 700);
+        //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
+        var labelName = nodeData.authorInfo.name;
+        // elements: itself and its label
+        var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId);
+        var label = drawLabel(draw,nodeKey,circle.cx(),circle.cy()+15,graphId,labelName);
+        nodeData.svg = circle;
+        nodeData.label = label;
+        
 
-        var fabricObject = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId);
-
-        nodeData.svg = fabricObject;
-
-        fabricObject.nodeData = nodeData;
+        circle.nodeData = nodeData;
 
     });
 
@@ -475,6 +480,27 @@ function drawGraph(draw, g) {
     });
 }
 
+function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
+    var fabricObject = drawer.circle(radius)
+            .attr({cx: cx,
+                cy: cy,
+                id: id,
+                graph: graphId,
+                //Fill
+                fill: 'purple'
+            })
+            .move(cx, cy);
+    //Add context_menu to the element using the selector, in this case the id
+
+    
+    add_context_menu("#" + id);
+    addMouseEvents(fabricObject, directed);
+    addMovingEvents(fabricObject);
+    addHoveringEvents(fabricObject);
+//    return [fabricObject,label];
+    return fabricObject;
+
+}
 
 function drawPathInLayer(drawer, fromCenterX, fromCenterY,
         controlX, controlY, toCenterX, toCenterY, id, graphId) {
@@ -488,26 +514,24 @@ function drawPathInLayer(drawer, fromCenterX, fromCenterY,
                 id: id,
                 'pointer-events': 'none'
             }).off();
+    edgePath.back();
     return edgePath;
 }
 
-function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
-    var fabricObject = drawer.circle(radius)
-            .attr({cx: cx,
-                cy: cy,
-                id: id,
-                graph: graphId,
-                //Fill
-                fill: 'purple'
-            })
-            .move(cx, cy);
-    //Add context_menu to the element using the selector, in this case the id
-    add_context_menu("#" + id);
-    addMouseEvents(fabricObject, directed);
-    addMovingEvents(fabricObject);
-    addHoveringEvents(fabricObject);
-    return fabricObject;
+function drawLabel (drawer,id,x,y,graphId,label){
+    var labelText = drawer.text(label).attr({ 
+                        id: "label-"+id,
+                        x: x,
+                        y: y,
+                        graph: graphId,
+                        "text-anchor": "middle",
+                        //Fill
+                        fill: 'black'
+                        });
+    return labelText;
+                        
 }
+
 
 
 function updateEdgesEnds(nodeGraphics, directed) {
@@ -596,11 +620,42 @@ function addMovingEvents(nodeGraphics, directed) {
             });
         }
         updateEdgesEnds(nodeGraphics, directed);
+        updateLabelPosition(nodeGraphics);
     });
+}
+
+function updateLabelPosition(nodeGraphics){
+    
+    nodeGraphics.nodeData.label.move(nodeGraphics.cx(),nodeGraphics.cy()+(nodeGraphics.attr('r')/2));
+    
 }
 
 function addMouseEvents(object) {
     object.draggable();
+    object.on("click",function (d){
+        if (d.shiftKey){
+            if (SELECTION.includes(this)){
+                SELECTION = arrayRemove(SELECTION,this);
+            }else{
+                SELECTION.push(this);
+                console.log("Added")
+//                addContextMenuSelection("#"+this.node.id);  
+            }
+            console.log("SELECTION");
+            console.log(SELECTION);
+        }
+    });
+    object.on("dblclick",function (d){
+        if (SELECTION.length<1){
+            console.log("Nothing is selected");
+        }else{
+            if (SELECTION.includes(this)){
+                console.log("ADD CONTEXT MENU");
+            }else{
+                console.log("THIS IS NOT PART OF THE SELECTION")
+            }
+        }
+    });
 }
 
 function get_svg_id(layer_name) {
@@ -842,9 +897,7 @@ function makeAttractor(svgElement) {
 
     var attractor = attractorGraphics.matter;
 
-    var theColor = getRandomColor();
 
-//    console.log(attractor);
     for (var i = 0; i < spanning_tree[1].length; i++) {
 
         var graphics = SVG.get(spanning_tree[1][i]);
@@ -853,12 +906,6 @@ function makeAttractor(svgElement) {
 
         var body = graphics.matter;
 
-        console.log("svgElement");
-        console.log(svgElement);
-
-        console.log("graphics");
-        console.log(graphics);
-
         if (!body) {
             add_element_to_world(world, graphics);
             body = graphics.matter;
@@ -866,7 +913,6 @@ function makeAttractor(svgElement) {
             // IMPORTANT: we need to do this to update objects that are attracted to more than one attractor
             Matter.Composite.remove(world, body);
             World.add(world, body);
-            graphics.attr('fill', 'red');
         }
 
         if (!body.attractedTo) {
@@ -874,13 +920,6 @@ function makeAttractor(svgElement) {
         }
         body.attractedTo.push(attractor);
 
-        console.log("");
-        console.log("***************************");
-        console.log("body.attractedTo:");
-        console.log(body.attractedTo);
-        console.log("***************************");
-
-        MatterAttractors.Engine.update(engine);
 
     }
 }

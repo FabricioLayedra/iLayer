@@ -20,3 +20,9 @@ function random_id() {
   // after the decimal.
   return Math.random().toString(36).substr(2, 5);
 };
+
+function arrayRemove(arr, value) {
+   return arr.filter(function(ele){
+       return ele !== value;
+   });
+}
