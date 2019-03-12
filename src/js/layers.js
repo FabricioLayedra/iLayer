@@ -38,6 +38,9 @@ function getRandomColor() {
 
 function add_new_layer(layer_name) {
     var layer = create_layer(layer_name);
+
+
+
 //    var color = Math.floor(Math.random() * 16777215).toString(16);
     var color = getRandomColor();
     $(layer.querySelector(' div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("style", "background-color: " + color + "; height: auto; width: 5px");
@@ -50,7 +53,7 @@ function create_layer(layer) {
     var canvas = document.createElement("div");
     var container = document.getElementById("set-canvases");
     canvas.setAttribute("id", layer);
-    canvas.setAttribute("style", "position: absolute");
+    canvas.setAttribute("style", "position: absolute;");
     container.appendChild(canvas);
     create_svg(layer, 1200, 800);
     var template = document.getElementById('li-element').content.cloneNode(true);
@@ -61,6 +64,7 @@ function create_layer(layer) {
     }
     change_layer_names(template, id);
     add_events(template);
+
     return template;
 }
 
@@ -75,6 +79,7 @@ function change_layer_names(item, id) {
     $(item.querySelector('div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("id", "color-" + id);
     $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("id", "p-" + id);
     $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("value", "Layer " + id);
+    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("style", "cursor: grab");
     $(item.querySelector('div > div:nth-child(1) > div.col-2 > button')).attr("data-target", "#collapse-" + id);
     $(item.querySelector('div > div:nth-child(1) > div.col-2 > button')).attr("aria-controls", "collapse-" + id);
     $(item.querySelector('div > div.row.collapse')).attr("id", "collapse-" + id);
@@ -161,7 +166,7 @@ function opacity_changer(range) {
     var layer_name = range.id.split("-")[1];
     $("#opacity-" + layer_name).html(range.value);
     //SEARCH FOR SELLECT ALL THE ELEMENTS OF THE LAYERS
-    SVG.get(get_svg_id(layer_name)).select("circle").attr({"fill-opacity": range.value / 100,"stroke-opacity": range.value / 100});
+    SVG.get(get_svg_id(layer_name)).select("circle").attr({"fill-opacity": range.value / 100, "stroke-opacity": range.value / 100});
     SVG.get(get_svg_id(layer_name)).select("path").attr("opacity", range.value / 100);
 
     //
@@ -439,10 +444,10 @@ function drawGraph(draw, g) {
         var labelName = nodeData.authorInfo.name;
         // elements: itself and its label
         var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId);
-        var label = drawLabel(draw,nodeKey,circle.cx(),circle.cy()+15,graphId,labelName);
+        var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + 25, graphId, labelName);
         nodeData.svg = circle;
         nodeData.label = label;
-        
+
 
         circle.nodeData = nodeData;
 
@@ -492,7 +497,7 @@ function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
             .move(cx, cy);
     //Add context_menu to the element using the selector, in this case the id
 
-    
+
     add_context_menu("#" + id);
     addMouseEvents(fabricObject, directed);
     addMovingEvents(fabricObject);
@@ -518,18 +523,16 @@ function drawPathInLayer(drawer, fromCenterX, fromCenterY,
     return edgePath;
 }
 
-function drawLabel (drawer,id,x,y,graphId,label){
-    var labelText = drawer.text(label).attr({ 
-                        id: "label-"+id,
-                        x: x,
-                        y: y,
-                        graph: graphId,
-                        "text-anchor": "middle",
-                        //Fill
-                        fill: 'black'
-                        });
+function drawLabel(drawer, id, x, y, graphId, label) {
+    var labelText = drawer.text(label).attr({
+        id: "label-" + id,
+        graph: graphId,
+        "text-anchor": "middle",
+        "alignment-baseline": "hanging",
+        fill: 'black'
+    });
+    labelText.move(x, y);
     return labelText;
-                        
 }
 
 
@@ -624,19 +627,17 @@ function addMovingEvents(nodeGraphics, directed) {
     });
 }
 
-function updateLabelPosition(nodeGraphics){
-    
-    nodeGraphics.nodeData.label.move(nodeGraphics.cx(),nodeGraphics.cy()+(nodeGraphics.attr('r')/2));
-    
+function updateLabelPosition(nodeGraphics) {
+    nodeGraphics.nodeData.label.move(nodeGraphics.cx(), nodeGraphics.cy() + 25);
 }
 
 function addMouseEvents(object) {
     object.draggable();
-    object.on("click",function (d){
-        if (d.shiftKey){
-            if (SELECTION.includes(this)){
-                SELECTION = arrayRemove(SELECTION,this);
-            }else{
+    object.on("click", function (d) {
+        if (d.shiftKey) {
+            if (SELECTION.includes(this)) {
+                SELECTION = arrayRemove(SELECTION, this);
+            } else {
                 SELECTION.push(this);
                 console.log("Added")
 //                addContextMenuSelection("#"+this.node.id);  
@@ -645,13 +646,13 @@ function addMouseEvents(object) {
             console.log(SELECTION);
         }
     });
-    object.on("dblclick",function (d){
-        if (SELECTION.length<1){
+    object.on("dblclick", function (d) {
+        if (SELECTION.length < 1) {
             console.log("Nothing is selected");
-        }else{
-            if (SELECTION.includes(this)){
+        } else {
+            if (SELECTION.includes(this)) {
                 console.log("ADD CONTEXT MENU");
-            }else{
+            } else {
                 console.log("THIS IS NOT PART OF THE SELECTION")
             }
         }
