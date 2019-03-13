@@ -26,3 +26,23 @@ function arrayRemove(arr, value) {
        return ele !== value;
    });
 }
+
+function scaleValue(oldmax,oldmin,newmax,newmin,oldvalue){
+    var OldRange = (oldmax - oldmin); 
+    var NewRange = (newmax - newmin); 
+    return (((oldvalue - oldmin) * NewRange) / OldRange) + newmin;
+}
+
+function valuesDict(dictionary){
+    return Object.keys(dictionary).map(function(key){
+        return dictionary[key];
+    });
+}
+
+function getMaxArray(array){
+    return Math.max(...array);
+}
+
+function getMinArray(array){
+    return Math.min(...array);
+}
