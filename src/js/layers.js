@@ -37,12 +37,8 @@ function getRandomColor() {
 /*----------------------------CREATION OF LAYERS--------------------------------*/
 
 function add_new_layer(layer_name) {
-    var layer = create_layer(layer_name);
-
-
-
-//    var color = Math.floor(Math.random() * 16777215).toString(16);
     var color = getRandomColor();
+    var layer = create_layer(layer_name);
     $(layer.querySelector(' div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("style", "background-color: " + color + "; height: auto; width: 5px");
     $("#layers-table").append(layer);
     sort_layers($("#layers-table"));
@@ -50,11 +46,15 @@ function add_new_layer(layer_name) {
 }
 
 function create_layer(layer) {
+
     var canvas = document.createElement("div");
     var container = document.getElementById("set-canvases");
     canvas.setAttribute("id", layer);
     canvas.setAttribute("style", "position: absolute;");
     container.appendChild(canvas);
+
+    window.canvas = canvas;
+
     create_svg(layer, 1200, 800);
     var template = document.getElementById('li-element').content.cloneNode(true);
     if (typeof layer === "undefined") {
@@ -63,7 +63,7 @@ function create_layer(layer) {
         var id = layer;
     }
     change_layer_names(template, id);
-    add_events(template);
+    add_events(template, layer);
 
     return template;
 }
@@ -88,7 +88,12 @@ function change_layer_names(item, id) {
     $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div > div.col-4 > input')).attr("id", "gravity-handler-" + id);
 }
 
-function add_events(item) {
+function add_events(item, layerName) {
+
+
+    console.log("************ item");
+    console.log(item);
+
     //checkbox opacity
     $(item.querySelector('div > div:nth-child(1) > div.col-sm-auto.pr-0 > input')).change(function () {
         show_hide_layer(this);
@@ -105,6 +110,12 @@ function add_events(item) {
     $(item.querySelector('div > div.row.collapse > div > div.collapse-item.slidecontainer > input')).on("input", function () {
         console.log("run");
         opacity_changer(this);
+    });
+    $(item.querySelector('div')).mouseenter(function () {
+        highlightLayer(layerName, true);
+    });
+    $(item.querySelector('div')).mouseleave(function () {
+        highlightLayer(layerName);
     });
 }
 
@@ -160,14 +171,40 @@ function stop_drag() {
     }
 }
 
+function highlightLayer(layerName, blurOthers) {
+
+    Object.keys(LAYERS).forEach(function (aLayer) {
+        if (aLayer !== layerName) {
+            let currentLayer = SVG.get(get_svg_id(aLayer));
+            let elements = currentLayer.select("*");
+            if (blurOthers) {
+                currentLayer.attr('opacity', currentLayer.attr('opacity') / 2);
+                elements.filter(function (add) {
+                    add.gaussianBlur(3)
+                            .componentTransfer({
+                                rgb: {type: 'discrete', tableValues: [0, 0.2, 0.4, 0.6, 0.8, 1]}
+                            });
+                });
+            } else {
+                currentLayer.attr('opacity', currentLayer.attr('opacity') * 2);
+                elements.unfilter(true);
+            }
+        }
+    });
+
+}
+
 function opacity_changer(range) {
 //   sortable["options"]["disabled"] = false;
     console.log(sortable["options"]["disabled"]);
     var layer_name = range.id.split("-")[1];
     $("#opacity-" + layer_name).html(range.value);
     //SEARCH FOR SELLECT ALL THE ELEMENTS OF THE LAYERS
-    SVG.get(get_svg_id(layer_name)).select("circle").attr({"fill-opacity": range.value / 100, "stroke-opacity": range.value / 100});
-    SVG.get(get_svg_id(layer_name)).select("path").attr("opacity", range.value / 100);
+//    SVG.get(get_svg_id(layer_name)).select("circle").attr({"fill-opacity": range.value / 100, "stroke-opacity": range.value / 100});
+//    SVG.get(get_svg_id(layer_name)).select("path").attr("opacity", range.value / 100);
+
+    // changing the opacity of the entire SVG element so that we don't have to iterate
+    SVG.get(get_svg_id(layer_name)).attr('opacity', range.value / 100);
 
     //
     //d3.selectAll("."+layer_name).style("opacity",this.value/100);
@@ -412,8 +449,14 @@ function lightenDarkenColor(col, amt) {
 
 // Adds a graph as a layer in the tool
 function addGraphAsLayer(g, layer_name) {
-    var color = add_new_layer(layer_name);
+
+//    var color = add_new_layer(layer_name);
+//    var darkenColor = lightenDarkenColor(color, -10);
+
+    add_new_layer(layer_name);
+    var color = '#688bd6';
     var darkenColor = lightenDarkenColor(color, -10);
+
     drawGraph(LAYERS[layer_name].layer, g);
     var svg_id = $("#" + layer_name).children("svg").attr("id");
     SVG.get(svg_id).select("circle").attr({fill: color, stroke: darkenColor, 'stroke-width': 2});
@@ -490,9 +533,7 @@ function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
             .attr({cx: cx,
                 cy: cy,
                 id: id,
-                graph: graphId,
-                //Fill
-                fill: 'purple'
+                graph: graphId
             })
             .move(cx, cy);
     //Add context_menu to the element using the selector, in this case the id
@@ -844,6 +885,8 @@ function send_adjacents_to_layer(selector, destination) {
     console.log(spanning_tree);
 
 }
+
+
 
 function highlightElement(element, color, timeout) {
     var oldStroke = element.attr('stroke');
