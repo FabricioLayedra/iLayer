@@ -42,6 +42,7 @@ function add_new_layer(layer_name) {
     $(layer.querySelector(' div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("style", "background-color: " + color + "; height: auto; width: 5px");
     $("#layers-table").append(layer);
     sort_layers($("#layers-table"));
+    LAYERS[layer_name].color = color;
     return color;
 }
 
@@ -457,12 +458,14 @@ function addGraphAsLayer(g, layer_name) {
     var color = '#688bd6';
     var darkenColor = lightenDarkenColor(color, -10);
 
-    drawGraph(LAYERS[layer_name].layer, g);
+//    drawGraph(LAYERS[layer_name].layer, g);
+    drawGraph(layer_name, g);
     var svg_id = $("#" + layer_name).children("svg").attr("id");
     SVG.get(svg_id).select("circle").attr({fill: color, stroke: darkenColor, 'stroke-width': 2});
 }
 
-function drawGraph(draw, g) {
+function drawGraph(layer_name, g) {
+    var draw = LAYERS[layer_name].layer;
     var graphId = g._label;
     var directed = g.directed;
     var nodeKeys = g.nodes();
@@ -487,6 +490,8 @@ function drawGraph(draw, g) {
         var labelName = nodeData.authorInfo.name;
         // elements: itself and its label
         var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId);
+        circle.layerName = layer_name;
+        
         var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + 25, graphId, labelName);
         nodeData.svg = circle;
         nodeData.label = label;
@@ -630,7 +635,15 @@ function updateEdgesEnds(nodeGraphics, directed) {
 
 function addHoveringEvents(nodeGraphics, directed) {
     nodeGraphics.on('mouseenter', function event() {
-        var color = '#f4aa42';
+        
+        var layerName = nodeGraphics.layerName;
+        
+        console.log("layerName:");
+        console.log(layerName);
+        
+        var color = LAYERS[layerName].color;
+        
+//        var color = '#f4aa42';
 //        var color = '#ffba59';
         highlightElement(nodeGraphics, color);
         nodeGraphics.nodeData.inEdges.forEach(function (inEdge) {
