@@ -942,11 +942,19 @@ function addContextMenuSelection(sel) {
                 items: {
                     "send": {
                         "name": "Send selection to...",
-                        "items": generateLayersNamesMenu(
-                                data,
-                                function (destination) {
+                        "items": Object.assign({},
+                                generateLayersNamesMenu(
+                                    data,
+                                    function (destination) {
+                                        sendSelectionToLayer(destination);
+                                    },layer
+                                ),
+                                newLayerItem(function(){
+                                    var destination = prompt("Enter the name of the layer:","");
+                                    addNewLayer(destination);
+                                    sort_layers(el.getElementsByTagName("li"));
                                     sendSelectionToLayer(destination);
-                                },layer)
+                                }))
                     }
                 }
             };
