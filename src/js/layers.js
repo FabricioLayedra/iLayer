@@ -1324,6 +1324,7 @@ function main() {
 
                         updateEdgesEnds(nodeGraphics);
                         updateLabelPosition(nodeGraphics);
+                        updateHighlights(nodeGraphics);
 
 
                         //            fabricObject.setPositionByOrigin({x: newX, y: newY}, 'center', 'center');
