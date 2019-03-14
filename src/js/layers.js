@@ -52,9 +52,6 @@ function createLayer(layer) {
     canvas.setAttribute("id", layer);
     canvas.setAttribute("style", "position: absolute;");
     container.appendChild(canvas);
-
-    window.canvas = canvas;
-
     createSVG(layer, 1200, 800);
     var template = document.getElementById('li-element').content.cloneNode(true);
     if (typeof layer === "undefined") {
@@ -70,6 +67,7 @@ function createLayer(layer) {
 
 function createSVG(layer_name, width, height) {
     var draw = SVG(layer_name).size(width, height);
+    window.draw = draw;
     LAYERS[layer_name] = {"layer": draw, "physics-engine": null};
 }
 
@@ -98,12 +96,12 @@ function addEvents(item, layerName) {
     });
     //checkbox physics up
     $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div > div.col-4 > input')).change(function () {
-        gravityHandler(this,true);
+        gravityHandler(this, true);
     });
-    
+
     //checkbox physics down
     $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div:nth-child(2) > div.col-4 > input')).change(function () {
-        gravityHandler(this,false);
+        gravityHandler(this, false);
     });
     //button
     $(item.querySelector('div > div:nth-child(1) > div.col-2 > button')).click(function () {
@@ -131,7 +129,7 @@ function showHideLayer(checkbox) {
     }
 }
 
-function activatePhysics(layer){
+function activatePhysics(layer) {
 //    var layer = checkbox.id.split("-")[2];
     var engine;
     if (!LAYERS[layer]["physics-engine"]) {
@@ -139,25 +137,25 @@ function activatePhysics(layer){
         addElementsToWorld(engine.world, layer);
     } else {
         engine = LAYERS[layer]["physics-engine"];
-        addMissingElementsToWorld(engine.world,layer);
+        addMissingElementsToWorld(engine.world, layer);
     }
     return engine;
 }
 
-function addMissingElementsToWorld(world,layer){
+function addMissingElementsToWorld(world, layer) {
     var Bodies = Matter.Bodies;
     var World = Matter.World;
     var Composite = Matter.Composite;
 
     var elements = LAYERS[layer].layer.children();
     var actualWorldElements = Composite.allBodies(world);
-    
+
     for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
         if (element.type === "circle") {
-            if (actualWorldElements.includes(element.matter)){
+            if (actualWorldElements.includes(element.matter)) {
                 console.log("YA INGRESADO")
-            }else{
+            } else {
                 var x = element.cx();
                 var y = element.cy();
                 var radius = element.attr("r");
@@ -170,18 +168,18 @@ function addMissingElementsToWorld(world,layer){
 
 
                 World.add(world, matterObject);
-            } 
+            }
         }
     }
 }
 
-function gravityHandler(checkbox,up) {
+function gravityHandler(checkbox, up) {
     var layer = checkbox.id.split("-")[2];
 
     if (checkbox.checked) {
 //        activatePhysics(layer);
-        addGravity(activatePhysics(layer),up);
-        
+        addGravity(activatePhysics(layer), up);
+
 //        console.log(checkbox.id)
 //        //Initialize the engine if it is not created
 //        var engine;
@@ -248,7 +246,7 @@ function opacityChanger(range) {
 //   sortable["options"]["disabled"] = false;
     console.log(sortable["options"]["disabled"]);
     var layer_name = range.id.split("-")[1];
-    $("#opacity-" + layer_name).html(range.value); 
+    $("#opacity-" + layer_name).html(range.value);
     // changing the opacity of the entire SVG element so that we don't have to iterate
     SVG.get(get_svg_id(layer_name)).attr('opacity', range.value / 100);
 }
@@ -270,7 +268,7 @@ Matter.use('matter-attractors');
 // module aliases
 var Engine = Matter.Engine, World = Matter.World, Bodies = Matter.Bodies, Runner = Matter.Runner, Render = Matter.Render, Body = Matter.Body;
 
-function createPhysicsWorld(layer_name,boundaries) {
+function createPhysicsWorld(layer_name, boundaries) {
 
     // create an engine
     var engine = Engine.create();
@@ -280,7 +278,6 @@ function createPhysicsWorld(layer_name,boundaries) {
 //        engine: engine
 //    });
 //    Render.run(render);
-    
     
 
     // create demo scene
@@ -321,14 +318,14 @@ function stop_physics(engine) {
     engine.enabled = false;
 }
 
-function addGravity(engine,up) {
+function addGravity(engine, up) {
     if (engine.world.gravity.scale !== 0) {
 //        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Add gravity" ;
         engine.world.gravity.scale = 0;
     } else if (!up) {
 //        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Remove gravity" ;
         engine.world.gravity.scale = 0.01;
-    } else if (up){
+    } else if (up) {
         engine.world.gravity.scale = -0.01;
     }
 }
@@ -356,7 +353,7 @@ function addElementsToWorld(world, layer) {
 
 
             World.add(world, matterObject);
-        } 
+        }
     }
 }
 
@@ -548,7 +545,7 @@ function drawGraph(layer_name, g) {
         // elements: itself and its label
         var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId);
         circle.layerName = layer_name;
-        
+
         var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + 25, graphId, labelName);
         nodeData.svg = circle;
         nodeData.label = label;
@@ -579,6 +576,8 @@ function drawGraph(layer_name, g) {
         var edgePath = drawPathInLayer(draw, fromCenterX, fromCenterY,
                 controlX, controlY, toCenterX, toCenterY, id, graphId);
 
+        edgePath.layerName = layer_name;
+
 //        if (directed){
         to.inEdges.push(edgePath);
         from.outEdges.push(edgePath);
@@ -588,8 +587,8 @@ function drawGraph(layer_name, g) {
 //        }
 
     });
-    
-    forceLayout(g,pxs,pys);
+
+    forceLayout(g, pxs, pys);
 }
 
 function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
@@ -640,7 +639,59 @@ function drawLabel(drawer, id, x, y, graphId, label) {
     return labelText;
 }
 
+function updateHighlight(object) {
 
+    var highlight = object.highlight;
+
+    if (!highlight) {
+        return;
+    }
+
+
+
+    if (object.type === 'circle') {
+
+        // IMPORTANT: It was IMPOSIBLE to just set the position of the path with the move/center/cx,cy/x,y methods
+        // so I am just replacing the path itself it using the plot method
+        // How sad that positioning was not enough. Understanding this was absolutely frustrating :(
+
+        
+//        let newPath = "M" + x + "," + y;
+//        newPath += "M" + (x - r) + "," + y;
+//        newPath += "a" + r + "," + r + " 0 1,0 " + (r * 2) + ",0";
+//        newPath += "a" + r + "," + r + " 0 1,0 " + -(r * 2) + ",0";
+//        highlight.plot(newPath);
+
+        let x = object.cx();
+        let y = object.cy();
+        let r = object.attr('r') + object.attr('stroke-width') / 2 + 2;
+        let layerName = object.layerName;
+        let drawer = LAYERS[layerName].layer;
+        let tmp = drawer.path()
+                .M({x: x - r, y: y})
+                .a(r, r, 0, 1, 0, {x: r * 2, y: 0})
+                .a(r, r, 0, 1, 0, {x: -r * 2, y: 0})
+                .hide();
+
+        highlight.replaceSegment(0, tmp.getSegment(0));
+        highlight.replaceSegment(1, tmp.getSegment(1));
+        highlight.replaceSegment(2, tmp.getSegment(2));
+
+    } else if (object.type === 'path') {
+        highlight.replaceSegment(0, object.getSegment(0));
+        highlight.replaceSegment(1, object.getSegment(1));
+    }
+}
+
+function updateHighlights(object) {
+    updateHighlight(object);
+    object.nodeData.inEdges.forEach(function (inEdge) {
+        updateHighlight(inEdge);
+    });
+    object.nodeData.outEdges.forEach(function (outEdge) {
+        updateHighlight(outEdge);
+    });
+}
 
 function updateEdgesEnds(nodeGraphics, directed) {
     let x = nodeGraphics.cx();
@@ -671,11 +722,8 @@ function updateEdgesEnds(nodeGraphics, directed) {
         segment.coords[0] = x;
         segment.coords[1] = y;
         outEdge.replaceSegment(1, segment);
-
-
-
-
     });
+
 //    }else{
 //       nodeGraphics.nodeData.edges.forEach(function(edge){
 //            segment = edge.getSegment(1);
@@ -692,35 +740,46 @@ function updateEdgesEnds(nodeGraphics, directed) {
 
 
 
-function addHoveringEvents(nodeGraphics, directed) {
-    nodeGraphics.on('mouseenter', function event() {
-        
-        var layerName = nodeGraphics.layerName;
-        
-        console.log("layerName:");
-        console.log(layerName);
-        
-        var color = LAYERS[layerName].color;
-        
-//        var color = '#f4aa42';
-//        var color = '#ffba59';
-        highlightElement(nodeGraphics, color);
-        nodeGraphics.nodeData.inEdges.forEach(function (inEdge) {
-            highlightElement(inEdge, color);
+function addHoveringEvents(object, directed) {
+
+    object.on('mouseenter', function event() {
+        if (!object.highlight) {
+            createHighlight(object);
+        } else {
+            object.highlight.show();
+        }
+        object.nodeData.inEdges.forEach(function (inEdge) {
+            if (!inEdge.highlight) {
+                createHighlight(inEdge);
+            } else {
+                inEdge.highlight.show();
+            }
         });
-        nodeGraphics.nodeData.outEdges.forEach(function (outEdge) {
-            highlightElement(outEdge, color);
-        });
-    });
-    nodeGraphics.on('mouseleave', function event() {
-        highlightElement(nodeGraphics);
-        nodeGraphics.nodeData.inEdges.forEach(function (inEdge) {
-            highlightElement(inEdge);
-        });
-        nodeGraphics.nodeData.outEdges.forEach(function (outEdge) {
-            highlightElement(outEdge);
+        object.nodeData.outEdges.forEach(function (outEdge) {
+            if (!outEdge.highlight) {
+                createHighlight(outEdge);
+            } else {
+                outEdge.highlight.show();
+            }
         });
     });
+
+    object.on('mouseleave', function event() {
+        if (object.highlight) {
+            object.highlight.hide();
+        }
+        object.nodeData.inEdges.forEach(function (inEdge) {
+            if (inEdge.highlight) {
+                inEdge.highlight.hide();
+            }
+        });
+        object.nodeData.outEdges.forEach(function (outEdge) {
+            if (outEdge.highlight) {
+                outEdge.highlight.hide();
+            }
+        });
+    });
+
 }
 
 function addMovingEvents(nodeGraphics, directed) {
@@ -737,11 +796,12 @@ function addMovingEvents(nodeGraphics, directed) {
         }
         updateEdgesEnds(nodeGraphics, directed);
         updateLabelPosition(nodeGraphics);
+        updateHighlights(nodeGraphics);
     });
 }
 
-function updateLabelPosition(nodeGraphics){
-    nodeGraphics.nodeData.label.attr({ x: nodeGraphics.cx(), y:nodeGraphics.cy()+15});
+function updateLabelPosition(nodeGraphics) {
+    nodeGraphics.nodeData.label.attr({x: nodeGraphics.cx(), y: nodeGraphics.cy() + 15});
 }
 
 function addMouseEvents(object) {
@@ -754,8 +814,8 @@ function addMouseEvents(object) {
                 SELECTION.push(this);
                 console.log("Added");
 //                console.log(this);
-                $.contextMenu( 'destroy', "#"+this.node.id );
-                addContextMenuSelection("#"+this.node.id);  
+                $.contextMenu('destroy', "#" + this.node.id);
+                addContextMenuSelection("#" + this.node.id);
             }
             console.log("SELECTION");
             console.log(SELECTION);
@@ -782,18 +842,11 @@ function getGraphFromSVGElement(svgElement) {
     var graph_name = $("#" + svgElement.node.id).attr("graph");
     return GRAPHS[graph_name];
 }
-;
 
 function getGraphFromSelector(selector) {
     var graph_name = $(selector).attr("graph");
     return GRAPHS[graph_name];
 }
-;
-
-function sendElementToLayer(svgElement, layerOrigin, layerDestination) {
-    console.log(svgElement);
-}
-;
 
 function getSpanningTree(selector, n_levels) {
     var graph = getGraphFromSelector(selector);
@@ -871,7 +924,7 @@ function addContextMenu(sel) {
             // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
             return {
                 callback: function (key, options) {
-                    console.log(key,options);
+                    console.log(key, options);
                 },
                 items: {
                     "send": {
@@ -937,7 +990,7 @@ function addContextMenuSelection(sel) {
             // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
             return {
                 callback: function (key, options) {
-                    console.log(key,options);
+                    console.log(key, options);
                 },
                 items: {
                     "send": {
@@ -971,12 +1024,18 @@ function newLayerItem(callback){
         };
 }
 
-
-
 function sendSelectionToLayer(destination){
     for (var i =0; i<SELECTION.length; i++){
-        SVG.get(get_svg_id(destination)).put(SELECTION[i].remove());
-        SVG.get(get_svg_id(destination)).put(SELECTION[i].nodeData.label.remove());
+        let object = SELECTION[i];
+        let svg_destination = get_svg_id(destination);
+        SVG.get(svg_destination).put(object.remove());
+        SVG.get(svg_destination).put(object.nodeData.label.remove());
+            // this need revision, as the highlight might exist already, so it only has to change of color and be animated
+        if (object.highlight){
+            object.highlight.remove();
+            object.highlight = null;
+        }
+        createHighlight(object, true, true, LAYERS[destination].color);
     }
 }
 
@@ -1003,11 +1062,18 @@ function getLayersNames(dict) {
 }
 
 function sendElementToLayer(selector, destination) {
-    var svg_destination = get_svg_id(destination);
-//    console.log("SENDING ELEMENT "+ selector);
-//    console.log(SVG.get(selector));
-    SVG.get(svg_destination).put(SVG.get(selector).remove());
-    SVG.get(svg_destination).put(SVG.get(selector).nodeData.label.remove());
+
+    let object = SVG.get(selector);
+    let svg_destination = get_svg_id(destination);
+    SVG.get(svg_destination).put(object.remove());
+    SVG.get(svg_destination).put(object.nodeData.label.remove());
+
+    // this need revision, as the highlight might exist already, so it only has to change of color and be animated
+    if (object.highlight){
+        object.highlight.remove();
+        object.highlight = null;
+    }
+    createHighlight(object, true, true, LAYERS[destination].color);
 }
 
 function sendAdjacentsToLayer(selector, destination) {
@@ -1039,36 +1105,6 @@ function sendAdjacentsToLayer(selector, destination) {
     }
 
     console.log(spanning_tree);
-
-}
-
-
-
-function highlightElement(element, color, timeout) {
-    var oldStroke = element.attr('stroke');
-    element.attr('stroke', color || element.oldStroke);
-    element.oldStroke = oldStroke;
-    if (timeout) {
-        setTimeout(function () {
-            element.attr('stroke', element.oldStroke);
-        }, timeout);
-    }
-}
-
-function highlightElements(ids, edges, color, timeout) {
-
-    ids.forEach(function (id) {
-        var element = SVG.get(id);
-        if (element.type === "circle") {
-            highlightElement(element, color, timeout);
-        }
-    });
-
-    edges.forEach(function (edge) {
-        if (edge) {
-            highlightElement(edge, color, timeout);
-        }
-    });
 
 }
 
@@ -1125,7 +1161,7 @@ function makeAttractor(svgElement) {
 }
 var pxs;
 var pys;
-function forceLayout(g){
+function forceLayout(g) {
     var renderer;
     var pxs = {};
     var pys = {};
@@ -1133,31 +1169,31 @@ function forceLayout(g){
     var graph = new Springy.Graph();
     var edges = g.edges();
     var nodes = g.nodes();
-    var data = {"nodes":[],"edges":[]};
+    var data = {"nodes": [], "edges": []};
 
     // make some nodes
-    
-    for (var i = 0; i< nodes.length; i++){
+
+    for (var i = 0; i < nodes.length; i++) {
         data["nodes"].push(nodes[i]);
     }
-    for (var i = 0; i< edges.length; i++){
-        data["edges"].push([edges[i].v,edges[i].w]);
+    for (var i = 0; i < edges.length; i++) {
+        data["edges"].push([edges[i].v, edges[i].w]);
     }
-    
+
     graph.loadJSON(data);
 //
-    var layout = new Springy.Layout.ForceDirected(graph, 400.0, 400.0,0.8);
-    
+    var layout = new Springy.Layout.ForceDirected(graph, 400.0, 400.0, 0.8);
+
     renderer = new Springy.Renderer(layout,
-      function clear() {
+            function clear() {
 //        console.log(this);
-      },
-      function drawEdge(edge, p1, p2) {
+            },
+            function drawEdge(edge, p1, p2) {
 //        console.log(edge,p1,p2);
-      },
-      function drawNode(node, p) {
+            },
+            function drawNode(node, p) {
 //        console.log(node.id,p.x,p.y);
-	// calculate bounding box of graph layout.. with ease-in
+                // calculate bounding box of graph layout.. with ease-in
 //	var currentBB = layout.getBoundingBox();
 //	var targetBB = {bottomleft: new Springy.Vector(-2, -2), topright: new Springy.Vector(2, 2)};
 //	var toScreen = function(p) {
@@ -1171,9 +1207,9 @@ function forceLayout(g){
 //			var contentHeight = 5;
 //			var boxWidth = contentWidth + 6;
 //			var boxHeight = contentHeight + 6;
-        var nodeGraphics = g.node(node.id).svg;
-        pxs[node.id] = nodeGraphics.cx() + p.x;
-        pys[node.id] = nodeGraphics.cy() + p.y;
+                var nodeGraphics = g.node(node.id).svg;
+                pxs[node.id] = nodeGraphics.cx() + p.x;
+                pys[node.id] = nodeGraphics.cy() + p.y;
 //                nodeGraphics.dmove(p.x,p.y);
                 nodeGraphics.cx(pxs[node.id]);
                 nodeGraphics.cy(pys[node.id]);
@@ -1187,7 +1223,7 @@ function forceLayout(g){
 
 //g.node(node.id).svg.transform({"x":p.x,"y":p.y});
 //        console.log(layout.getBoundingBox());
-      }
+            }
     );
 
     renderer.start();
@@ -1196,6 +1232,7 @@ function forceLayout(g){
 //    renderer.onRenderStop = function(d){
 //        console.log("paro");
 //    };
+
     setTimeout(
             function(){
                 console.log("STOP");
@@ -1203,6 +1240,7 @@ function forceLayout(g){
                 document.getElementById("loading").style.display = "none";
                 scaleLayout(g,pxs,pys);
             },500);
+
     pxs = {};
     pys = {};
 //    console.log(get_svg_id("colab"));
@@ -1216,7 +1254,7 @@ function forceLayout(g){
 //      });
 }
 
-function scaleLayout(g,pxs,pys){
+function scaleLayout(g, pxs, pys) {
     var oldMaxX = getMaxArray(valuesDict(pxs));
     var oldMinX = getMinArray(valuesDict(pxs));
     var newMaxX = 790;
@@ -1226,13 +1264,13 @@ function scaleLayout(g,pxs,pys){
     var newMaxY = 600;
     var newMinY = 50;
     var nodesNames = Object.keys(pxs);
-    for (var i = 0; i< nodesNames.length; i++){
+    for (var i = 0; i < nodesNames.length; i++) {
         let nodeGraphics = g.node(nodesNames[i]).svg;
-        let newX = scaleValue(oldMaxX,oldMinX,newMaxX,newMinX,nodeGraphics.cx());
-        let newY = scaleValue(oldMaxY,oldMinY,newMaxY,newMinY,nodeGraphics.cy());
+        let newX = scaleValue(oldMaxX, oldMinX, newMaxX, newMinX, nodeGraphics.cx());
+        let newY = scaleValue(oldMaxY, oldMinY, newMaxY, newMinY, nodeGraphics.cy());
         nodeGraphics.cx(newX);
         nodeGraphics.cy(newY);
-        updateEdgesEnds(nodeGraphics,false);
+        updateEdgesEnds(nodeGraphics, false);
         updateLabelPosition(nodeGraphics);
     }
 
@@ -1382,3 +1420,84 @@ main();
 //    // }
 //    
 //});
+
+
+function drawCircularPath(cx, cy, r) {
+
+    var p = "M" + cx + "," + cy;
+    p += "m" + -r + ",0";
+    p += "a" + r + "," + r + " 0 1,0 " + (r * 2) + ",0";
+    p += "a" + r + "," + r + " 0 1,0 " + -(r * 2) + ",0";
+    return p;
+}
+
+
+function createHighlight(object, animate, hideAfter, color) {
+
+    var highlight;
+    let layerName = object.layerName;
+    let drawer = LAYERS[layerName].layer;
+    var waitingTime = 0;
+    color = color || LAYERS[layerName].color;
+
+    if (object.type === 'circle') {
+
+        let cx = object.cx();
+        let cy = object.cy();
+        let r = object.attr('r') + object.attr('stroke-width') / 2 + 2;
+
+        highlight = drawer.path()
+                .M({x: cx - r, y: cy})
+                .a(r, r, 0, 1, 0, {x: r * 2, y: 0})
+                .a(r, r, 0, 1, 0, {x: -r * 2, y: 0})
+                .attr({
+                    stroke: color,
+                    fill: 'transparent',
+                    'stroke-width': 2,
+                    'pointer-events': 'none'
+                });
+
+//                console.log("highlight.cx(): " + highlight.cx(100));
+//                console.log("highlight.cy(): " + highlight.cy(100));
+
+    } else if (object.type === 'path') {
+
+        let coords1 = object.getSegment(0).coords;
+        let coords2 = object.getSegment(1).coords;
+
+        highlight = drawer.path()
+                .M({x: coords1[0], y: coords1[1]})
+                .Q({x: coords2[0], y: coords2[1]}, {x: coords2[2], y: coords2[3]})
+                .attr({
+                    stroke: color,
+                    fill: 'transparent',
+                    'stroke-width': 3,
+                    'pointer-events': 'none'
+                });
+
+        highlight.back();
+    }
+
+    object.highlight = highlight;
+
+    highlight.filter(function (add) {
+        add.gaussianBlur(2)
+                .componentTransfer({
+                    rgb: {type: 'discrete', tableValues: [0, 2, 0.4, 0.6, 0.8, 1]}
+                });
+    });
+
+    if (animate) {
+        waitingTime = 500;
+        highlight.drawAnimated({
+            duration: 500
+        });
+    }
+
+    if (hideAfter) {
+        setTimeout(function () {
+            highlight.animate().attr({opacity: 0});
+        }, waitingTime);
+    }
+
+}
