@@ -5410,6 +5410,8 @@ function capitalize(s) {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
+SVG.capitalize = capitalize;
+
 // Ensure to six-based hex
 function fullHex(hex) {
   return hex.length == 4 ?
