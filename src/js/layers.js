@@ -36,9 +36,9 @@ function getRandomColor() {
 
 /*----------------------------CREATION OF LAYERS--------------------------------*/
 
-function add_new_layer(layer_name) {
+function addNewLayer(layer_name) {
     var color = getRandomColor();
-    var layer = create_layer(layer_name);
+    var layer = createLayer(layer_name);
     $(layer.querySelector(' div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("style", "background-color: " + color + "; height: auto; width: 5px");
     $("#layers-table").append(layer);
     sort_layers($("#layers-table"));
@@ -46,7 +46,7 @@ function add_new_layer(layer_name) {
     return color;
 }
 
-function create_layer(layer) {
+function createLayer(layer) {
 
     var canvas = document.createElement("div");
     var container = document.getElementById("set-canvases");
@@ -56,25 +56,25 @@ function create_layer(layer) {
 
     window.canvas = canvas;
 
-    create_svg(layer, 1200, 800);
+    createSVG(layer, 1200, 800);
     var template = document.getElementById('li-element').content.cloneNode(true);
     if (typeof layer === "undefined") {
         var id = Object.keys(LAYERS).length;
     } else {
         var id = layer;
     }
-    change_layer_names(template, id);
-    add_events(template, layer);
+    changeLayerNames(template, id);
+    addEvents(template, layer);
 
     return template;
 }
 
-function create_svg(layer_name, width, height) {
+function createSVG(layer_name, width, height) {
     var draw = SVG(layer_name).size(width, height);
     LAYERS[layer_name] = {"layer": draw, "physics-engine": null};
 }
 
-function change_layer_names(item, id) {
+function changeLayerNames(item, id) {
     //Change this function is anything changes at the nav-item html template
     $(item.querySelector('div > div:nth-child(1) > div.col-sm-auto.pr-0 > input')).attr("layer", id);
     $(item.querySelector('div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("id", "color-" + id);
@@ -91,7 +91,7 @@ function change_layer_names(item, id) {
 
 }
 
-function add_events(item, layerName) {
+function addEvents(item, layerName) {
 
 
     console.log("************ item");
@@ -99,25 +99,25 @@ function add_events(item, layerName) {
 
     //checkbox opacity
     $(item.querySelector('div > div:nth-child(1) > div.col-sm-auto.pr-0 > input')).change(function () {
-        show_hide_layer(this);
+        showHideLayer(this);
     });
     //checkbox physics up
     $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div > div.col-4 > input')).change(function () {
-        gravity_handler(this,true);
+        gravityHandler(this,true);
     });
     
     //checkbox physics down
     $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div:nth-child(2) > div.col-4 > input')).change(function () {
-        gravity_handler(this,false);
+        gravityHandler(this,false);
     });
     //button
     $(item.querySelector('div > div:nth-child(1) > div.col-2 > button')).click(function () {
-        stop_drag();
+        stopDrag();
     });
     //range
     $(item.querySelector('div > div.row.collapse > div > div.collapse-item.slidecontainer > input')).on("input", function () {
         console.log("run");
-        opacity_changer(this);
+        opacityChanger(this);
     });
     $(item.querySelector('div')).mouseenter(function () {
         highlightLayer(layerName, true);
@@ -127,7 +127,7 @@ function add_events(item, layerName) {
     });
 }
 
-function show_hide_layer(checkbox) {
+function showHideLayer(checkbox) {
     var layer = "#" + $(checkbox).attr("layer").toLowerCase().split(" ");
     if (checkbox.checked) {
         $(layer).css("display", "block");
@@ -180,7 +180,7 @@ function addMissingElementsToWorld(world,layer){
     }
 }
 
-function gravity_handler(checkbox,up) {
+function gravityHandler(checkbox,up) {
     var layer = checkbox.id.split("-")[2];
 
     if (checkbox.checked) {
@@ -214,7 +214,7 @@ function gravity_handler(checkbox,up) {
     }
 }
 
-function stop_drag() {
+function stopDrag() {
     console.log(sortable["options"]["disabled"]);
     if (sortable["options"]["disabled"] === true) {
         sortable["options"]["disabled"] = false;
@@ -246,7 +246,7 @@ function highlightLayer(layerName, blurOthers) {
 
 }
 
-function opacity_changer(range) {
+function opacityChanger(range) {
 //   sortable["options"]["disabled"] = false;
     console.log(sortable["options"]["disabled"]);
     var layer_name = range.id.split("-")[1];
@@ -453,7 +453,7 @@ function loadGraph(filename, key, directed) {
             g.setEdge(format_id(data["source"]), format_id(data["target"]), {colabInfo: {value: data["value"], id: data["id"]}});
         });
 
-//        var color = "#"+ add_new_layer(layer_name);
+//        var color = "#"+ addNewLayer(layer_name);
 //        drawGraph(LAYERS[layer_name].layer,g,layer_name);
 //        var svg_id = $("#"+layer_name).children("svg").attr("id");
 //        SVG.get(svg_id).select("circle").fill(color);
@@ -509,10 +509,10 @@ function lightenDarkenColor(col, amt) {
 // Adds a graph as a layer in the tool
 function addGraphAsLayer(g, layer_name) {
 
-//    var color = add_new_layer(layer_name);
+//    var color = addNewLayer(layer_name);
 //    var darkenColor = lightenDarkenColor(color, -10);
 
-    add_new_layer(layer_name);
+    addNewLayer(layer_name);
     var color = '#688bd6';
     var darkenColor = lightenDarkenColor(color, -10);
 
@@ -796,7 +796,7 @@ function sendElementToLayer(svgElement, layerOrigin, layerDestination) {
 }
 ;
 
-function get_spanning_tree(selector, n_levels) {
+function getSpanningTree(selector, n_levels) {
     var graph = getGraphFromSelector(selector);
     var edges = graph.edges();
     //This substring is just the name without the # of the selector
@@ -856,11 +856,7 @@ function get_spanning_tree(selector, n_levels) {
     return [idNode, ego, links];
 }
 
-function send_ego_network_to_layer(svgElement, n_levels) {
-    console.log(svgElement);
-}
-
-function get_parent_layer_name(svgElement) {
+function getParentLayerName(svgElement) {
     return $(svgElement).parent().parent().attr("id");
 }
 /*-----------------------------CONTEXT MENU-------------------------------------*/
@@ -869,7 +865,7 @@ function addContextMenu(sel) {
     $.contextMenu({
         selector: sel,
         build: function ($trigger, e) {
-            var data = get_layers_names(LAYERS);
+            var data = getLayersNames(LAYERS);
             console.log(e);
             // this callback is executed every time the menu is to be shown
             // its results are destroyed every time the menu is hidden
@@ -881,18 +877,18 @@ function addContextMenu(sel) {
                 items: {
                     "send": {
                         "name": "Send to...",
-                        "items": generate_menu_layers_names(
+                        "items": generateLayersNamesMenu(
                                 data,
                                 function (destination) {
-                                    send_element_to_layer(sel, destination);
+                                    sendElementToLayer(sel, destination);
                                 })
                     },
                     "ego": {
                         "name": "Send adjacents to...",
-                        "items": generate_menu_layers_names(
+                        "items": generateLayersNamesMenu(
                                 data,
                                 function (destination) {
-                                    send_adjacents_to_layer(sel, destination);
+                                    sendAdjacentsToLayer(sel, destination);
                                 })
                     },
                     "transform": {
@@ -912,7 +908,7 @@ function addContextMenuSelection(sel) {
     $.contextMenu({
         selector: sel,
         build: function ($trigger, e) {
-            var data = get_layers_names(LAYERS);
+            var data = getLayersNames(LAYERS);
             console.log(e);
             // this callback is executed every time the menu is to be shown
             // its results are destroyed every time the menu is hidden
@@ -924,7 +920,7 @@ function addContextMenuSelection(sel) {
                 items: {
                     "send": {
                         "name": "Send selection to...",
-                        "items": generate_menu_layers_names(
+                        "items": generateLayersNamesMenu(
                                 data,
                                 function (destination) {
                                     sendSelectionToLayer(destination);
@@ -944,44 +940,45 @@ function sendSelectionToLayer(destination){
 }
 
 
-function generate_menu_layers_names(list, callback) {
+function generateLayersNamesMenu(list, callback) {
     var items = {};
     var count = list.length;
     for (var i = 0; i < count; i++) {
         var text = list[i];
         var item = {};
-        item["name"] = text;
+        item["name"] = "Layer " + text;
         item["callback"] = callback;
         items[text] = item;
     }
     return items;
 }
 
-function get_layers_names(dict) {
+function getLayersNames(dict) {
     return Object.keys(dict);
 }
 
-function send_element_to_layer(selector, destination) {
+function sendElementToLayer(selector, destination) {
     var svg_destination = get_svg_id(destination);
     SVG.get(svg_destination).put(SVG.get(selector).remove());
+    SVG.get(svg_destination).put(SVG.get(selector).nodeData.label.remove());
 }
 
-function send_adjacents_to_layer(selector, destination) {
-    var spanning_tree = get_spanning_tree(selector, 1);
+function sendAdjacentsToLayer(selector, destination) {
+    var spanning_tree = getSpanningTree(selector, 1);
     var source = spanning_tree[0];
     var targets = spanning_tree[1];
     //send the center
-    send_element_to_layer(source, destination);
+    sendElementToLayer(source, destination);
     //send the target nodes and edges
     for (var i = 0; i < targets.length; i++) {
         // target nodes
-        send_element_to_layer(targets[i], destination);
+        sendElementToLayer(targets[i], destination);
         try {
-            send_element_to_layer(source + targets[i], destination);
+            sendElementToLayer(source + targets[i], destination);
 
         } catch (error) {
             try {
-                send_element_to_layer(targets[i] + source, destination);
+                sendElementToLayer(targets[i] + source, destination);
             } catch (error) {
                 console.error(error);
                 // expected output: ReferenceError: nonExistentFunction is not defined
@@ -991,7 +988,7 @@ function send_adjacents_to_layer(selector, destination) {
             // Note - error messages will vary depending on browser
         }
         //edges
-        //send_element_to_layer(source+targets[i],destination);
+        //sendElementToLayer(source+targets[i],destination);
     }
 
     console.log(spanning_tree);
@@ -1036,9 +1033,9 @@ function makeAttractor(svgElement) {
     var svgID = svgElement.attr("id");
     var attractorGraphics = SVG.get(svgElement.attr("id"));
 
-    var spanning_tree = get_spanning_tree("#" + svgID, 1);
+    var spanning_tree = getSpanningTree("#" + svgID, 1);
 
-    var layer_name = get_parent_layer_name(svgElement);
+    var layer_name = getParentLayerName(svgElement);
 
     var engine = null;
 
@@ -1257,7 +1254,7 @@ function main() {
 //    });
 
     $("#new-layer").click(function () {
-        add_new_layer("" + (Object.keys(LAYERS).length + 1));
+        addNewLayer("" + (Object.keys(LAYERS).length + 1));
         //    readDataColab(datafile,random_id());
         sort_layers(el.getElementsByTagName("li"));
     });
