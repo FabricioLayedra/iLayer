@@ -41,7 +41,7 @@
 
       <!-- Templates -->
       <template id="li-element">
-        <li class="nav-item">
+        <li class="nav-item" style="margin: 0 0 10px 0">
 
           <div class="container">
             <div class="row">
@@ -50,7 +50,7 @@
                 <input class="form-check-input my-auto" type="checkbox"  checked="true" layer="untitled">
               </div>
               <!--CHANGE THE NAME-->
-              <div class="col-2-auto mr-1" id = "color-untitled"  style="background-color:orange; height: auto; width: 5px">
+              <div class="col-2-auto" id = "color-untitled"  style="background-color:orange; height: auto; width: 5px">
               </div> 
               <div class="col-8 my-auto">
                 <!--CHANGE THE NAME-->
@@ -135,12 +135,13 @@
 
 
 
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
+<!--         Nav Item - Dashboard 
+                <li class="nav-item active">
+
           <a class="nav-link" href="index.html">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span></a>
-        </li>
+        </li>-->
 
         <!-- Divider -->
         <hr class="sidebar-divider">
@@ -149,7 +150,8 @@
         <div class="sidebar-heading">
           LAYERS
         </div>
-        <ul class="navbar-nav space2x" id ="layers-table">
+         <li class="nav-item active">
+        <ul class="navbar-nav nav-link" id ="layers-table">
         <!-- Nav Item - Pages Collapse Menu -->
 
     <!--      <li class="nav-item">
@@ -184,6 +186,7 @@
           </div>
         </li>-->
         </ul>
+         </li>
 
         <!-- Divider -->
         <hr class="sidebar-divider my-0">
@@ -191,7 +194,7 @@
 
 
         <!-- Nav Item - Dashboard -->
-        <li class="nav-item active mx-auto">
+        <li class="nav-link nav-item active mx-auto">
             <a id="new-layer" class="btn btn-success btn-icon-split m-2 ">
               <span class="icon text-white-50">
                 <i class="fas fa-check"></i>
@@ -271,7 +274,7 @@
 
             </div>
 <div id ="loading" class="containerLoad">
-    <span class="_text">Cargando... </span>
+    <span class="_text">Loading data... </span>
 </div>
 
 

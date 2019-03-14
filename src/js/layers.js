@@ -38,7 +38,8 @@ function getRandomColor() {
 function addNewLayer(layer_name) {
     var color = getRandomColor();
     var layer = createLayer(layer_name);
-    $(layer.querySelector(' div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("style", "background-color: " + color + "; height: auto; width: 5px");
+    $(layer.querySelector(' div > div:nth-child(1) > div.col-2-auto')).attr("style", "background-color: " + color + "; height: auto; width: 15px");
+    $(layer.querySelector('div > div:nth-child(1) > div.col-8.my-auto')).attr("style","border:  solid 1px "+color);
     $("#layers-table").append(layer);
     sort_layers($("#layers-table"));
     LAYERS[layer_name].color = color;
@@ -87,7 +88,7 @@ function changeLayerNames(item, id) {
     $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div:nth-child(2) > div.col-4 > input')).attr("id", "gravity-handler-" + id);
 
 }
-
+document.querySelector('#layers-table > li > div > div:nth-child(1) > div.col-8.my-auto')
 function addEvents(item, layerName) {
 
     //checkbox opacity
@@ -1360,7 +1361,7 @@ main();
 //
 //$("input[id|='p']").click(function () {
 //  // body...
-//    console.log("clickeando");
+//    console.log("clickeando")
 //    console.log("cambia color");
 //
 //    let value = $(this).attr("id").split("-")[1];
