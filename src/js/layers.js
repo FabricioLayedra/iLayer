@@ -2,7 +2,7 @@
 /*--------------------------------CONSTANTS-------------------------------------*/
 
 
-var datafile = "./data/authors_relations_19nodes_sample2016.json";
+var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
 var datafile2 = "./data/authors_relations_2015.json";
@@ -15,7 +15,6 @@ var GRAPHS = {};
 var SELECTION = [];
 
 var el = document.getElementById("layers-table");
-
 
 var sortable = new Sortable(el, {
 
@@ -91,10 +90,6 @@ function changeLayerNames(item, id) {
 
 function addEvents(item, layerName) {
 
-
-    console.log("************ item");
-    console.log(item);
-
     //checkbox opacity
     $(item.querySelector('div > div:nth-child(1) > div.col-sm-auto.pr-0 > input')).change(function () {
         showHideLayer(this);
@@ -117,10 +112,10 @@ function addEvents(item, layerName) {
         console.log("run");
         opacityChanger(this);
     });
-    $(item.querySelector('div')).mouseenter(function () {
+    $(item.querySelector('#p-'+layerName)).mouseenter(function () {
         highlightLayer(layerName, true);
     });
-    $(item.querySelector('div')).mouseleave(function () {
+    $(item.querySelector('#p-'+layerName)).mouseleave(function () {
         highlightLayer(layerName);
     });
 }
@@ -205,8 +200,11 @@ function gravityHandler(checkbox, up) {
             console.log("No engine");
         } else {
             console.log("Stoping engine...");
+            Matter.World.clear(LAYERS[layer]["physics-engine"].world);
+            Matter.Engine.clear(LAYERS[layer]["physics-engine"]);
 //            stop_physics(LAYERS[layer]["physics-engine"]);
             LAYERS[layer]["physics-engine"] = null;
+            
         }
         console.log("Removing physics...");
     }
@@ -263,7 +261,6 @@ function sort_layers(list) {
     }
 }
 
-
 /*---------------------------------PHYSICS--------------------------------------*/
 
 Matter.use('matter-attractors');
@@ -276,38 +273,39 @@ function createPhysicsWorld(layer_name, boundaries) {
     // create an engine
     var engine = Engine.create();
 
-    var render = Render.create({
-        element: document.body,
-        engine: engine
-    });
-    Render.run(render);
-
-
+//    var render = Render.create({
+//        element: document.body,
+//        engine: engine
+//    });
+//    Render.run(render);
+    
 
     // create demo scene
     var world = engine.world;
     world.gravity.scale = 0;
-
-    var length = 120000;
-    var dimensions = [1200, 800];
-    var tickerLength = 300;
-
-    var roof = Bodies.rectangle(0, 0, length, tickerLength, {isStatic: true});
-    var leftWall = Bodies.rectangle(0, 0, tickerLength, length, {isStatic: true});
-    var rightWall = Bodies.rectangle(0, 800, tickerLength, length, {isStatic: true});
-    var ground = Bodies.rectangle(0, 600, length, tickerLength, {isStatic: true});
+   var length = 120000;
+   var dimensions = [1200,800];
+   var tickerLength = 300;
+    
+    var roof = Bodies.rectangle(0,-tickerLength+160, length, tickerLength, {isStatic: true});
+    var leftWall = Bodies.rectangle(-tickerLength+160,0, tickerLength, length, {isStatic: true});
+    var rightWall = Bodies.rectangle(1200, tickerLength, length, {isStatic: true});
+    var ground = Bodies.rectangle(0,800, length, tickerLength, {isStatic: true});
 
     World.add(world, roof);
     World.add(world, leftWall);
     World.add(world, rightWall);
     World.add(world, ground);
 
-
-
     //Add more boundaries
     Engine.run(engine);
     LAYERS[layer_name]["physics-engine"] = engine;
     return engine;
+}
+
+function removeWorld(engine){
+    Matter.World.clear(engine.world);
+    Matter.Engine.clear(engine);
 }
 
 //send a matter engine to restart it
@@ -850,10 +848,6 @@ function getGraphFromSelector(selector) {
     return GRAPHS[graph_name];
 }
 
-function sendElementToLayer(svgElement, layerOrigin, layerDestination) {
-    console.log(svgElement);
-}
-
 function getSpanningTree(selector, n_levels) {
     var graph = getGraphFromSelector(selector);
     var edges = graph.edges();
@@ -924,7 +918,7 @@ function addContextMenu(sel) {
         selector: sel,
         build: function ($trigger, e) {
             var data = getLayersNames(LAYERS);
-            console.log(e);
+            var layer = getParentLayerName(sel);
             // this callback is executed every time the menu is to be shown
             // its results are destroyed every time the menu is hidden
             // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
@@ -935,27 +929,49 @@ function addContextMenu(sel) {
                 items: {
                     "send": {
                         "name": "Send to...",
-                        "items": generateLayersNamesMenu(
-                                data,
-                                function (destination) {
-                                    sendElementToLayer(sel, destination);
-                                })
+                        "items": Object.assign({},
+                                generateLayersNamesMenu(
+                                    data,
+                                    function (destination) {
+                                        sendElementToLayer(sel, destination);
+                                    },layer
+                                ),
+                                newLayerItem(function(){
+                                    var destination = prompt("Enter the name of the layer:","");
+                                    addNewLayer(destination);
+                                    sort_layers(el.getElementsByTagName("li"));
+                                    sendElementToLayer(sel,destination);
+                                }))
                     },
                     "ego": {
                         "name": "Send adjacents to...",
-                        "items": generateLayersNamesMenu(
-                                data,
-                                function (destination) {
-                                    sendAdjacentsToLayer(sel, destination);
-                                })
+                        "items": Object.assign({},
+                                generateLayersNamesMenu(
+                                    data,
+                                    function (destination) {
+                                        sendAdjacentsToLayer(sel, destination);
+                                    },layer
+                                ),
+                                newLayerItem(function(){
+                                    var destination = prompt("Enter the name of the layer:","");
+                                    addNewLayer(destination);
+                                    sort_layers(el.getElementsByTagName("li"));
+                                    sendAdjacentsToLayer(sel,destination);
+                                }))
                     },
                     "transform": {
-                        "name": "Attract my neighbours",
-
-                        "callback": function () {
-                            makeAttractor(this);
-                        }},
-                    "select": {"name": "Select .."}
+                        "name": "Attract..",
+                        "items":{
+                            "neighbours": {"name":"Adjacent nodes",
+                                "callback": function () {
+                                    makeAttractor(this);
+                                }
+                            }
+                        }
+                    }
+                        
+//                    ,
+//                    "select": {"name": "Select .."}
                 }
             };
         }
@@ -967,7 +983,8 @@ function addContextMenuSelection(sel) {
         selector: sel,
         build: function ($trigger, e) {
             var data = getLayersNames(LAYERS);
-            console.log(e);
+            var layer = getParentLayerName(sel);
+
             // this callback is executed every time the menu is to be shown
             // its results are destroyed every time the menu is hidden
             // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
@@ -978,11 +995,19 @@ function addContextMenuSelection(sel) {
                 items: {
                     "send": {
                         "name": "Send selection to...",
-                        "items": generateLayersNamesMenu(
-                                data,
-                                function (destination) {
+                        "items": Object.assign({},
+                                generateLayersNamesMenu(
+                                    data,
+                                    function (destination) {
+                                        sendSelectionToLayer(destination);
+                                    },layer
+                                ),
+                                newLayerItem(function(){
+                                    var destination = prompt("Enter the name of the layer:","");
+                                    addNewLayer(destination);
+                                    sort_layers(el.getElementsByTagName("li"));
                                     sendSelectionToLayer(destination);
-                                })
+                                }))
                     }
                 }
             };
@@ -990,23 +1015,44 @@ function addContextMenuSelection(sel) {
     });
 }
 
-function sendSelectionToLayer(destination) {
-    for (var i = 0; i < SELECTION.length; i++) {
-        SVG.get(get_svg_id(destination)).put(SELECTION[i].remove());
-        SVG.get(get_svg_id(destination)).put(SELECTION[i].nodeData.label.remove());
+function newLayerItem(callback){
+    return {"send":
+            {
+                "name": "New Layer...",
+                "callback": callback           
+            }
+        };
+}
+
+function sendSelectionToLayer(destination){
+    for (var i =0; i<SELECTION.length; i++){
+        let object = SELECTION[i];
+        let svg_destination = get_svg_id(destination);
+        SVG.get(svg_destination).put(object.remove());
+        SVG.get(svg_destination).put(object.nodeData.label.remove());
+            // this need revision, as the highlight might exist already, so it only has to change of color and be animated
+        if (object.highlight){
+            object.highlight.remove();
+            object.highlight = null;
+        }
+        createHighlight(object, true, true, LAYERS[destination].color);
     }
 }
 
 
-function generateLayersNamesMenu(list, callback) {
+function generateLayersNamesMenu(list, callback,layerName) {
     var items = {};
     var count = list.length;
     for (var i = 0; i < count; i++) {
         var text = list[i];
-        var item = {};
-        item["name"] = "Layer " + text;
-        item["callback"] = callback;
-        items[text] = item;
+        console.log("Comparing...");
+        console.log(text,layerName);
+        if (text !== layerName){
+            var item = {};
+            item["name"] = "Layer " + text;
+            item["callback"] = callback;
+            items[text] = item;
+        }
     }
     return items;
 }
@@ -1028,7 +1074,6 @@ function sendElementToLayer(selector, destination) {
         object.highlight = null;
     }
     createHighlight(object, true, true, LAYERS[destination].color);
-
 }
 
 function sendAdjacentsToLayer(selector, destination) {
@@ -1187,12 +1232,15 @@ function forceLayout(g) {
 //    renderer.onRenderStop = function(d){
 //        console.log("paro");
 //    };
-    setTimeout(function () {
-        console.log("STOP");
-        renderer.stop();
-        document.getElementById("loading").style.display = "none";
-        scaleLayout(g, pxs, pys);
-    }, 1000);
+
+    setTimeout(
+            function(){
+                console.log("STOP");
+                renderer.stop();
+                document.getElementById("loading").style.display = "none";
+                scaleLayout(g,pxs,pys);
+            },500);
+
     pxs = {};
     pys = {};
 //    console.log(get_svg_id("colab"));

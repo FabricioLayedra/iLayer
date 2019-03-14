@@ -1,0 +1,156 @@
+{
+    "nodes": [
+        {
+            "group": 1, 
+            "id": "Alice Thudt"
+        }, 
+        {
+            "group": 1, 
+            "id": "Mona Hosseinkhani Loorak"
+        }, 
+        {
+            "group": 1, 
+            "id": "Sheelagh Carpendale"
+        }, 
+        {
+            "group": 1, 
+            "id": "Charles Perin"
+        }, 
+        {
+            "group": 1, 
+            "id": "Dominikus Baur"
+        }, 
+        {
+            "group": 1, 
+            "id": "Christopher Collins"
+        }, 
+        {
+            "group": 1, 
+            "id": "Samuel Huron"
+        }, 
+        {
+            "group": 1, 
+            "id": "Michael Hill"
+        }, 
+        {
+            "group": 1, 
+            "id": "Noreen Kamal"
+        }
+    ], 
+    "links": [
+        {
+            "source": "Alice Thudt", 
+            "target": "Dominikus Baur", 
+            "value": 1, 
+            "id": 1
+        }, 
+        {
+            "source": "Alice Thudt", 
+            "target": "Samuel Huron", 
+            "value": 1, 
+            "id": 2
+        }, 
+        {
+            "source": "Alice Thudt", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 3
+        }, 
+        {
+            "source": "Charles Perin", 
+            "target": "Christopher Collins", 
+            "value": 1, 
+            "id": 4
+        }, 
+        {
+            "source": "Charles Perin", 
+            "target": "Michael Hill", 
+            "value": 1, 
+            "id": 5
+        }, 
+        {
+            "source": "Charles Perin", 
+            "target": "Noreen Kamal", 
+            "value": 1, 
+            "id": 6
+        }, 
+        {
+            "source": "Charles Perin", 
+            "target": "Sheelagh Carpendale", 
+            "value": 2, 
+            "id": 7
+        }, 
+        {
+            "source": "Christopher Collins", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 8
+        }, 
+        {
+            "source": "Dominikus Baur", 
+            "target": "Samuel Huron", 
+            "value": 1, 
+            "id": 9
+        }, 
+        {
+            "source": "Dominikus Baur", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 10
+        }, 
+        {
+            "source": "Michael Hill", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 11
+        }, 
+        {
+            "source": "Mona Hosseinkhani Loorak", 
+            "target": "Charles Perin", 
+            "value": 2, 
+            "id": 12
+        }, 
+        {
+            "source": "Mona Hosseinkhani Loorak", 
+            "target": "Christopher Collins", 
+            "value": 1, 
+            "id": 13
+        }, 
+        {
+            "source": "Mona Hosseinkhani Loorak", 
+            "target": "Michael Hill", 
+            "value": 1, 
+            "id": 14
+        }, 
+        {
+            "source": "Mona Hosseinkhani Loorak", 
+            "target": "Noreen Kamal", 
+            "value": 1, 
+            "id": 15
+        }, 
+        {
+            "source": "Mona Hosseinkhani Loorak", 
+            "target": "Sheelagh Carpendale", 
+            "value": 2, 
+            "id": 16
+        }, 
+        {
+            "source": "Noreen Kamal", 
+            "target": "Michael Hill", 
+            "value": 1, 
+            "id": 17
+        }, 
+        {
+            "source": "Noreen Kamal", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 18
+        }, 
+        {
+            "source": "Samuel Huron", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 19
+        }
+    ]
+}
