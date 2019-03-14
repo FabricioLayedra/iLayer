@@ -12,7 +12,7 @@ var LAYERS = {};
 
 var GRAPHS = {};
 
-var SELECTION = {};
+var SELECTION = [];
 
 var el = document.getElementById("layers-table");
 
@@ -87,6 +87,8 @@ function change_layer_names(item, id) {
     $(item.querySelector('div > div.row.collapse > div > div.row > h6:nth-child(2)')).attr("id", "opacity-" + id);
     $(item.querySelector('div > div.row.collapse > div > div.collapse-item.slidecontainer > input')).attr("id", "range-" + id);
     $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div > div.col-4 > input')).attr("id", "gravity-handler-" + id);
+    $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div:nth-child(2) > div.col-4 > input')).attr("id", "gravity-handler-" + id);
+
 }
 
 function add_events(item, layerName) {
@@ -99,9 +101,14 @@ function add_events(item, layerName) {
     $(item.querySelector('div > div:nth-child(1) > div.col-sm-auto.pr-0 > input')).change(function () {
         show_hide_layer(this);
     });
-    //checkbox physics
+    //checkbox physics up
     $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div > div.col-4 > input')).change(function () {
-        gravity_handler(this);
+        gravity_handler(this,true);
+    });
+    
+    //checkbox physics down
+    $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div:nth-child(2) > div.col-4 > input')).change(function () {
+        gravity_handler(this,false);
     });
     //button
     $(item.querySelector('div > div:nth-child(1) > div.col-2 > button')).click(function () {
@@ -128,29 +135,73 @@ function show_hide_layer(checkbox) {
         $(layer).css("display", "none");
     }
 }
-;
 
-function gravity_handler(checkbox) {
+function activatePhysics(layer){
+//    var layer = checkbox.id.split("-")[2];
+    var engine;
+    if (!LAYERS[layer]["physics-engine"]) {
+        engine = createPhysicsWorld(layer);
+        addElementsToWorld(engine.world, layer);
+    } else {
+        engine = LAYERS[layer]["physics-engine"];
+        addMissingElementsToWorld(engine.world,layer);
+    }
+    return engine;
+}
+
+function addMissingElementsToWorld(world,layer){
+    var Bodies = Matter.Bodies;
+    var World = Matter.World;
+    var Composite = Matter.Composite;
+
+    var elements = LAYERS[layer].layer.children();
+    var actualWorldElements = Composite.allBodies(world);
+    
+    for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        if (element.type === "circle") {
+            if (actualWorldElements.includes(element.matter)){
+                console.log("YA INGRESADO")
+            }else{
+                var x = element.cx();
+                var y = element.cy();
+                var radius = element.attr("r");
+
+                var matterObject = Bodies.circle(x, y, radius);
+
+                //nodeData.matter = matterObject;
+                matterObject.svg = element;
+                element.matter = matterObject;
+
+
+                World.add(world, matterObject);
+            } 
+        }
+    }
+}
+
+function gravity_handler(checkbox,up) {
     var layer = checkbox.id.split("-")[2];
 
     if (checkbox.checked) {
+//        activatePhysics(layer);
+        addGravity(activatePhysics(layer),up);
+        
+//        console.log(checkbox.id)
+//        //Initialize the engine if it is not created
+//        var engine;
+//        if (!LAYERS[layer]["physics-engine"]) {
+//            activatePhysics(layer)
+//            //add elements to physics world
+//            addElementsToWorld(engine.world, layer);
+//            addGravity(engine,up);
+//        } else {
+//            engine = LAYERS[layer]["physics-engine"];
+//            addGravity(engine,up);
+//        }
+//        //Initialize the engine if it is not created
 
-        console.log(checkbox.id)
-        //Initialize the engine if it is not created
-        var engine;
-        if (!LAYERS[layer]["physics-engine"]) {
-            create_physics_worlds(layer);
-            engine = LAYERS[layer]["physics-engine"];
-            console.log(LAYERS[layer]["physics-engine"]);
-            //add elements to physics world
-            add_elements_to_world(engine.world, layer);
-            addGravity(engine);
-        } else {
-            engine = LAYERS[layer]["physics-engine"];
-        }
-        //Initialize the engine if it is not created
-
-        console.log("Adding physics...");
+        console.log("Adding gravity...");
     } else {
         if (!LAYERS[layer]["physics-engine"]) {
             console.log("No engine");
@@ -199,17 +250,9 @@ function opacity_changer(range) {
 //   sortable["options"]["disabled"] = false;
     console.log(sortable["options"]["disabled"]);
     var layer_name = range.id.split("-")[1];
-    $("#opacity-" + layer_name).html(range.value);
-    //SEARCH FOR SELLECT ALL THE ELEMENTS OF THE LAYERS
-//    SVG.get(get_svg_id(layer_name)).select("circle").attr({"fill-opacity": range.value / 100, "stroke-opacity": range.value / 100});
-//    SVG.get(get_svg_id(layer_name)).select("path").attr("opacity", range.value / 100);
-
+    $("#opacity-" + layer_name).html(range.value); 
     // changing the opacity of the entire SVG element so that we don't have to iterate
     SVG.get(get_svg_id(layer_name)).attr('opacity', range.value / 100);
-
-    //
-    //d3.selectAll("."+layer_name).style("opacity",this.value/100);
-    //CHANGE TO NEW LIBRARY
 }
 ;
 
@@ -230,7 +273,7 @@ Matter.use('matter-attractors');
 // module aliases
 var Engine = Matter.Engine, World = Matter.World, Bodies = Matter.Bodies, Runner = Matter.Runner, Render = Matter.Render, Body = Matter.Body;
 
-function create_physics_worlds(layer_name) {
+function createPhysicsWorld(layer_name,boundaries) {
 
     // create an engine
     var engine = Engine.create();
@@ -240,13 +283,28 @@ function create_physics_worlds(layer_name) {
         engine: engine
     });
     Render.run(render);
+    
+    
 
     // create demo scene
     var world = engine.world;
     world.gravity.scale = 0;
+    
+   var length = 120000;
+   var dimensions = [1200,800];
+   var tickerLength = 300;
+    
+    var roof = Bodies.rectangle(0,0, length, tickerLength, {isStatic: true});
+    var leftWall = Bodies.rectangle(0,0, tickerLength, length, {isStatic: true});
+    var rightWall = Bodies.rectangle(0,800, tickerLength, length, {isStatic: true});
+    var ground = Bodies.rectangle(0,600, length, tickerLength, {isStatic: true});
 
-    var ground = Bodies.rectangle(400, 610, 810, 60, {isStatic: true});
-//    World.add(world, ground);
+    World.add(world, roof);
+    World.add(world, leftWall);
+    World.add(world, rightWall);
+    World.add(world, ground);
+
+
 
     //Add more boundaries
     Engine.run(engine);
@@ -264,17 +322,20 @@ function stop_physics(engine) {
     engine.enabled = false;
 }
 
-function addGravity(engine) {
-    if (engine.world.gravity.scale > 0) {
+function addGravity(engine,up) {
+    if (engine.world.gravity.scale !== 0) {
 //        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Add gravity" ;
         engine.world.gravity.scale = 0;
-    } else {
+    } else if (!up) {
 //        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Remove gravity" ;
         engine.world.gravity.scale = 0.01;
+    } else if (up){
+        engine.world.gravity.scale = -0.01;
     }
 }
 
-function add_elements_to_world(world, layer) {
+
+function addElementsToWorld(world, layer) {
     var Bodies = Matter.Bodies;
     var World = Matter.World;
 
@@ -296,10 +357,7 @@ function add_elements_to_world(world, layer) {
 
 
             World.add(world, matterObject);
-        } else if (element.type === "path") {
-            // Edges
-        }
-
+        } 
     }
 }
 
@@ -484,8 +542,8 @@ function drawGraph(layer_name, g) {
 
         var radius = 50;
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
-        var y = getRandomBetween(50, 600);
-        var x = getRandomBetween(50, 700);
+        var y = -1200;
+        var x = -1200;
         //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
         var labelName = nodeData.authorInfo.name;
         // elements: itself and its label
@@ -531,6 +589,8 @@ function drawGraph(layer_name, g) {
 //        }
 
     });
+    
+    forceLayout(g,pxs,pys);
 }
 
 function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
@@ -544,7 +604,7 @@ function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
     //Add context_menu to the element using the selector, in this case the id
 
 
-    add_context_menu("#" + id);
+    addContextMenu("#" + id);
     addMouseEvents(fabricObject, directed);
     addMovingEvents(fabricObject);
     addHoveringEvents(fabricObject);
@@ -681,8 +741,8 @@ function addMovingEvents(nodeGraphics, directed) {
     });
 }
 
-function updateLabelPosition(nodeGraphics) {
-    nodeGraphics.nodeData.label.move(nodeGraphics.cx(), nodeGraphics.cy() + 25);
+function updateLabelPosition(nodeGraphics){
+    nodeGraphics.nodeData.label.attr({ x: nodeGraphics.cx(), y:nodeGraphics.cy()+15});
 }
 
 function addMouseEvents(object) {
@@ -693,8 +753,10 @@ function addMouseEvents(object) {
                 SELECTION = arrayRemove(SELECTION, this);
             } else {
                 SELECTION.push(this);
-                console.log("Added")
-//                addContextMenuSelection("#"+this.node.id);  
+                console.log("Added");
+//                console.log(this);
+                $.contextMenu( 'destroy', "#"+this.node.id );
+                addContextMenuSelection("#"+this.node.id);  
             }
             console.log("SELECTION");
             console.log(SELECTION);
@@ -803,16 +865,18 @@ function get_parent_layer_name(svgElement) {
 }
 /*-----------------------------CONTEXT MENU-------------------------------------*/
 
-function add_context_menu(sel) {
+function addContextMenu(sel) {
     $.contextMenu({
         selector: sel,
         build: function ($trigger, e) {
             var data = get_layers_names(LAYERS);
+            console.log(e);
             // this callback is executed every time the menu is to be shown
             // its results are destroyed every time the menu is hidden
             // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
             return {
                 callback: function (key, options) {
+                    console.log(key,options);
                 },
                 items: {
                     "send": {
@@ -843,7 +907,42 @@ function add_context_menu(sel) {
         }
     });
 }
-;
+
+function addContextMenuSelection(sel) {
+    $.contextMenu({
+        selector: sel,
+        build: function ($trigger, e) {
+            var data = get_layers_names(LAYERS);
+            console.log(e);
+            // this callback is executed every time the menu is to be shown
+            // its results are destroyed every time the menu is hidden
+            // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
+            return {
+                callback: function (key, options) {
+                    console.log(key,options);
+                },
+                items: {
+                    "send": {
+                        "name": "Send selection to...",
+                        "items": generate_menu_layers_names(
+                                data,
+                                function (destination) {
+                                    sendSelectionToLayer(destination);
+                                })
+                    }
+                }
+            };
+        }
+    });
+}
+
+function sendSelectionToLayer(destination){
+    for (var i =0; i<SELECTION.length; i++){
+        SVG.get(get_svg_id(destination)).put(SELECTION[i].remove());
+        SVG.get(get_svg_id(destination)).put(SELECTION[i].nodeData.label.remove());
+    }
+}
+
 
 function generate_menu_layers_names(list, callback) {
     var items = {};
@@ -944,7 +1043,7 @@ function makeAttractor(svgElement) {
     var engine = null;
 
     if (!LAYERS[layer_name]["physics-engine"]) {
-        engine = create_physics_worlds(layer_name);
+        engine = createPhysicsWorld(layer_name);
     } else {
         engine = LAYERS[layer_name]["physics-engine"];
     }
@@ -980,6 +1079,135 @@ function makeAttractor(svgElement) {
 
     }
 }
+var pxs;
+var pys;
+function forceLayout(g){
+    var renderer;
+    var pxs = {};
+    var pys = {};
+    // make a new graph
+    var graph = new Springy.Graph();
+    var edges = g.edges();
+    var nodes = g.nodes();
+    var data = {"nodes":[],"edges":[]};
+
+    // make some nodes
+    
+    for (var i = 0; i< nodes.length; i++){
+        data["nodes"].push(nodes[i]);
+    }
+    for (var i = 0; i< edges.length; i++){
+        data["edges"].push([edges[i].v,edges[i].w]);
+    }
+    
+    graph.loadJSON(data);
+//
+    var layout = new Springy.Layout.ForceDirected(graph, 400.0, 400.0,0.8);
+    
+    renderer = new Springy.Renderer(layout,
+      function clear() {
+//        console.log(this);
+      },
+      function drawEdge(edge, p1, p2) {
+//        console.log(edge,p1,p2);
+      },
+      function drawNode(node, p) {
+//        console.log(node.id,p.x,p.y);
+	// calculate bounding box of graph layout.. with ease-in
+//	var currentBB = layout.getBoundingBox();
+//	var targetBB = {bottomleft: new Springy.Vector(-2, -2), topright: new Springy.Vector(2, 2)};
+//	var toScreen = function(p) {
+//		var size = currentBB.topright.subtract(currentBB.bottomleft);
+//		var sx = p.subtract(currentBB.bottomleft).divide(size.x).x * 1200;
+//		var sy = p.subtract(currentBB.bottomleft).divide(size.y).y * 800;
+//		return new Springy.Vector(sx, sy);
+//	};
+//        var s = toScreen(p);
+//        			var contentWidth = 5;
+//			var contentHeight = 5;
+//			var boxWidth = contentWidth + 6;
+//			var boxHeight = contentHeight + 6;
+        var nodeGraphics = g.node(node.id).svg;
+        pxs[node.id] = nodeGraphics.cx() + p.x;
+        pys[node.id] = nodeGraphics.cy() + p.y;
+//                nodeGraphics.dmove(p.x,p.y);
+                nodeGraphics.cx(pxs[node.id]);
+                nodeGraphics.cy(pys[node.id]);
+//                nodeGraphics.on("stop",function(){console.log("PARO")});
+//                updateEdgesEnds(nodeGraphics,false);
+//        updateLabelPosition(nodeGraphics);
+
+
+//         .cx(g.node(node.id).svg.cx()+p.x),g.node(node.id).svg.cy(g.node(node.id).svg.cy()+p.y);
+//        g.node(node.id).svg.dmove(s.x, s.y);
+
+//g.node(node.id).svg.transform({"x":p.x,"y":p.y});
+//        console.log(layout.getBoundingBox());
+      }
+    );
+
+    renderer.start();
+//        console.log(renderer);
+
+//    renderer.onRenderStop = function(d){
+//        console.log("paro");
+//    };
+    setTimeout(function(){console.log("STOP");renderer.stop();document.getElementById("loading").style.display = "none";scaleLayout(g,pxs,pys);},1000);
+    pxs = {};
+    pys = {};
+//    console.log(get_svg_id("colab"));
+//    svgPanZoom(get_svg_id("colab"));
+//  
+//     var springy = window.springy = jQuery('#springydemo').springy({
+//        graph: graph,
+//        nodeSelected: function(node){
+//          console.log('Node selected: ' + JSON.stringify(node));
+//        }
+//      });
+}
+
+function scaleLayout(g,pxs,pys){
+    var oldMaxX = getMaxArray(valuesDict(pxs));
+    var oldMinX = getMinArray(valuesDict(pxs));
+    var newMaxX = 790;
+    var newMinX = 50;
+    var oldMaxY = getMaxArray(valuesDict(pys));
+    var oldMinY = getMinArray(valuesDict(pys));
+    var newMaxY = 600;
+    var newMinY = 50;
+    var nodesNames = Object.keys(pxs);
+    for (var i = 0; i< nodesNames.length; i++){
+        let nodeGraphics = g.node(nodesNames[i]).svg;
+        let newX = scaleValue(oldMaxX,oldMinX,newMaxX,newMinX,nodeGraphics.cx());
+        let newY = scaleValue(oldMaxY,oldMinY,newMaxY,newMinY,nodeGraphics.cy());
+        nodeGraphics.cx(newX);
+        nodeGraphics.cy(newY);
+        updateEdgesEnds(nodeGraphics,false);
+        updateLabelPosition(nodeGraphics);
+    }
+
+}
+
+
+
+//function forceLayout2(g){
+//    var graph = createGraph();
+//    var edges = g.edges();
+//    var nodes = g.nodes();
+//    var data = {"nodes":[],"edges":[]};
+//
+//    // make some nodes
+////    
+////    for (var i = 0; i< nodes.length; i++){
+////        data["nodes"].push(nodes[i]);
+////
+////    }
+//    for (var i = 0; i< edges.length; i++){
+//        graph.addLink(edges[i].v,edges[i].w);
+//    }
+//    console.log(graph.forcelayout()));
+//}
+
 /*-----------------------------------MAIN---------------------------------------*/
 
 function main() {
@@ -1007,6 +1235,7 @@ function main() {
                         nodeGraphics.attr("cy", newY);
 
                         updateEdgesEnds(nodeGraphics);
+                        updateLabelPosition(nodeGraphics);
 
 
                         //            fabricObject.setPositionByOrigin({x: newX, y: newY}, 'center', 'center');
