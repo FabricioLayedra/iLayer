@@ -27,7 +27,7 @@ function stopSliding(e) {
   this.node.allowed = null;
 
   count=0;
-//  this.node.releasePointerCapture(e.pointerId);
+  this.node.releasePointerCapture(e.pointerId);
 }
 
 function slide(event) {
@@ -62,6 +62,7 @@ function addTouchEvents(nodeParent){
     nodeParent.on('pointerdown', beginSliding);
     nodeParent.on('pointermove',slide);
     nodeParent.on('pointerup',stopSliding);
+    
 //    function(event){
 //        console.log("ENTER");
 //        console.log(this);
