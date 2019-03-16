@@ -2,7 +2,9 @@
 /*--------------------------------CONSTANTS-------------------------------------*/
 var count = 0;
 
-var datafile = "./data/authors_relations_SC_JD_sample2015.json";
+var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
+//var datafile = "./data/authors_relations_SC_JD_sample2015.json";
+
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
 var datafile2 = "./data/authors_relations_2015.json";
