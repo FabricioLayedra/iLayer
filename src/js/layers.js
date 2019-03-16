@@ -1,6 +1,6 @@
 
 /*--------------------------------CONSTANTS-------------------------------------*/
-
+var count = 0;
 
 var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
@@ -70,6 +70,7 @@ function createSVG(layer_name, width, height) {
     var draw = SVG(layer_name).size(width, height);
     window.draw = draw;
     LAYERS[layer_name] = {"layer": draw, "physics-engine": null};
+    
 }
 
 function changeLayerNames(item, id) {
@@ -119,6 +120,9 @@ function addEvents(item, layerName) {
     $(item.querySelector('#p-'+layerName)).mouseleave(function () {
         highlightLayer(layerName);
     });
+    item.querySelector('#p-'+layerName).addEventListener('pointerdown', (event) => {
+        console.log('Pointer down event');
+      });
 }
 
 function showHideLayer(checkbox) {
@@ -539,15 +543,14 @@ function drawGraph(layer_name, g) {
 
         var radius = 50;
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
-        var y = -1200;
-        var x = -1200;
+        var y = getRandomBetween(-100,-600);
+        var x = getRandomBetween(-100,-600);
         //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
         var labelName = nodeData.authorInfo.name;
         // elements: itself and its label
-        var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId);
-        circle.layerName = layer_name;
+        var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId,layer_name);
 
-        var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + 25, graphId, labelName);
+        var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + 25, graphId, labelName,circle.parent());
         nodeData.svg = circle;
         nodeData.label = label;
 
@@ -575,9 +578,8 @@ function drawGraph(layer_name, g) {
 //        var path = "M" + fromCenterX + "," + fromCenterY + " Q" + controlX + "," + controlY + " " + toCenterX + "," + toCenterY;
 
         var edgePath = drawPathInLayer(draw, fromCenterX, fromCenterY,
-                controlX, controlY, toCenterX, toCenterY, id, graphId);
+                controlX, controlY, toCenterX, toCenterY, id, graphId,layer_name);
 
-        edgePath.layerName = layer_name;
 
 //        if (directed){
         to.inEdges.push(edgePath);
@@ -592,8 +594,8 @@ function drawGraph(layer_name, g) {
     forceLayout(g, pxs, pys);
 }
 
-function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
-    var fabricObject = drawer.circle(radius)
+function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId,layerName) {
+    var nodeGraphics = drawer.circle(radius)
             .attr({cx: cx,
                 cy: cy,
                 id: id,
@@ -602,18 +604,26 @@ function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
             .move(cx, cy);
     //Add context_menu to the element using the selector, in this case the id
 
+//    nodeGraphics.layerName = layerName;
 
+    var group = drawer.group().attr({id:"group-"+id});
+//    console.log(group);
+    group.layerName = layerName;
+    group.add(nodeGraphics);
+
+    
     addContextMenu("#" + id);
-    addMouseEvents(fabricObject, directed);
-    addMovingEvents(fabricObject);
-    addHoveringEvents(fabricObject);
+//    addMouseEvents(nodeGraphics, directed);
+//    addMovingEvents(nodeGraphics);
+    addTouchEvents(nodeGraphics.parent());
+//    addHoveringEvents(nodeGraphics);
 //    return [fabricObject,label];
-    return fabricObject;
+    return nodeGraphics;
 
 }
 
 function drawPathInLayer(drawer, fromCenterX, fromCenterY,
-        controlX, controlY, toCenterX, toCenterY, id, graphId) {
+        controlX, controlY, toCenterX, toCenterY, id, graphId,layerName) {
     var edgePath = drawer.path()
             .M({x: fromCenterX, y: fromCenterY})
             .Q({x: controlX, y: controlY}, {x: toCenterX, y: toCenterY})
@@ -624,11 +634,17 @@ function drawPathInLayer(drawer, fromCenterX, fromCenterY,
                 id: id,
                 'pointer-events': 'none'
             }).off();
+//    edgePath.layerName = layerName;
+
+    var group = drawer.group().attr({id:"path-"+id});
+//    console.log(group);
+    group.add(edgePath);
+    group.layerName = layerName;
     edgePath.back();
     return edgePath;
 }
 
-function drawLabel(drawer, id, x, y, graphId, label) {
+function drawLabel(drawer, id, x, y, graphId, label,group) {
     var labelText = drawer.text(label).attr({
         id: "label-" + id,
         graph: graphId,
@@ -637,6 +653,7 @@ function drawLabel(drawer, id, x, y, graphId, label) {
         fill: 'black'
     });
     labelText.move(x, y);
+    group.add(labelText);
     return labelText;
 }
 
@@ -694,15 +711,17 @@ function updateHighlights(object) {
     });
 }
 
-function updateEdgesEnds(nodeGraphics, directed) {
-    let x = nodeGraphics.cx();
-    let y = nodeGraphics.cy();
+function updateEdgesEnds(nodeGraphics, coordX, coordY,directed) {
+    let x = !coordX ? nodeGraphics.cx() : coordX;
+    let y = !coordY ? nodeGraphics.cy() : coordY;
+    console.log(x,y);
     let segment;
+    console.log(nodeGraphics.nodeData.inEdges);
 
 //    if (directed){
     nodeGraphics.nodeData.inEdges.forEach(function (inEdge) {
         segment = inEdge.getSegment(1);
-
+console.log("entra");
         // TMP: to make it straight, we just set the control point at the ending point
         segment.coords[0] = x;
         segment.coords[1] = y;
@@ -745,38 +764,38 @@ function addHoveringEvents(object, directed) {
 
     object.on('mouseenter', function event() {
         if (!object.highlight) {
-            createHighlight(object);
+            createHighlight(object.parent());
         } else {
-            object.highlight.show();
+            object.parent().highlight.show();
         }
         object.nodeData.inEdges.forEach(function (inEdge) {
             if (!inEdge.highlight) {
-                createHighlight(inEdge);
+                createHighlight(inEdge.parent());
             } else {
-                inEdge.highlight.show();
+                inEdge.parent().highlight.show();
             }
         });
         object.nodeData.outEdges.forEach(function (outEdge) {
             if (!outEdge.highlight) {
-                createHighlight(outEdge);
+                createHighlight(outEdge.parent());
             } else {
-                outEdge.highlight.show();
+                outEdge.parent().highlight.show();
             }
         });
     });
 
     object.on('mouseleave', function event() {
-        if (object.highlight) {
-            object.highlight.hide();
+        if (object.parent().highlight) {
+            object.parent().highlight.hide();
         }
         object.nodeData.inEdges.forEach(function (inEdge) {
-            if (inEdge.highlight) {
-                inEdge.highlight.hide();
+            if (inEdge.parent().highlight) {
+                inEdge.parent().highlight.hide();
             }
         });
         object.nodeData.outEdges.forEach(function (outEdge) {
-            if (outEdge.highlight) {
-                outEdge.highlight.hide();
+            if (outEdge.parent().highlight) {
+                outEdge.parent().highlight.hide();
             }
         });
     });
@@ -784,7 +803,8 @@ function addHoveringEvents(object, directed) {
 }
 
 function addMovingEvents(nodeGraphics, directed) {
-    nodeGraphics.on('dragmove', function event(e) {
+    nodeGraphics.parent().draggable();
+    nodeGraphics.parent().on('dragmove', function event(e) {
         let theBody = nodeGraphics.matter;
         if (theBody) {
             let event = e.detail.event;
@@ -795,9 +815,10 @@ function addMovingEvents(nodeGraphics, directed) {
                 y: (y - theBody.position.y) * 0.25
             });
         }
+        console.log(nodeGraphics);
         updateEdgesEnds(nodeGraphics, directed);
-        updateLabelPosition(nodeGraphics);
-        updateHighlights(nodeGraphics);
+//        updateLabelPosition(nodeGraphics);
+//        updateHighlights(nodeGraphics);
     });
 }
 
@@ -822,17 +843,7 @@ function addMouseEvents(object) {
             console.log(SELECTION);
         }
     });
-    object.on("dblclick", function (d) {
-        if (SELECTION.length < 1) {
-            console.log("Nothing is selected");
-        } else {
-            if (SELECTION.includes(this)) {
-                console.log("ADD CONTEXT MENU");
-            } else {
-                console.log("THIS IS NOT PART OF THE SELECTION")
-            }
-        }
-    });
+
 }
 
 function get_svg_id(layer_name) {
@@ -910,7 +921,7 @@ function getSpanningTree(selector, n_levels) {
 }
 
 function getParentLayerName(svgElement) {
-    return $(svgElement).parent().parent().attr("id");
+    return $(svgElement).parent().parent().parent().attr("id");
 }
 /*-----------------------------CONTEXT MENU-------------------------------------*/
 
@@ -1325,7 +1336,7 @@ function main() {
 
                         updateEdgesEnds(nodeGraphics);
                         updateLabelPosition(nodeGraphics);
-                        updateHighlights(nodeGraphics);
+                        updateHighlights(nodeGraphics.parent());
 
 
                         //            fabricObject.setPositionByOrigin({x: newX, y: newY}, 'center', 'center');
@@ -1374,15 +1385,15 @@ main();
 //    }
 //});
 //
-//$("input[id|='p']").dblclick(function () {
-//  // body...
-//    console.log("Doble_Clickeando");
-//    // console.log();
-//    $(this).attr("previous-layer-name",$(this).val().toLowerCase());
-//    $(this).attr("readonly",false);
-//    // console.log(this);
-//
-//});
+$("input[id|='p']").dblclick(function () {
+  // body...
+    console.log("Doble_Clickeando");
+    // console.log();
+    $(this).attr("previous-layer-name",$(this).val().toLowerCase());
+    $(this).attr("readonly",false);
+    // console.log(this);
+
+});
 //
 //$("input[id|='p']").on('keypress',function(e) {
 //    $(this).attr("readonly",true);
@@ -1441,46 +1452,52 @@ function createHighlight(object, animate, hideAfter, color) {
     let drawer = LAYERS[layerName].layer;
     var waitingTime = 0;
     color = color || LAYERS[layerName].color;
+    
+    if (object.type === 'g'){
+        
+        let firstChild = object.children()[0];
+        if (firstChild.type === 'circle') {
 
-    if (object.type === 'circle') {
+            let cx = firstChild.cx();
+            let cy = firstChild.cy();
+            let r = firstChild.attr('r') + firstChild.attr('stroke-width') / 2 + 2;
 
-        let cx = object.cx();
-        let cy = object.cy();
-        let r = object.attr('r') + object.attr('stroke-width') / 2 + 2;
+            highlight = drawer.path()
+                    .M({x: cx - r, y: cy})
+                    .a(r, r, 0, 1, 0, {x: r * 2, y: 0})
+                    .a(r, r, 0, 1, 0, {x: -r * 2, y: 0})
+                    .attr({
+                        stroke: color,
+                        fill: 'transparent',
+                        'stroke-width': 2,
+                        'pointer-events': 'none'
+                    });
+                
+//                console.log(highlight);
 
-        highlight = drawer.path()
-                .M({x: cx - r, y: cy})
-                .a(r, r, 0, 1, 0, {x: r * 2, y: 0})
-                .a(r, r, 0, 1, 0, {x: -r * 2, y: 0})
-                .attr({
-                    stroke: color,
-                    fill: 'transparent',
-                    'stroke-width': 2,
-                    'pointer-events': 'none'
-                });
+    //                console.log("highlight.cx(): " + highlight.cx(100));
+    //                console.log("highlight.cy(): " + highlight.cy(100));
 
-//                console.log("highlight.cx(): " + highlight.cx(100));
-//                console.log("highlight.cy(): " + highlight.cy(100));
+        } else if (firstChild.type === 'path') {
 
-    } else if (object.type === 'path') {
+            let coords1 = firstChild.getSegment(0).coords;
+            let coords2 = firstChild.getSegment(1).coords;
 
-        let coords1 = object.getSegment(0).coords;
-        let coords2 = object.getSegment(1).coords;
+            highlight = drawer.path()
+                    .M({x: coords1[0], y: coords1[1]})
+                    .Q({x: coords2[0], y: coords2[1]}, {x: coords2[2], y: coords2[3]})
+                    .attr({
+                        stroke: color,
+                        fill: 'transparent',
+                        'stroke-width': 3,
+                        'pointer-events': 'none'
+                    });
 
-        highlight = drawer.path()
-                .M({x: coords1[0], y: coords1[1]})
-                .Q({x: coords2[0], y: coords2[1]}, {x: coords2[2], y: coords2[3]})
-                .attr({
-                    stroke: color,
-                    fill: 'transparent',
-                    'stroke-width': 3,
-                    'pointer-events': 'none'
-                });
-
-        highlight.back();
+            highlight.back();
+        }
     }
-
     object.highlight = highlight;
+    object.add(highlight);
 
     highlight.filter(function (add) {
         add.gaussianBlur(2)
