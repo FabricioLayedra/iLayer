@@ -18,6 +18,8 @@ var SELECTION = [];
 
 var el = document.getElementById("layers-table");
 
+var active = null;
+
 var sortable = new Sortable(el, {
 
     onEnd: function (evt) {
@@ -122,9 +124,15 @@ function addEvents(item, layerName) {
     $(item.querySelector('#p-'+layerName)).mouseleave(function () {
         highlightLayer(layerName);
     });
-    item.querySelector('#p-'+layerName).addEventListener('pointerdown', (event) => {
-        console.log('Pointer down event');
-      });
+    $(item.querySelector('#p-'+layerName)).on('pointerdown', function(){
+        if (active){
+            $(active).css("background-color","");
+        }
+        active = $(this).parent();
+
+        $(active).css("background-color",LAYERS[layerName]["color"]);
+        
+    });
 }
 
 function showHideLayer(checkbox) {
@@ -1357,7 +1365,8 @@ function main() {
 //    loadGraph(datafile2,"authors2015",false).then(function(){
 //        console.log(GRAPHS);
 //        addGraphAsLayer(GRAPHS["authors2015"],"colab2");
-//    });
+//    }); 
+
 
     $("#new-layer").click(function () {
         addNewLayer("" + (Object.keys(LAYERS).length + 1));
