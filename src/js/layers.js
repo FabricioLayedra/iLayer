@@ -74,6 +74,7 @@ function createSVG(layer_name, width, height) {
     var draw = SVG(layer_name).size(width, height);
     window.draw = draw;
     LAYERS[layer_name] = {"layer": draw, "physics-engine": null};
+    addLayerEvents(draw.node, draw);
     
 }
 
@@ -553,7 +554,7 @@ function drawGraph(layer_name, g) {
 
         var radius = 50;
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
-        var y = getRandomBetween(30,800);
+        var y = getRandomBetween(30,600);
         var x = getRandomBetween(30,800);
         //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
         var labelName = nodeData.authorInfo.name;
@@ -609,7 +610,7 @@ function addHighlightToGroups(groups){
     console.log(groups);
 
     for (var i = 0; i<groups.length;i++){
-            console.log(groups[i].type);
+//            console.log(groups[i].type);
 
         createHighlight(groups[i]);
     }
@@ -678,7 +679,7 @@ function drawPathInLayer(drawer, fromCenterX, fromCenterY,
                 fill: 'transparent',
                 strokeWidth: 1,
                 id: id,
-                'pointer-events': 'none'
+                'pointer-events': 'visibleStroke'
             }).off();
 //    edgePath.layerName = layerName;
 
@@ -1095,7 +1096,7 @@ function sendSelectionToLayer(destination){
             object.highlight.remove();
             object.highlight = null;
         }
-        createHighlight(object, true, true, LAYERS[destination].color);
+        createHighlight(object.parent(), true, true, LAYERS[destination].color);
     }
 }
 
@@ -1124,6 +1125,8 @@ function getLayersNames(dict) {
 function sendElementToLayer(selector, destination) {
 
     let object = SVG.get(selector);
+    createHighlight(object.parent(), true, true, LAYERS[destination].color);
+
     let svg_destination = get_svg_id(destination);
     SVG.get(svg_destination).put(object.remove());
     SVG.get(svg_destination).put(object.nodeData.label.remove());
@@ -1133,7 +1136,7 @@ function sendElementToLayer(selector, destination) {
         object.highlight.remove();
         object.highlight = null;
     }
-    createHighlight(object, true, true, LAYERS[destination].color);
+    
 }
 
 function sendAdjacentsToLayer(selector, destination) {

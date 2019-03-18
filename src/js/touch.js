@@ -42,8 +42,8 @@ function slide(event) {
         let y = event.pageY-this.cy()-this.node.dy;
         this.dmove(x,y);
 //        this.children()[0].dmove(x,y)
-        count+=1;
-        console.log(count);
+//        count+=1;
+//        console.log(count);
         updateEdgesEnds(this.children()[0],this.cx()-this.node.childDX,this.cy()-this.node.childDY);
         
 //        this.node.childDY=this.node.childDY+y;
@@ -53,10 +53,10 @@ function slide(event) {
 }
 
 function highlight(event,node,show){
-    console.log(event);
+//    console.log(event);
     
     event.preventDefault();
-    console.log(node);
+//    console.log(node);
     var child = node.children()[0];
 //    console.this.highlight.show());
 //    console.log(child);
@@ -162,3 +162,119 @@ function addTouchEvents(nodeParent){
 
 
 }
+
+// the idea here is that we will have different modes and depending on the mode we are, the same gesture will do different things
+// modes are often set by the user or even the layer itself
+
+function addLayerEvents(layer, drawer) {
+
+
+    let mc = new Hammer(layer);
+
+    // let the pan gesture support all directions.
+    // this will block the vertical scrolling on a touch-device while on the element
+    mc.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
+
+    let startingPoint = null;
+    let currentPoint = null;
+    let segment = null;
+    let segment2 = null;
+    let line = null;
+    let rect = null;
+    let intersection = null;
+    let verifier = null;
+    let touchCanvas = true;
+
+    mc.on("panstart", function (ev) {
+
+        startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+        rect = layer.createSVGRect();
+        rect.x = startingPoint.x;
+        rect.y = startingPoint.y;
+        console.log("hits an element?")
+        verifier = layer.createSVGRect();
+        verifier.x = startingPoint.x;
+        verifier.y = startingPoint.y;
+        verifier.width = 1;
+        verifier.height = 1;
+        let elements = layer.getIntersectionList(verifier,null);
+        for (var i =0; i <elements.length; i++){
+//                            console.log();
+
+            
+            if (elements[i].tagName  === "circle"){
+//                console.log(elements[i]);
+                touchCanvas = false ;
+                break;
+            }
+        }
+        
+        
+        if (touchCanvas){
+                    line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y)
+                            .stroke({color: '#f06', width: 1, linecap: 'round'})
+                            .attr({'stroke-dasharray': [8, 3], stroke: 'red'});
+        }
+
+//        line = drawer.path()
+//                .M(startingPoint)
+//                .L(startingPoint)
+//                .attr({stroke: 'red', fill: 'transparent', strokeWidth: 1, 'stroke-dasharray': [8, 3]});
+
+
+
+    });
+
+    mc.on("panmove", function (ev) {
+
+        currentPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+
+        /*segment = line.getSegment(1);
+         segment.coords[0] = currentPoint.x;
+         segment.coords[1] = currentPoint.y;
+         line.replaceSegment(1, segment);*/
+        if (touchCanvas){
+
+        line.attr("x2", currentPoint.x);
+        line.attr("y2", currentPoint.y);
+        line.stroke({color: '#f06000', width: 1, linecap: 'round'});
+
+        rect.x = Math.min(startingPoint.x, currentPoint.x);
+        rect.y = Math.min(startingPoint.y, currentPoint.y);
+        rect.width = Math.abs(currentPoint.x - startingPoint.x);
+        rect.height = Math.abs(currentPoint.y - startingPoint.y);
+//        drawer.rect(rect.width,rect.height).move(rect.x,rect.y);
+        let list = layer.getIntersectionList(rect, null);
+//        console.log(layer);
+//        console.log(list);
+
+        list.forEach(function (element) {
+            let edge = SVG.get(element.id);
+//            console.log(edge);
+            if (edge.type === "path") {
+//                console.log(edge);
+//                console.log(line);
+                intersection = line.intersectsPath(edge);
+                if (intersection.length) {
+//                    console.log("intersections:");
+                    segment2 = edge.getSegment(1);
+                    segment2.coords[0] = currentPoint.x;
+                    segment2.coords[1] = currentPoint.y;
+                    edge.replaceSegment(1, segment2);
+                }
+            }
+        });}
+    });
+
+    mc.on("panend", function (ev) {
+        if (touchCanvas){
+        line.remove();
+    }else{
+        touchCanvas = true;
+    }
+    });
+
+
+
+}
+
