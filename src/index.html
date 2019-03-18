@@ -120,7 +120,7 @@
     <div id="wrapper">
 
       <!-- Sidebar -->
-      <ul class="navbar-nav  bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+      <ul class="navbar-nav  bg-sidebar sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <!-- Sidebar - Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
@@ -147,8 +147,14 @@
         <hr class="sidebar-divider">
 
         <!-- Heading -->
-        <div class="sidebar-heading">
-          LAYERS
+        <div class="font-title sidebar-heading row">
+            <div class = "col-md-8">
+                <span class=" align-middle">LAYERS</span>
+            </div>
+            <div class ="col-md-4 text-center pr-0 mr-0">
+                <button type="button" class="btn btn-light px-2 py-0 " id = "new-layer" onpointerdown="event.preventDefault()">+</button>
+            </div>
+            
         </div>
          <li class="nav-item active">
         <ul class="navbar-nav nav-link" id ="layers-table">
@@ -188,20 +194,7 @@
         </ul>
          </li>
 
-        <!-- Divider -->
-        <hr class="sidebar-divider my-0">
 
-
-
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-link nav-item active mx-auto">
-            <a id="new-layer" class="btn btn-success btn-icon-split m-2 ">
-              <span class="icon text-white-50">
-                <i class="fas fa-check"></i>
-              </span>
-              <span class="text">New Layer</span>
-            </a>
-        </li>
 
 
 
@@ -273,9 +266,9 @@
               </div>-->
 
             </div>
-<div id ="loading" class="containerLoad">
+<!--<div id ="loading" class="containerLoad">
     <span class="_text">Loading data... </span>
-</div>
+</div>-->
 
 
           </div>
