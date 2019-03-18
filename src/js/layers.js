@@ -130,7 +130,7 @@ function addEvents(item, layerName) {
         }
         active = $(this).parent();
 
-        $(active).css("background-color",LAYERS[layerName]["color"]);
+        $(active).css("background-color",lightenDarkenColor(LAYERS[layerName]["color"],20));
         
     });
 }
@@ -553,8 +553,8 @@ function drawGraph(layer_name, g) {
 
         var radius = 50;
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
-        var y = getRandomBetween(-100,-600);
-        var x = getRandomBetween(-100,-600);
+        var y = getRandomBetween(30,800);
+        var x = getRandomBetween(30,800);
         //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
         var labelName = nodeData.authorInfo.name;
         // elements: itself and its label
@@ -600,8 +600,19 @@ function drawGraph(layer_name, g) {
 //        }
 
     });
+    
+    addHighlightToGroups(SVG.select('g').members);
+//    forceLayout(g, pxs, pys);
+}
 
-    forceLayout(g, pxs, pys);
+function addHighlightToGroups(groups){
+    console.log(groups);
+
+    for (var i = 0; i<groups.length;i++){
+            console.log(groups[i].type);
+
+        createHighlight(groups[i]);
+    }
 }
 
 function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId,layerName) {
@@ -615,21 +626,46 @@ function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId,layerNa
     //Add context_menu to the element using the selector, in this case the id
 
 //    nodeGraphics.layerName = layerName;
-
+    let distance = 1;
+    let r = nodeGraphics.attr('r') + nodeGraphics.attr('stroke-width') / 2 + 2;
+//    console.log(cx);
+    var halo = drawHaloInCircle(drawer,r,nodeGraphics.cx(),nodeGraphics.cy(),distance,LAYERS[layerName]["color"]);
     var group = drawer.group().attr({id:"group-"+id});
-//    console.log(group);
     group.layerName = layerName;
+
+    
+//    console.log(group);
     group.add(nodeGraphics);
+    group.add(halo);
 
     
     addContextMenu("#" + id);
 //    addMouseEvents(nodeGraphics, directed);
 //    addMovingEvents(nodeGraphics);
     addTouchEvents(nodeGraphics.parent());
+    createHighlight(group);
+
 //    addHoveringEvents(nodeGraphics);
 //    return [fabricObject,label];
     return nodeGraphics;
 
+}
+
+function drawHaloInCircle(drawer,r,cx,cy,distance,color){
+    var halo = drawer.path()
+                    .M({x: cx - (r +distance), y: cy})
+                    .a(r+distance, r+distance, 0, 1, 0, {x: (r+distance) * 2, y: 0})
+                    .a(r+distance, r+distance, 0, 1, 0, {x: -((r+distance) * 2), y: 0})
+                    .attr({
+                        stroke: color,
+                        fill: 'transparent',
+                        'stroke-width': 2,
+                        'pointer-events': 'none'
+                    });
+                
+
+                
+    return halo;
 }
 
 function drawPathInLayer(drawer, fromCenterX, fromCenterY,
@@ -724,20 +760,18 @@ function updateHighlights(object) {
 function updateEdgesEnds(nodeGraphics, coordX, coordY,directed) {
     let x = !coordX ? nodeGraphics.cx() : coordX;
     let y = !coordY ? nodeGraphics.cy() : coordY;
-    console.log(x,y);
     let segment;
-    console.log(nodeGraphics.nodeData.inEdges);
 
 //    if (directed){
     nodeGraphics.nodeData.inEdges.forEach(function (inEdge) {
         segment = inEdge.getSegment(1);
-console.log("entra");
         // TMP: to make it straight, we just set the control point at the ending point
         segment.coords[0] = x;
         segment.coords[1] = y;
         segment.coords[2] = x;
         segment.coords[3] = y;
         inEdge.replaceSegment(1, segment);
+        inEdge.highlight.replaceSegment(1,inEdge.getSegment(1))
 
     });
     nodeGraphics.nodeData.outEdges.forEach(function (outEdge, i) {
@@ -746,12 +780,16 @@ console.log("entra");
         segment.coords[0] = x;
         segment.coords[1] = y;
         outEdge.replaceSegment(0, segment);
+        outEdge.highlight.replaceSegment(0,outEdge.getSegment(0))
+
 
         // to make it straight, we just set the control point at the starting one
         segment = outEdge.getSegment(1);
         segment.coords[0] = x;
         segment.coords[1] = y;
         outEdge.replaceSegment(1, segment);
+        outEdge.highlight.replaceSegment(1,outEdge.getSegment(1))
+
     });
 
 //    }else{
@@ -770,47 +808,47 @@ console.log("entra");
 
 
 
-function addHoveringEvents(object, directed) {
-
-    object.on('mouseenter', function event() {
-        if (!object.highlight) {
-            createHighlight(object.parent());
-        } else {
-            object.parent().highlight.show();
-        }
-        object.nodeData.inEdges.forEach(function (inEdge) {
-            if (!inEdge.highlight) {
-                createHighlight(inEdge.parent());
-            } else {
-                inEdge.parent().highlight.show();
-            }
-        });
-        object.nodeData.outEdges.forEach(function (outEdge) {
-            if (!outEdge.highlight) {
-                createHighlight(outEdge.parent());
-            } else {
-                outEdge.parent().highlight.show();
-            }
-        });
-    });
-
-    object.on('mouseleave', function event() {
-        if (object.parent().highlight) {
-            object.parent().highlight.hide();
-        }
-        object.nodeData.inEdges.forEach(function (inEdge) {
-            if (inEdge.parent().highlight) {
-                inEdge.parent().highlight.hide();
-            }
-        });
-        object.nodeData.outEdges.forEach(function (outEdge) {
-            if (outEdge.parent().highlight) {
-                outEdge.parent().highlight.hide();
-            }
-        });
-    });
-
-}
+//function addHoveringEvents(object, directed) {
+//
+//    object.on('mouseenter', function event() {
+//        if (!object.highlight) {
+//            createHighlight(object.parent());
+//        } else {
+//            object.parent().highlight.show();
+//        }
+//        object.nodeData.inEdges.forEach(function (inEdge) {
+//            if (!inEdge.highlight) {
+//                createHighlight(inEdge.parent());
+//            } else {
+//                inEdge.parent().highlight.show();
+//            }
+//        });
+//        object.nodeData.outEdges.forEach(function (outEdge) {
+//            if (!outEdge.highlight) {
+//                createHighlight(outEdge.parent());
+//            } else {
+//                outEdge.parent().highlight.show();
+//            }
+//        });
+//    });
+//
+//    object.on('mouseleave', function event() {
+//        if (object.parent().highlight) {
+//            object.parent().highlight.hide();
+//        }
+//        object.nodeData.inEdges.forEach(function (inEdge) {
+//            if (inEdge.parent().highlight) {
+//                inEdge.parent().highlight.hide();
+//            }
+//        });
+//        object.nodeData.outEdges.forEach(function (outEdge) {
+//            if (outEdge.parent().highlight) {
+//                outEdge.parent().highlight.hide();
+//            }
+//        });
+//    });
+//
+//}
 
 function addMovingEvents(nodeGraphics, directed) {
     nodeGraphics.parent().draggable();
@@ -1287,7 +1325,7 @@ function scaleLayout(g, pxs, pys) {
     var newMinY = 50;
     var nodesNames = Object.keys(pxs);
     for (var i = 0; i < nodesNames.length; i++) {
-        let nodeGraphics = g.node(nodesNames[i]).svg;
+        let nodeGraphics = g.node(nodesNames[i]).svg.parent();
         let newX = scaleValue(oldMaxX, oldMinX, newMaxX, newMinX, nodeGraphics.cx());
         let newY = scaleValue(oldMaxY, oldMinY, newMaxY, newMinY, nodeGraphics.cy());
         nodeGraphics.cx(newX);
@@ -1374,7 +1412,6 @@ function main() {
         sort_layers(el.getElementsByTagName("li"));
     });
 
-
 }
 
 main();
@@ -1460,11 +1497,14 @@ function createHighlight(object, animate, hideAfter, color) {
 
     var highlight;
     let layerName = object.layerName;
+//    console.log(object);
+//    console.log(LAYERS[layerName])
     let drawer = LAYERS[layerName].layer;
     var waitingTime = 0;
     color = color || LAYERS[layerName].color;
     
     if (object.type === 'g'){
+        
         
         let firstChild = object.children()[0];
         if (firstChild.type === 'circle') {
@@ -1474,7 +1514,7 @@ function createHighlight(object, animate, hideAfter, color) {
             let r = firstChild.attr('r') + firstChild.attr('stroke-width') / 2 + 2;
 
             highlight = drawer.path()
-                    .M({x: cx - r, y: cy})
+                    .M({x: cx - r , y: cy})
                     .a(r, r, 0, 1, 0, {x: r * 2, y: 0})
                     .a(r, r, 0, 1, 0, {x: -r * 2, y: 0})
                     .attr({
@@ -1488,6 +1528,8 @@ function createHighlight(object, animate, hideAfter, color) {
 
     //                console.log("highlight.cx(): " + highlight.cx(100));
     //                console.log("highlight.cy(): " + highlight.cy(100));
+        firstChild.highlight = highlight;
+
 
         } else if (firstChild.type === 'path') {
 
@@ -1504,11 +1546,13 @@ function createHighlight(object, animate, hideAfter, color) {
                         'pointer-events': 'none'
                     });
 
-            highlight.back();
+            highlight.back();        
+            firstChild.highlight = highlight;
+
         }
     }
-    object.highlight = highlight;
     object.add(highlight);
+    highlight.hide();
 
     highlight.filter(function (add) {
         add.gaussianBlur(2)
