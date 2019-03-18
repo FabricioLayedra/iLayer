@@ -52,17 +52,44 @@ function slide(event) {
     }
 }
 
+function highlight(event,node,show){
+    console.log(event);
+    
+    event.preventDefault();
+    console.log(node);
+    var child = node.children()[0];
+//    console.this.highlight.show());
+//    console.log(child);
+    if (show){
+        child.highlight.show();
+
+        child.nodeData.inEdges.forEach(function (inEdge) {
+            inEdge.highlight.show();
+        });
+
+        child.nodeData.outEdges.forEach(function (outEdge) {
+            outEdge.highlight.show();
+        });
+    }else{
+        child.highlight.hide();
+
+        child.nodeData.inEdges.forEach(function (inEdge) {
+            inEdge.highlight.hide();
+        });
+
+        child.nodeData.outEdges.forEach(function (outEdge) {
+            outEdge.highlight.hide();
+        });
+    }
+    
+}
+
 function addTouchEvents(nodeParent){
-//    var child = nodeParent.children()[0];
-//    const slider = document.getElementById('slider');
-//
-//slider.onpointerdown = beginSliding;
-//slider.onpointerup = stopSliding;
-//    
-    nodeParent.on('pointerdown', beginSliding);
+    nodeParent.on('pointerdown',function(e){highlight(e,nodeParent,true)});    
+    nodeParent.on('pointerdown',beginSliding);
     nodeParent.on('pointermove',slide);
     nodeParent.on('pointerup',stopSliding);
-    
+    nodeParent.on('pointerup',function(e){highlight(e,nodeParent,false)});
 //    function(event){
 //        console.log("ENTER");
 //        console.log(this);
@@ -135,7 +162,3 @@ function addTouchEvents(nodeParent){
 
 
 }
-//
-//function highlightActive(item){
-//    
-//}
