@@ -9,6 +9,13 @@
     background-size: cover;
 }
 
+.button-color{
+    color: #fff;
+    background-color: #606062;
+    border-color: #606062;
+
+}
+
 .font-title{
     font-size: 1rem !important;
 }
