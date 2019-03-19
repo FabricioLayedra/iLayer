@@ -16,10 +16,6 @@ function beginSliding(e) {
   if (!this.node.childDY){
       this.node.childDY = this.cy()-this.children()[0].cy();
   }
-//  this.node.childDX = this.cx()-this.children()[0].cx();
-//  this.node.childDY = this.cy()-this.children()[0].cy();
-//  this.fire("pointermove",slide(e,this)e.log(this);
-
   this.node.setPointerCapture(e.pointerId);
 }
 
@@ -28,39 +24,18 @@ function stopSliding(e) {
   this.node.releasePointerCapture(e.pointerId);
 }
 
-
-
-function slide(event) {
-    
+function slide(event) {  
     if (this.node.allowed){
-
-//        console.log(this.cx());
-//        console.log(this.cy());
-//        console.log(this.x());
-//        console.log(this.y());
         let x = event.pageX-this.cx()-this.node.dx;
         let y = event.pageY-this.cy()-this.node.dy;
         this.dmove(x,y);
-//        this.children()[0].dmove(x,y)
-//        count+=1;
-//        console.log(count);
         updateEdgesEnds(getElementFromGroup(this,'circle'),this.cx()-this.node.childDX,this.cy()-this.node.childDY);
-        
-//        this.node.childDY=this.node.childDY+y;
-
-        
     }
 }
 
 function highlight(event,node,show){
-//    console.log(event);
-    
     event.preventDefault();
-//    console.log(node);
-//    console.log(node);
     var child = getElementFromGroup(node,'circle');
-    ////    console.this.highlight.show());
-//    console.log(child);
     if (show){
         child.highlight.show();
 
@@ -82,8 +57,7 @@ function highlight(event,node,show){
         child.nodeData.outEdges.forEach(function (outEdge) {
             outEdge.highlight.hide();
         });
-    }
-    
+    }   
 }
 
 function addTouchEvents(nodeParent){
@@ -92,85 +66,12 @@ function addTouchEvents(nodeParent){
     nodeParent.on('pointermove',slide);
     nodeParent.on('pointerup',stopSliding);
     nodeParent.on('pointerup',function(e){highlight(e,nodeParent,false)});
-//    function(event){
-//        console.log("ENTER");
-//        console.log(this);
-//        console.log(event.pageX,event.pageY);
-//        nodeParent.dx = event.pageX-this.cx();
-//        nodeParent.dy = event.pageY-this.cy();
-//        console.log(this.cy()+event.pageY-event.pageY-this.cy())
-////        event.preventDefault();
-//        console.log(this);
-//        nodeParent.original = [this.cx(),this.cy()];
-//       
-//        nodeParent.dx = event.pageX-this.cx();
-//        nodeParent.dy = event.pageY-this.cy();
-//        nodeParent.previousX = event.pageX;
-//        nodeParent.previousY = event.pageY;
-//            nodeParent.previousX = event.pageX-this.cx();
-//            nodeParent.previousY = event.pageY-this.cy();
-//            console.log(nodeParent.previousX,nodeParent.previousY)
-//            console.log("INITIALIZE");
-//            console.log(nodeParent);
-//            console.log(this.cx() - nodeParent.dx);
-//        console.log()
-//                          console.log(this.cx() - nodeParent.dx);
-//            console.log(nodeParent.dy);
-//            console.log(this.cx());
-//            console.log(this.cy());
-//            console.log(event.pageX);
-//            console.log(event.pageY);
-//         detectInputType(event,"down");
-//     });
-//    
-//    nodeParent.on('pointermove',function(event){
-//        if (!nodeParent.dx){
-//            console.log("move");
-//            console.log(this);
-//        }
-        
-        
-//        event.preventDefault();
-//            console.log(move);
-//            var x = event.pageX-nodeParent.previousX;
-//            var y = event.pageY-nodeParent.previousY;
-//            console.log(event.pageX-this.cx()-nodeParent.previousX,event.pageY-this.cy()-nodeParent.previousY);
-
-//            this.cx(event.pageX-this.cx())
-//            this.cy(event.pageY-this.cy());
-//            this.cy(this.cy()+y);
-
-//                    console.log(event.pageX);
-
-//            nodeParent.previousX = x;
-//            nodeParent.previousY = y;
-
-//        console.log("ON DRAG");
-//        console.log(this);
-
-//
-//     });
-//     
-//     nodeParent.on('pointerup',function(event){
-////        nodeParent.original = null;
-////        nodeParent.dx = null;
-////        nodeParent.dy =null;
-//
-//            nodeParent.previousX = null;
-//            nodeParent.previousY = null;
-////        console.log("ON UP");
-////        console.log(this);
-//     });
-
-
 }
 
 // the idea here is that we will have different modes and depending on the mode we are, the same gesture will do different things
 // modes are often set by the user or even the layer itself
 
 function addLayerEvents(layer, drawer) {
-
-
     let mc = new Hammer(layer);
 
     // let the pan gesture support all directions.
@@ -201,11 +102,7 @@ function addLayerEvents(layer, drawer) {
         verifier.height = 1;
         let elements = layer.getIntersectionList(verifier,null);
         for (var i =0; i <elements.length; i++){
-//                            console.log();
-
-            
             if (elements[i].tagName  === "circle"){
-//                console.log(elements[i]);
                 touchCanvas = false ;
                 break;
             }
@@ -213,9 +110,9 @@ function addLayerEvents(layer, drawer) {
         
         
         if (touchCanvas){
-                    line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y)
-                            .stroke({color: '#f06', width: 1, linecap: 'round'})
-                            .attr({'stroke-dasharray': [8, 3], stroke: 'red'});
+            line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y)
+                    .stroke({color: '#f06', width: 1, linecap: 'round'})
+                    .attr({'stroke-dasharray': [8, 3], stroke: 'red'});
         }
 
 //        line = drawer.path()
@@ -326,4 +223,47 @@ function addLayerEvents(layer, drawer) {
 
 
 }
+
+function addToolEvents(tool,drawer) {
+    let mc = new Hammer(tool);
+
+    // let the pan gesture support all directions.
+    // this will block the vertical scrolling on a touch-device while on the element
+    mc.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
+    
+    let startingPoint = null;
+    let currentPoint = null;
+    let path = null;
+    let ghost = null;
+    
+    
+
+    mc.on("panstart", function (ev) {
+
+        startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+        
+        console.log(startingPoint.x,startingPoint.y);
+//        console.log(startingPoint);
+        path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
+        ghost = drawer.path(path).center(-20,-20);
+        let relationAspect = ghost.width()/ghost.height();
+        ghost.height(25);
+        ghost.width(25*relationAspect)
+
+//        ghost = drawer.circle(5).center(-startingPoint.x,-startingPoint.y);
+        
+    });
+
+    mc.on("panmove", function (ev) {
+        currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+        console.log(ghost.cx(),ghost.cy());
+        ghost.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
+    });
+
+    mc.on("panend", function (ev) {
+        console.log(ev);
+    });
+
+}
+
 
