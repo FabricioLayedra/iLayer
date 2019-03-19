@@ -30,6 +30,8 @@ function stopSliding(e) {
   this.node.releasePointerCapture(e.pointerId);
 }
 
+
+
 function slide(event) {
     
     if (this.node.allowed){
@@ -44,7 +46,7 @@ function slide(event) {
 //        this.children()[0].dmove(x,y)
 //        count+=1;
 //        console.log(count);
-        updateEdgesEnds(this.children()[0],this.cx()-this.node.childDX,this.cy()-this.node.childDY);
+        updateEdgesEnds(getElementFromGroup(this,'circle'),this.cx()-this.node.childDX,this.cy()-this.node.childDY);
         
 //        this.node.childDY=this.node.childDY+y;
 
@@ -56,9 +58,10 @@ function highlight(event,node,show){
 //    console.log(event);
     
     event.preventDefault();
+    console.log(node);
 //    console.log(node);
-    var child = node.children()[0];
-//    console.this.highlight.show());
+    var child = getElementFromGroup(node,'circle');
+    ////    console.this.highlight.show());
 //    console.log(child);
     if (show){
         child.highlight.show();
@@ -261,6 +264,8 @@ function addLayerEvents(layer, drawer) {
                     segment2.coords[0] = currentPoint.x;
                     segment2.coords[1] = currentPoint.y;
                     edge.replaceSegment(1, segment2);
+                    edge.highlight.replaceSegment(1, segment2);
+                    edge.highlight.show();
                 }
             }
         });}
@@ -268,6 +273,24 @@ function addLayerEvents(layer, drawer) {
 
     mc.on("panend", function (ev) {
         if (touchCanvas){
+            
+            let list = layer.getIntersectionList(rect, null);
+//        console.log(layer);
+//        console.log(list);
+
+        list.forEach(function (element) {
+            let edge = SVG.get(element.id);
+//            console.log(edge);
+            if (edge.type === "path") {
+//                console.log(edge);
+//                console.log(line);
+                intersection = line.intersectsPath(edge);
+                if (intersection.length) {
+//                    console.log("intersections:");
+                    edge.highlight.hide();
+                }
+            }
+        });
         line.remove();
     }else{
         touchCanvas = true;

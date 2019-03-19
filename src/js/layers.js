@@ -611,7 +611,6 @@ function addHighlightToGroups(groups){
 
     for (var i = 0; i<groups.length;i++){
 //            console.log(groups[i].type);
-
         createHighlight(groups[i]);
     }
 }
@@ -628,16 +627,25 @@ function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId,layerNa
 
 //    nodeGraphics.layerName = layerName;
     let distance = 1;
-    let r = nodeGraphics.attr('r') + nodeGraphics.attr('stroke-width') / 2 + 2;
+    let r = nodeGraphics.attr('r') + nodeGraphics.attr('stroke-width') / 2 ;
+    var ear = drawEarInCircle(drawer,r,nodeGraphics.cx(),nodeGraphics.cy(),LAYERS[layerName]["color"]);
+
 //    console.log(cx);
-    var halo = drawHaloInCircle(drawer,r,nodeGraphics.cx(),nodeGraphics.cy(),distance,LAYERS[layerName]["color"]);
+//        let r = nodeGraphics.attr('r') + nodeGraphics.attr('stroke-width') / 2 +2;
+//    var halo = drawHaloInCircle(drawer,r,nodeGraphics.cx(),nodeGraphics.cy(),distance,LAYERS[layerName]["color"]);
+
     var group = drawer.group().attr({id:"group-"+id});
     group.layerName = layerName;
 
     
 //    console.log(group);
+//nodeGraphics.forward();
     group.add(nodeGraphics);
-    group.add(halo);
+//    ear.back()
+    group.add(ear);
+    ear.back();
+    
+//    group.add(halo);
 
     
     addContextMenu("#" + id);
@@ -667,6 +675,22 @@ function drawHaloInCircle(drawer,r,cx,cy,distance,color){
 
                 
     return halo;
+}
+function drawEarInCircle(drawer,r,cx,cy,color){
+    var ear = drawer.path()
+                    .M({x: cx , y: cy-r})
+                    .a(r, r, 0, 1, 0, {x: r, y: r})
+                    .L({x: cx+r, y: cy-r})
+                    .Z()
+//                    .L({x: cx, y: cy-r})
+//                    .a(r, r, 0, 1, 0, {x: r , y: r})
+                    .attr({
+                        stroke: color,
+                        fill: color,
+                        'stroke-width': 2,
+                        'pointer-events': 'none'
+                    });
+    return ear;
 }
 
 function drawPathInLayer(drawer, fromCenterX, fromCenterY,
@@ -1509,8 +1533,11 @@ function createHighlight(object, animate, hideAfter, color) {
     if (object.type === 'g'){
         
         
-        let firstChild = object.children()[0];
-        if (firstChild.type === 'circle') {
+        
+        if (!object.node.id.includes("path")) {
+            let firstChild = getElementFromGroup(object,'circle');
+                        
+//                        console.log(object.id.includes("path"));
 
             let cx = firstChild.cx();
             let cy = firstChild.cy();
@@ -1534,7 +1561,8 @@ function createHighlight(object, animate, hideAfter, color) {
         firstChild.highlight = highlight;
 
 
-        } else if (firstChild.type === 'path') {
+        } else{
+            let firstChild = getElementFromGroup(object,'path');
 
             let coords1 = firstChild.getSegment(0).coords;
             let coords2 = firstChild.getSegment(1).coords;
