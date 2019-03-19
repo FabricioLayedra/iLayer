@@ -226,24 +226,46 @@
         <div id="content">
 
           <!-- Topbar -->
-          <nav class="navbar navbar-expand navbar-light bg-white topbar static-top">
+          <nav class="navbar navbar-expand navbar-light bg-sidebar topbar static-top">
             <!-- Sidebar Toggle (Topbar) -->
 <!--            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
               <i class="fa fa-bars"></i>
             </button>-->
 
             <!-- Topbar Search -->
+            
+            <div class="mr-2">
+                <button class="btn button-color tool" type="button">
+                    <i class="fas fa-apple-alt fa-sm"></i>
+                  </button>
+            </div>
+            
+            <div class="mr-2">
+                <button class="btn button-color tool" type="button">
+                    <i class="fas fa-arrows-alt fa-sm"></i>
+                  </button>
+            </div>
+<!--            
+            <div>
+                <button class="btn button-color" type="button">
+                    <i class="fas fa-search fa-sm"></i>
+                  </button>
+            </div>-->
+            
+            
             <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
               <div class="input-group">
                 <input id="search-bar" type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search"
     aria-describedby="basic-addon2" >
                 <div class="input-group-append">
-                  <button class="btn btn-primary" type="button">
+                  <button class="btn button-color" type="button">
                     <i class="fas fa-search fa-sm"></i>
                   </button>
                 </div>
               </div>
             </form>
+
+            
 
             <!-- Topbar Navbar -->
             <ul class="navbar-nav ml-auto">
@@ -256,8 +278,7 @@
           <!-- End of Topbar -->
 
           <!-- Begin Page Content -->
-          <div class="container-fluid" id = "container">
-            <div id="set-canvases" style ="position: relative">
+          <div id="set-canvases" style ="position: relative">
               <!--GET THE RIGHT DIMENSIONS-->
       <!--              <div id= "canvas-default" width="1200" height="800" style ="position: absolute">
                   </div>-->
@@ -286,7 +307,7 @@
       <i class="fas fa-angle-up"></i>
     </a>
 
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <!--<script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
@@ -324,25 +345,15 @@
     <script src="lib/hammer.min.js" charset="utf-8"></script> 
     <script src="lib/svg.path.min.js" charset="utf-8"></script>  
     <script src="lib/svg.intersections.js" charset="utf-8"></script>   
-
-
-
-
+    
     <script src="js/touch.js" charset="utf-8"></script> 
-        <script src="js/layers.js" charset="utf-8"></script> 
+    <script src="js/layers.js" charset="utf-8"></script> 
     <script src="js/search-bar.js" charset="utf-8"></script> 
-
-
-
-
-
-
-    <!--<script src="lib/fabricjs/dist/fabric.min.js"></script>-->
-
-
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.js"></script>
+    <script src="https://use.fontawesome.com/releases/v5.7.2/js/all.js"></script>
+
 
     <!-- search plugin-->
 

@@ -20,6 +20,17 @@ var el = document.getElementById("layers-table");
 
 var active = null;
 
+var activeLayer = null;
+
+var setCanvases = $("#content");
+
+console.log("DIMENSIONS");
+var generalWidth = setCanvases.width();
+var generalHeight = $(document).height()-70;
+console.log(generalWidth,generalHeight);
+
+
+
 var sortable = new Sortable(el, {
 
     onEnd: function (evt) {
@@ -57,7 +68,7 @@ function createLayer(layer) {
     canvas.setAttribute("id", layer);
     canvas.setAttribute("style", "position: absolute;");
     container.appendChild(canvas);
-    createSVG(layer, 1200, 800);
+    createSVG(layer, generalWidth, generalHeight);
     var template = document.getElementById('li-element').content.cloneNode(true);
     if (typeof layer === "undefined") {
         var id = Object.keys(LAYERS).length;
@@ -130,6 +141,7 @@ function addEvents(item, layerName) {
             $(active).css("background-color","");
         }
         active = $(this).parent();
+        activeLayer = LAYERS[layerName];
 
         $(active).css("background-color",lightenDarkenColor(LAYERS[layerName]["color"],20));
         
@@ -1425,6 +1437,12 @@ function main() {
 
     loadGraph(datafile, "authors2016", false).then(function () {
         addGraphAsLayer(GRAPHS["authors2016"], "colab");
+            var tools = document.getElementsByClassName("tool");
+            console.log(LAYERS["colab"]);
+            console.log(LAYERS);
+    for (var i =0; i<tools.length; i++){
+        addToolEvents(tools[i],LAYERS["colab"].layer);
+    }
     });
 
 //    loadGraph(datafile2,"authors2015",false).then(function(){
@@ -1438,10 +1456,16 @@ function main() {
         //    readDataColab(datafile,random_id());
         sort_layers(el.getElementsByTagName("li"));
     });
+    
+    
+    /*setting events to the tools*/
+    
 
 }
 
 main();
+
+
 /*---------------------------------GARBAGE--------------------------------------*/
 ///* FILLING DOWN THE NAME OF THE LAYER */
 //
