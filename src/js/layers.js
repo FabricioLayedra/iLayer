@@ -607,7 +607,7 @@ function drawGraph(layer_name, g) {
 }
 
 function addHighlightToGroups(groups){
-    console.log(groups);
+//    console.log(groups);
 
     for (var i = 0; i<groups.length;i++){
 //            console.log(groups[i].type);

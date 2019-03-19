@@ -25,8 +25,6 @@ function beginSliding(e) {
 
 function stopSliding(e) {
   this.node.allowed = null;
-
-  count=0;
   this.node.releasePointerCapture(e.pointerId);
 }
 
@@ -58,7 +56,7 @@ function highlight(event,node,show){
 //    console.log(event);
     
     event.preventDefault();
-    console.log(node);
+//    console.log(node);
 //    console.log(node);
     var child = getElementFromGroup(node,'circle');
     ////    console.this.highlight.show());
@@ -74,6 +72,7 @@ function highlight(event,node,show){
             outEdge.highlight.show();
         });
     }else{
+
         child.highlight.hide();
 
         child.nodeData.inEdges.forEach(function (inEdge) {
@@ -194,7 +193,7 @@ function addLayerEvents(layer, drawer) {
         rect = layer.createSVGRect();
         rect.x = startingPoint.x;
         rect.y = startingPoint.y;
-        console.log("hits an element?")
+//        console.log("hits an element?")
         verifier = layer.createSVGRect();
         verifier.x = startingPoint.x;
         verifier.y = startingPoint.y;
@@ -274,23 +273,50 @@ function addLayerEvents(layer, drawer) {
     mc.on("panend", function (ev) {
         if (touchCanvas){
             
-            let list = layer.getIntersectionList(rect, null);
+            
+            
+//            let list = layer.getIntersectionList(rect, null);
 //        console.log(layer);
 //        console.log(list);
-
-        list.forEach(function (element) {
-            let edge = SVG.get(element.id);
-//            console.log(edge);
-            if (edge.type === "path") {
-//                console.log(edge);
-//                console.log(line);
-                intersection = line.intersectsPath(edge);
-                if (intersection.length) {
-//                    console.log("intersections:");
-                    edge.highlight.hide();
+// this needs to be upgraded too something more efficient.            
+            SVG.select('g').members.forEach(
+                function(n){
+                    let children = n.node.children;
+                    for (var k =0; k<children.length; k++){
+                        let element = SVG.get(children[k].id);
+                        if (element.highlight){
+                            element.highlight.hide();
+                        }
+                    }
+//                    children.forEach(function(n){
+//                        if (n.highlight){
+//                            n.highlight.hide();
+//                        }
+//                    });
+//                    n.each(
+//                            function(child1){
+//                                console.log(child.type);
+//                                if (child1.highlight){
+//                                    child1.highlight.hide();
+//                                }
+//                            }
+//                                    )
                 }
-            }
-        });
+            );
+
+//        list.forEach(function (element) {
+//            let edge = SVG.get(element.id);
+////            console.log(edge);
+//            if (edge.type === "path") {
+////                console.log(edge);
+////                console.log(line);
+//                intersection = line.intersectsPath(edge);
+//                if (intersection.length) {
+////                    console.log("intersections:");
+//                    edge.highlight.hide();
+//                }
+//            }
+//        });
         line.remove();
     }else{
         touchCanvas = true;
