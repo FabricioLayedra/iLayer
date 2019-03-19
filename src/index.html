@@ -15,7 +15,7 @@
 
       <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="css/fonts/nunito-font.css" rel="stylesheet">
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.css" rel="stylesheet">
@@ -25,12 +25,12 @@
     <link href="css/table_style.css" rel="stylesheet">
 
     <!-- Custom styles for ui-->
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="css/lib/jquery-ui.css">
     <link rel="stylesheet" href="css/jquery.contextMenu.min.css">
     <!-- Icon for the title-->
     <link rel="shortcut icon" type="image/png" href="img/logo.png" />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css">
+    <link rel="stylesheet" href="css/jquery.contextMenu.min.css">
 
     <title>iLayer</title>
 
@@ -120,7 +120,7 @@
     <div id="wrapper">
 
       <!-- Sidebar -->
-      <ul class="navbar-nav  bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+      <ul class="navbar-nav  bg-sidebar sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <!-- Sidebar - Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
@@ -147,8 +147,14 @@
         <hr class="sidebar-divider">
 
         <!-- Heading -->
-        <div class="sidebar-heading">
-          LAYERS
+        <div class="font-title sidebar-heading row">
+            <div class = "col-md-8">
+                <span class=" align-middle">LAYERS</span>
+            </div>
+            <div class ="col-md-4 text-center pr-0 mr-0">
+                <button type="button" class="btn btn-light px-2 py-0 " id = "new-layer" onpointerdown="event.preventDefault()">+</button>
+            </div>
+            
         </div>
          <li class="nav-item active">
         <ul class="navbar-nav nav-link" id ="layers-table">
@@ -188,20 +194,7 @@
         </ul>
          </li>
 
-        <!-- Divider -->
-        <hr class="sidebar-divider my-0">
 
-
-
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-link nav-item active mx-auto">
-            <a id="new-layer" class="btn btn-success btn-icon-split m-2 ">
-              <span class="icon text-white-50">
-                <i class="fas fa-check"></i>
-              </span>
-              <span class="text">New Layer</span>
-            </a>
-        </li>
 
 
 
@@ -233,11 +226,11 @@
         <div id="content">
 
           <!-- Topbar -->
-          <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+          <nav class="navbar navbar-expand navbar-light bg-white topbar static-top">
             <!-- Sidebar Toggle (Topbar) -->
-            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+<!--            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
               <i class="fa fa-bars"></i>
-            </button>
+            </button>-->
 
             <!-- Topbar Search -->
             <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
@@ -273,9 +266,9 @@
               </div>-->
 
             </div>
-<div id ="loading" class="containerLoad">
+<!--<div id ="loading" class="containerLoad">
     <span class="_text">Loading data... </span>
-</div>
+</div>-->
 
 
           </div>
@@ -311,8 +304,8 @@
 
 
     <!-- Sorting plugin-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable.js"></script> 
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="lib/jquery-sortable.js"></script> 
+    <script src="lib/Sortable.min.js"></script>
 
     <!-- iLayer core -->
     <script src="js/utils.js"></script>
@@ -320,17 +313,26 @@
     
     <!--<script src="lib/svg_3.0.12.js"></script>-->
     <script src="lib/svg_2.7.1.js"></script>    
-    
+
     <script src="lib/svg.draggable.js" charset="utf-8"></script>   
-    <script src="lib/svg.path.min.js" charset="utf-8"></script>   
     <script src="lib/jquery-ui.js" charset="utf-8"></script>   
     <script src="lib/springy.js" charset="utf-8"></script>   
     <script src="lib/springyui.js" charset="utf-8"></script>   
     <script src="lib/svg.filter.js" charset="utf-8"></script>   
     <script src="lib/matterjs/build/matter.min.js"></script>
     <script src="lib/matter_attractors/build/matter-attractors.js"></script>
-    <script src="js/layers.js" charset="utf-8"></script> 
+    <script src="lib/hammer.min.js" charset="utf-8"></script> 
+    <script src="lib/svg.path.min.js" charset="utf-8"></script>  
+    <script src="lib/svg.intersections.js" charset="utf-8"></script>   
+
+
+
+
+    <script src="js/touch.js" charset="utf-8"></script> 
+        <script src="js/layers.js" charset="utf-8"></script> 
     <script src="js/search-bar.js" charset="utf-8"></script> 
+
+
 
 
 
