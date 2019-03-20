@@ -224,35 +224,55 @@ function addLayerEvents(layer, drawer) {
 
 }
 
-function addPressEvents(mc,toolGraphics) {
-//   console.log(mc);
-    // let the pan gesture support all directions.
-    // this will block the vertical scrolling on a touch-device while on the element
+function addPressEvents(mc,toolGraphics,drawer) {
+
     mc.get('press').set({time: 500});
     mc.on('press', function(event) {
         event.preventDefault();
         $(event.target).attr('oncontextmenu', 'return false');
-        
         mc.off('panmove');
-//        console.log("Pressed");
-//        console.log(toolGraphics);
-//        toolGraphics._event=null;        
-//        toolGraphics._events = {};        
-//        toolGraphics._memory = {};
-//        toolGraphics.draggable(false);
-//        tool = toolGraphics.node;
+        
+        let line = null;
+        let startingPoint = null;
+        let currentPoint = null;
+
+        mc.on("panstart", function (ev) {
+            startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+            line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y)
+                    .stroke({color: '#f06', width: 1, linecap: 'round'})
+                    .attr({'stroke-dasharray': [8, 3], stroke: 'red'});
+        });
+
+        mc.on("panmove", function (ev) {
+            currentPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+            line.attr("x2", currentPoint.x);
+            line.attr("y2", currentPoint.y);
+            line.stroke({color: '#f06000', width: 1, linecap: 'round'});
+            //CHANGE GRAVITY HERE
+        });
+
+        mc.on("panend", function (ev) {
+            line.remove();
+            mc.off('panstart');
+            mc.off('panmove');
+            mc.off('panend');
+            addDragEvents(mc,toolGraphics);
+
+        });
     });
     mc.on('pressup',function(event) {
+        mc.off('panstart');
+        mc.off('panmove');
+        mc.off('panend');
+        console.log(mc);
+
         addDragEvents(mc,toolGraphics);
-//        toolGraphics.draggable();
-        ;// do something
     });
 }
 
 function moveElements(ev, nodeGraphics){
     let currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
 //        console.log(ghost.cx(),ghost.cy());
-    console.log(nodeGraphics);
     nodeGraphics.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
 }
 
@@ -293,8 +313,11 @@ function addDragEvents(hammer,toolGraphics){
 ////        console.log(activeLayer);
 //    });
 }
+function getActiveLayer(){
+    return activeLayer;
+}
 
-function addToolEvents(tool,drawer) {
+function addToolEvents(tool) {
     let mc = new Hammer(tool);
 
     // let the pan gesture support all directions.
@@ -315,7 +338,7 @@ function addToolEvents(tool,drawer) {
         console.log(startingPoint.x,startingPoint.y);
 //        console.log(startingPoint);
         path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
-        ghost = drawer.path(path).center(-20,-20).attr({"tool":true});
+        ghost = getActiveLayer().layer.path(path).center(-20,-20).attr({"tool":true});
 //        ghost.draggable();
         let relationAspect = ghost.width()/ghost.height();
         ghost.height(25);
@@ -338,7 +361,7 @@ function addToolEvents(tool,drawer) {
 
         addDragEvents(mc,ghost);
         console.log(ghost);
-        addPressEvents(mc,ghost);
+        addPressEvents(mc,ghost,getActiveLayer().layer);
 //        console.log(activeLayer);
     });
 
