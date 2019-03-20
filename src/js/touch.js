@@ -102,7 +102,7 @@ function addLayerEvents(layer, drawer) {
         verifier.height = 1;
         let elements = layer.getIntersectionList(verifier,null);
         for (var i =0; i <elements.length; i++){
-            if (elements[i].tagName  === "circle"){
+            if (elements[i].tagName  === "circle" || $(elements[i]).attr("tool")){
                 touchCanvas = false ;
                 break;
             }
@@ -224,6 +224,76 @@ function addLayerEvents(layer, drawer) {
 
 }
 
+function addPressEvents(mc,toolGraphics) {
+//   console.log(mc);
+    // let the pan gesture support all directions.
+    // this will block the vertical scrolling on a touch-device while on the element
+    mc.get('press').set({time: 500});
+    mc.on('press', function(event) {
+        event.preventDefault();
+        $(event.target).attr('oncontextmenu', 'return false');
+        
+        mc.off('panmove');
+//        console.log("Pressed");
+//        console.log(toolGraphics);
+//        toolGraphics._event=null;        
+//        toolGraphics._events = {};        
+//        toolGraphics._memory = {};
+//        toolGraphics.draggable(false);
+//        tool = toolGraphics.node;
+    });
+    mc.on('pressup',function(event) {
+        addDragEvents(mc,toolGraphics);
+//        toolGraphics.draggable();
+        ;// do something
+    });
+}
+
+function moveElements(ev, nodeGraphics){
+    let currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+//        console.log(ghost.cx(),ghost.cy());
+    console.log(nodeGraphics);
+    nodeGraphics.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
+}
+
+function addDragEvents(hammer,toolGraphics){
+
+    // let the pan gesture support all directions.
+    // this will block the vertical scrolling on a touch-device while on the element
+    hammer.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
+    
+    
+
+//    mc.on("panstart", function (ev) {
+//
+//        startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+//        
+//        console.log(startingPoint.x,startingPoint.y);
+////        console.log(startingPoint);
+//        path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
+//        ghost = drawer.path(path).center(-20,-20).attr({"tool":true});
+////        ghost.draggable();
+//        let relationAspect = ghost.width()/ghost.height();
+//        ghost.height(25);
+//        ghost.width(25*relationAspect)
+//
+////        ghost = drawer.circle(5).center(-startingPoint.x,-startingPoint.y);
+//        
+//    });
+
+    hammer.on("panmove", function (ev) {
+        moveElements(ev,toolGraphics);
+    });
+
+//    mc.on("panend", function (ev) {
+//        ghost.front();
+//        ghost.draggable();
+//        console.log(ghost);
+//        addPressEvents(ghost.node,ghost);
+////        console.log(activeLayer);
+//    });
+}
+
 function addToolEvents(tool,drawer) {
     let mc = new Hammer(tool);
 
@@ -245,7 +315,8 @@ function addToolEvents(tool,drawer) {
         console.log(startingPoint.x,startingPoint.y);
 //        console.log(startingPoint);
         path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
-        ghost = drawer.path(path).center(-20,-20);
+        ghost = drawer.path(path).center(-20,-20).attr({"tool":true});
+//        ghost.draggable();
         let relationAspect = ghost.width()/ghost.height();
         ghost.height(25);
         ghost.width(25*relationAspect)
@@ -261,7 +332,14 @@ function addToolEvents(tool,drawer) {
     });
 
     mc.on("panend", function (ev) {
-        console.log(ev);
+        ghost.front();
+//        ghost.draggable();
+        let mc = new Hammer(ghost.node);
+
+        addDragEvents(mc,ghost);
+        console.log(ghost);
+        addPressEvents(mc,ghost);
+//        console.log(activeLayer);
     });
 
 }
