@@ -137,11 +137,13 @@ function addEvents(item, layerName) {
         highlightLayer(layerName);
     });
     $(item.querySelector('#p-'+layerName)).on('pointerdown', function(){
-        activateLayer(this,layerName);
+        activateLayer(layerName);
     });
 }
 
-function activateLayer(item,layerName){
+function activateLayer(layerName){
+    let item = $("#p-"+layerName);
+    console.log(item.parent());
     if (active){
         $(active).css("background-color","");
     }
@@ -534,19 +536,25 @@ function lightenDarkenColor(col, amt) {
 }
 
 // Adds a graph as a layer in the tool
-function addGraphAsLayer(g, layer_name) {
+function addGraphAsLayer(g, layerName) {
 
 //    var color = addNewLayer(layer_name);
 //    var darkenColor = lightenDarkenColor(color, -10);
 
-    addNewLayer(layer_name);
+    addNewLayer(layerName);
     var color = '#688bd6';
     var darkenColor = lightenDarkenColor(color, -10);
 
 //    drawGraph(LAYERS[layer_name].layer, g);
-    drawGraph(layer_name, g);
-    var svg_id = $("#" + layer_name).children("svg").attr("id");
+    drawGraph(layerName, g);
+    var svg_id = $("#" + layerName).children("svg").attr("id");
     SVG.get(svg_id).select("circle").attr({fill: color, stroke: darkenColor, 'stroke-width': 2});
+    
+    
+            var tools = document.getElementsByClassName("tool");
+        for (var i =0; i<tools.length; i++){
+            addToolEvents(tools[i],LAYERS[layerName].layer);
+        }
 }
 
 function drawGraph(layer_name, g) {
@@ -1440,12 +1448,7 @@ function main() {
 
     loadGraph(datafile, "authors2016", false).then(function () {
         addGraphAsLayer(GRAPHS["authors2016"], "1");
-        
-        /*setting events to the tools*/
-        var tools = document.getElementsByClassName("tool");
-        for (var i =0; i<tools.length; i++){
-            addToolEvents(tools[i],LAYERS["1"].layer);
-        }
+        activateLayer("1");
     });
 
 //    loadGraph(datafile2,"authors2015",false).then(function(){
@@ -1455,9 +1458,15 @@ function main() {
 
 
     $("#new-layer").click(function () {
-        addNewLayer("" + (Object.keys(LAYERS).length + 1));
+        let layerName = "" + (Object.keys(LAYERS).length + 1);
+        addNewLayer(layerName);
         //    readDataColab(datafile,random_id());
         sort_layers(el.getElementsByTagName("li"));
+                /*setting events to the tools*/
+        var tools = document.getElementsByClassName("tool");
+        for (var i =0; i<tools.length; i++){
+            addToolEvents(tools[i]);
+        }
     });
     
 }
