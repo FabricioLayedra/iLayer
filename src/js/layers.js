@@ -81,10 +81,10 @@ function createLayer(layer) {
     return template;
 }
 
-function createSVG(layer_name, width, height) {
-    var draw = SVG(layer_name).size(width, height);
+function createSVG(layerName, width, height) {
+    var draw = SVG(layerName).size(width, height).attr({"id":"layer-"+layerName});
     window.draw = draw;
-    LAYERS[layer_name] = {"layer": draw, "physics-engine": null};
+    LAYERS[layerName] = {"layer": draw, "physics-engine": null};
     addLayerEvents(draw.node, draw);
     
 }
@@ -162,8 +162,10 @@ function showHideLayer(checkbox) {
     }
 }
 
-function activatePhysics(layer) {
-//    var layer = checkbox.id.split("-")[2];
+function activatePhysics(layerTag) {
+    let layer = layerTag.split("-")[1];
+//    console.log(LAYERS);
+//    console.log(layer);
     var engine;
     if (!LAYERS[layer]["physics-engine"]) {
         engine = createPhysicsWorld(layer);
@@ -195,7 +197,7 @@ function addMissingElementsToWorld(world, layer) {
 
                 var matterObject = Bodies.circle(x, y, radius);
 
-                //nodeData.matter = matterObject;
+                //nodeData.matter = matterObjasect;
                 matterObject.svg = element;
                 element.matter = matterObject;
 
@@ -316,19 +318,19 @@ function createPhysicsWorld(layer_name, boundaries) {
     // create demo scene
     var world = engine.world;
     world.gravity.scale = 0;
-   var length = 120000;
-   var dimensions = [1200,800];
-   var tickerLength = 300;
-    
-    var roof = Bodies.rectangle(0,-tickerLength+160, length, tickerLength, {isStatic: true});
-    var leftWall = Bodies.rectangle(-tickerLength+160,0, tickerLength, length, {isStatic: true});
-    var rightWall = Bodies.rectangle(1200, tickerLength, length, {isStatic: true});
-    var ground = Bodies.rectangle(0,800, length, tickerLength, {isStatic: true});
-
-    World.add(world, roof);
-    World.add(world, leftWall);
-    World.add(world, rightWall);
-    World.add(world, ground);
+//   var length = 120000;
+//   var dimensions = [1200,800];
+//   var tickerLength = 300;
+//    
+//    var roof = Bodies.rectangle(0,-tickerLength+160, length, tickerLength, {isStatic: true});
+//    var leftWall = Bodies.rectangle(-tickerLength+160,0, tickerLength, length, {isStatic: true});
+//    var rightWall = Bodies.rectangle(1200, tickerLength, length, {isStatic: true});
+//    var ground = Bodies.rectangle(0,800, length, tickerLength, {isStatic: true});
+//
+//    World.add(world, roof);
+//    World.add(world, leftWall);
+//    World.add(world, rightWall);
+//    World.add(world, ground);
 
     //Add more boundaries
     Engine.run(engine);
@@ -351,16 +353,16 @@ function stop_physics(engine) {
     engine.enabled = false;
 }
 
-function addGravity(engine, up) {
-    if (engine.world.gravity.scale !== 0) {
-//        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Add gravity" ;
-        engine.world.gravity.scale = 0;
-    } else if (!up) {
-//        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Remove gravity" ;
-        engine.world.gravity.scale = 0.01;
-    } else if (up) {
-        engine.world.gravity.scale = -0.01;
-    }
+function addGravity(engine, value) {
+//    if (engine.world.gravity.scale !== 0) {
+////        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Add gravity" ;
+//        engine.world.gravity.scale = 0;
+//    } else if (!up) {
+////        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Remove gravity" ;
+//        engine.world.gravity.scale = 0.01;
+//    } else if (up) {
+        engine.world.gravity.scale = value;
+//    }
 }
 
 
@@ -370,20 +372,35 @@ function addElementsToWorld(world, layer) {
 
     var elements = LAYERS[layer].layer.children();
 
-    for (var i = 0; i < elements.length; i++) {
-        var element = elements[i];
-        if (element.type === "circle") {
+     for (var i = 0; i < elements.length; i++) {
+        var group = elements[i];
+//        console.log(group.children());
+        let circle = getElementFromGroup(group,"circle");
+//        count+=1;
+//        console.log(count);
+//        console.log(circle);
+//        if (element.type === "circle") {  
+        if (circle){
+            //Todo: Add pixels of difference between group and circle
+            var x = circle.cx();
 
-            var x = element.cx();
-            var y = element.cy();
-            var radius = element.attr("r");
 
+            var y = circle.cy();
+            
+//            LAYERS[layer].layer.circle(5).center(x,y).attr({fill:"red",opacity:0.25});
+           
+            var radius = circle.attr("r");
+            var deltaX = group.cx()-circle.cx();
+            var deltaY = group.cy()-circle.cy();
+            
             var matterObject = Bodies.circle(x, y, radius);
 
             //nodeData.matter = matterObject;
-            matterObject.svg = element;
-            element.matter = matterObject;
-
+            matterObject.svg = group;
+            group.matter = matterObject;
+            console.log(group.x());
+            group.initX = x;
+            group.initY = y;
 
             World.add(world, matterObject);
         }
@@ -576,19 +593,41 @@ function drawGraph(layer_name, g) {
 //        }
 
         var radius = 50;
+        
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
         var y = getRandomBetween(30,600);
         var x = getRandomBetween(30,800);
+        
         //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
         var labelName = nodeData.authorInfo.name;
-        // elements: itself and its label
-        var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId,layer_name);
+        
+        //CREATION OF THE GROUP
+        var group = draw.group().attr({id:"group-"+nodeKey});
+        group.layerName = layer_name;
+        group.firstTime = true;
+        
+        // creation of the elements
+        var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId);
+        var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + (radius/2), graphId,labelName);
+        var r = circle.attr('r') + circle.attr('stroke-width') / 2 ;
+        var ear = drawEarInCircle(draw,r,circle.cx(),circle.cy(),LAYERS[layer_name]["color"]);
+        
+        //addition of the elements
+        group.add(ear);
+        group.add(circle);
+        group.add(label);
+        
+        //set the distance between the group and the circle
+        group.childDX = group.cx()-getElementFromGroup(group,'circle').cx();
+        group.childDY = group.cy()-getElementFromGroup(group,'circle').cy();
+        
+        //addition of highlights and events
+        createHighlight(group);
+        addTouchEvents(group);
 
-        var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + 25, graphId, labelName,circle.parent());
+        //circular references
         nodeData.svg = circle;
         nodeData.label = label;
-
-
         circle.nodeData = nodeData;
 
     });
@@ -613,6 +652,12 @@ function drawGraph(layer_name, g) {
 
         var edgePath = drawPathInLayer(draw, fromCenterX, fromCenterY,
                 controlX, controlY, toCenterX, toCenterY, id, graphId,layer_name);
+                
+        var group = draw.group().attr({id:"path-"+id});
+    //    console.log(group);
+        group.add(edgePath);
+        group.layerName = layer_name;
+        group.back();
 
 
 //        if (directed){
@@ -638,7 +683,8 @@ function addHighlightToGroups(groups){
     }
 }
 
-function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId,layerName) {
+function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
+    
     var nodeGraphics = drawer.circle(radius)
             .attr({cx: cx,
                 cy: cy,
@@ -646,41 +692,11 @@ function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId,layerNa
                 graph: graphId
             })
             .move(cx, cy);
+    
     //Add context_menu to the element using the selector, in this case the id
-
-//    nodeGraphics.layerName = layerName;
-    let distance = 1;
-    let r = nodeGraphics.attr('r') + nodeGraphics.attr('stroke-width') / 2 ;
-    var ear = drawEarInCircle(drawer,r,nodeGraphics.cx(),nodeGraphics.cy(),LAYERS[layerName]["color"]);
-
-//    console.log(cx);
-//        let r = nodeGraphics.attr('r') + nodeGraphics.attr('stroke-width') / 2 +2;
-//    var halo = drawHaloInCircle(drawer,r,nodeGraphics.cx(),nodeGraphics.cy(),distance,LAYERS[layerName]["color"]);
-
-    var group = drawer.group().attr({id:"group-"+id});
-    group.layerName = layerName;
-
-    
-//    console.log(group);
-//nodeGraphics.forward();
-    group.add(nodeGraphics);
-//    ear.back()
-    group.add(ear);
-    ear.back();
-    
-//    group.add(halo);
-
-    
     addContextMenu("#" + id);
-//    addMouseEvents(nodeGraphics, directed);
-//    addMovingEvents(nodeGraphics);
-    addTouchEvents(nodeGraphics.parent());
-    createHighlight(group);
-
-//    addHoveringEvents(nodeGraphics);
-//    return [fabricObject,label];
+ 
     return nodeGraphics;
-
 }
 
 function drawHaloInCircle(drawer,r,cx,cy,distance,color){
@@ -699,6 +715,7 @@ function drawHaloInCircle(drawer,r,cx,cy,distance,color){
                 
     return halo;
 }
+
 function drawEarInCircle(drawer,r,cx,cy,color){
     var ear = drawer.path()
                     .M({x: cx , y: cy-r})
@@ -729,16 +746,10 @@ function drawPathInLayer(drawer, fromCenterX, fromCenterY,
                 'pointer-events': 'visibleStroke'
             }).off();
 //    edgePath.layerName = layerName;
-
-    var group = drawer.group().attr({id:"path-"+id});
-//    console.log(group);
-    group.add(edgePath);
-    group.layerName = layerName;
-    edgePath.back();
     return edgePath;
 }
 
-function drawLabel(drawer, id, x, y, graphId, label,group) {
+function drawLabel(drawer, id, x, y, graphId, label) {
     var labelText = drawer.text(label).attr({
         id: "label-" + id,
         graph: graphId,
@@ -747,7 +758,6 @@ function drawLabel(drawer, id, x, y, graphId, label,group) {
         fill: 'black'
     });
     labelText.move(x, y);
-    group.add(labelText);
     return labelText;
 }
 
@@ -806,23 +816,29 @@ function updateHighlights(object) {
 }
 
 function updateEdgesEnds(nodeGraphics, coordX, coordY,directed) {
-    let x = !coordX ? nodeGraphics.cx() : coordX;
-    let y = !coordY ? nodeGraphics.cy() : coordY;
-    let segment;
+    var x = !coordX ? nodeGraphics.cx() : coordX;
+    var y = !coordY ? nodeGraphics.cy() : coordY;
+    var segment;
 
 //    if (directed){
     nodeGraphics.nodeData.inEdges.forEach(function (inEdge) {
         segment = inEdge.getSegment(1);
+//        console.log(x,y);
+//        console.log(inEdge.getSegment(1));
         // TMP: to make it straight, we just set the control point at the ending point
         segment.coords[0] = x;
         segment.coords[1] = y;
         segment.coords[2] = x;
         segment.coords[3] = y;
         inEdge.replaceSegment(1, segment);
+//        console.log(inEdge.getSegment(1));
+
         inEdge.highlight.replaceSegment(1,inEdge.getSegment(1))
+//        break;
 
     });
     nodeGraphics.nodeData.outEdges.forEach(function (outEdge, i) {
+//        console.log(outEdge);
 
         segment = outEdge.getSegment(0);
         segment.coords[0] = x;
@@ -1412,39 +1428,62 @@ function main() {
     var bodies = [];
     var Composite = Matter.Composite;
 
-    (function render() {
-        for (let layer in LAYERS) {
+    function render() {
+        for (var layer in LAYERS) {
             //        console.log(LAYERS[layer])
             if (LAYERS[layer]["physics-engine"]) {
                 bodies = Composite.allBodies(LAYERS[layer]["physics-engine"].world);
+                console.log(bodies.length);
 
                 /*console.log('LAYERS[layer]["physics-engine"].world.gravity.scale');
                  console.log(LAYERS[layer]["physics-engine"].world.gravity.scale);*/
 
-                for (let i = 0; i < bodies.length; i += 1) {
+                for (var i = 0; i < bodies.length; i += 1) {
 
-                    let currentBody = bodies[i];
-                    let nodeGraphics = currentBody.svg;
-
+                    var currentBody = bodies[i];
+                    var nodeGraphics = currentBody.svg;
+ 
                     if (nodeGraphics) {
                         let newX = currentBody.position.x;
                         let newY = currentBody.position.y;
-                        nodeGraphics.attr("cx", newX);
-                        nodeGraphics.attr("cy", newY);
+                        nodeGraphics.dmove(newX-nodeGraphics.initX,newY-nodeGraphics.initY);
+//                        console.log(newX-nodeGraphics.initX,newY-nodeGraphics.initY);
+//                        console.log(LAYERS[layer].layer.circle(5).center(newX-nodeGraphics.initX,newY-nodeGraphics.initY));;
 
-                        updateEdgesEnds(nodeGraphics);
-                        updateLabelPosition(nodeGraphics);
-                        updateHighlights(nodeGraphics.parent());
+//                        if (i===0){
+//                            LAYERS[layer].layer.circle(5).center(nodeGraphics.cx(),nodeGraphics.cy());
+                        updateEdgesEnds(getElementFromGroup(nodeGraphics,'circle'),nodeGraphics.cx()-nodeGraphics.childDX,nodeGraphics.cy()- nodeGraphics.childDY);
+
+//                        }                        
+                        
+                        
+//                        nodeGraphics.cx(newX)
+//                        nodeGraphics.cy(newY);
+
+//                        console.log(nodeGraphics.center());
 
 
-                        //            fabricObject.setPositionByOrigin({x: newX, y: newY}, 'center', 'center');
-                        //            fabricObject.setCoords();
+//                        console.log(nodeGraphics.cy());add
+//                        console.log(nodeGraphics.parent().cx());
+//                        console.log(nodeGraphics.parent().cy());
+                        
+                        
+//                        console.log(nodeGraphics.parent());
+//                        nodeGraphics.parent().center(newX,newY);
+//                        console.log()
+
+//                        updateEdgesEnds(getElementFromGroup(nodeGraphics,'circle'));
+//                        updateHighlights(nodeGraphics.parent());
+
                     }
-                }
+                }            
             }
         }
+        
         window.requestAnimationFrame(render);
-    })();
+    };
+    
+    render();
 
     loadGraph(datafile, "authors2016", false).then(function () {
         addGraphAsLayer(GRAPHS["authors2016"], "1");
