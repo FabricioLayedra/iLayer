@@ -2,6 +2,8 @@
 /*--------------------------------CONSTANTS-------------------------------------*/
 var count = 0;
 
+var distLabelGroup = 0;
+
 var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 
@@ -24,7 +26,6 @@ var activeLayer = null;
 
 var setCanvases = $("#content");
 
-console.log("DIMENSIONS");
 var generalWidth = setCanvases.width();
 var generalHeight = $(document).height()-70;
 console.log(generalWidth,generalHeight);
@@ -81,10 +82,10 @@ function createLayer(layer) {
     return template;
 }
 
-function createSVG(layer_name, width, height) {
-    var draw = SVG(layer_name).size(width, height);
+function createSVG(layerName, width, height) {
+    var draw = SVG(layerName).size(width, height).attr({"id":"layer-"+layerName});
     window.draw = draw;
-    LAYERS[layer_name] = {"layer": draw, "physics-engine": null};
+    LAYERS[layerName] = {"layer": draw, "physics-engine": null};
     addLayerEvents(draw.node, draw);
     
 }
@@ -137,15 +138,20 @@ function addEvents(item, layerName) {
         highlightLayer(layerName);
     });
     $(item.querySelector('#p-'+layerName)).on('pointerdown', function(){
-        if (active){
-            $(active).css("background-color","");
-        }
-        active = $(this).parent();
-        activeLayer = LAYERS[layerName];
-
-        $(active).css("background-color",lightenDarkenColor(LAYERS[layerName]["color"],20));
-        
+        activateLayer(layerName);
     });
+}
+
+function activateLayer(layerName){
+    let item = $("#p-"+layerName);
+    console.log(item.parent());
+    if (active){
+        $(active).css("background-color","");
+    }
+    active = $(item).parent();
+    activeLayer = LAYERS[layerName];
+
+    $(active).css("background-color",lightenDarkenColor(LAYERS[layerName]["color"],20));
 }
 
 function showHideLayer(checkbox) {
@@ -157,8 +163,10 @@ function showHideLayer(checkbox) {
     }
 }
 
-function activatePhysics(layer) {
-//    var layer = checkbox.id.split("-")[2];
+function activatePhysics(layerTag) {
+    let layer = layerTag.split("-")[1];
+//    console.log(LAYERS);
+//    console.log(layer);
     var engine;
     if (!LAYERS[layer]["physics-engine"]) {
         engine = createPhysicsWorld(layer);
@@ -190,7 +198,7 @@ function addMissingElementsToWorld(world, layer) {
 
                 var matterObject = Bodies.circle(x, y, radius);
 
-                //nodeData.matter = matterObject;
+                //nodeData.matter = matterObjasect;
                 matterObject.svg = element;
                 element.matter = matterObject;
 
@@ -303,23 +311,33 @@ function createPhysicsWorld(layer_name, boundaries) {
 
 //    var render = Render.create({
 //        element: document.body,
-//        engine: engine
+//        engine: engine,
+//        options: {
+//         width: generalWidth,
+//         height: generalHeight
+//       }
 //    });
 //    Render.run(render);
-    
+//    
 
     // create demo scene
     var world = engine.world;
     world.gravity.scale = 0;
-   var length = 120000;
-   var dimensions = [1200,800];
-   var tickerLength = 300;
     
-    var roof = Bodies.rectangle(0,-tickerLength+160, length, tickerLength, {isStatic: true});
-    var leftWall = Bodies.rectangle(-tickerLength+160,0, tickerLength, length, {isStatic: true});
-    var rightWall = Bodies.rectangle(1200, tickerLength, length, {isStatic: true});
-    var ground = Bodies.rectangle(0,800, length, tickerLength, {isStatic: true});
-
+    var strongness = 300;
+    
+//   var length = 120000;
+//   var dimensions = [1200,800];
+//   var tickerLength = 300;
+//    
+    var roof = Bodies.rectangle(generalWidth/2,-(strongness/2)+5, generalWidth,strongness, {isStatic: true});
+    var leftWall = Bodies.rectangle(-(strongness/2)+10,0+generalHeight/2,  strongness, generalHeight, {isStatic: true});
+    var rightWall = Bodies.rectangle(0+generalWidth+strongness/2-20, 0+generalHeight/2, strongness, generalHeight, {isStatic: true});
+    console.log(generalWidth);
+    
+    var ground = Bodies.rectangle(0+generalWidth/2,generalHeight+100-distLabelGroup/2,generalWidth,200, {isStatic: true});
+    console.log(ground);
+//
     World.add(world, roof);
     World.add(world, leftWall);
     World.add(world, rightWall);
@@ -346,16 +364,22 @@ function stop_physics(engine) {
     engine.enabled = false;
 }
 
-function addGravity(engine, up) {
-    if (engine.world.gravity.scale !== 0) {
-//        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Add gravity" ;
-        engine.world.gravity.scale = 0;
-    } else if (!up) {
-//        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Remove gravity" ;
-        engine.world.gravity.scale = 0.01;
-    } else if (up) {
-        engine.world.gravity.scale = -0.01;
-    }
+function addGravity(engine,x,y,factor) {
+//    if (engine.world.gravity.scale !== 0) {
+////        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Add gravity" ;
+//        engine.world.gravity.scale = 0;
+//    } else if (!up) {
+////        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Remove gravity" ;
+//        engine.world.gravity.scale = 0.01;
+//    } else if (up) {
+//    if (factor){
+//      engine.world.gravity.scale = factor;
+//      return;
+//    }
+    engine.world.gravity.x =x;
+    engine.world.gravity.y = y;
+    engine.world.gravity.scale = factor * 0.00001;
+//    console.log(engine.world.gravity);
 }
 
 
@@ -365,20 +389,36 @@ function addElementsToWorld(world, layer) {
 
     var elements = LAYERS[layer].layer.children();
 
-    for (var i = 0; i < elements.length; i++) {
-        var element = elements[i];
-        if (element.type === "circle") {
+     for (var i = 0; i < elements.length; i++) {
+        var group = elements[i];
+//        console.log(group.children());
+        let circle = getElementFromGroup(group,"circle");
+//        count+=1;
+//        console.log(count);
+//        console.log(circle);
+//        if (element.type === "circle") {  
+        if (circle){
+            var x = group.cx()-group.childDX;
+//            console.log(circle.cx());
+//            console.log(group.cx()-group.childDX);
 
-            var x = element.cx();
-            var y = element.cy();
-            var radius = element.attr("r");
-
+            var y = group.cy()-group.childDY;
+//            console.log(circle.cy());
+//            console.log(group.cy()-group.childDY)
+//            LAYERS[layer].layer.circle(5).center(x,y).attr({fill:"red",opacity:0.25});
+           
+            var radius = circle.attr("r");
+//            var deltaX = group.cx()-circle.cx();
+//            var deltaY = group.cy()-circle.cy();
+            
             var matterObject = Bodies.circle(x, y, radius);
 
             //nodeData.matter = matterObject;
-            matterObject.svg = element;
-            element.matter = matterObject;
-
+            matterObject.svg = group;
+            group.matter = matterObject;
+//            console.log(group.x());
+            group.initX = x;
+            group.initY = y;
 
             World.add(world, matterObject);
         }
@@ -477,10 +517,6 @@ function loadGraph(filename, key, directed) {
             g.setEdge(format_id(data["source"]), format_id(data["target"]), {colabInfo: {value: data["value"], id: data["id"]}});
         });
 
-//        var color = "#"+ addNewLayer(layer_name);
-//        drawGraph(LAYERS[layer_name].layer,g,layer_name);
-//        var svg_id = $("#"+layer_name).children("svg").attr("id");
-//        SVG.get(svg_id).select("circle").fill(color);
         if (Object.keys(GRAPHS).includes(key)) {
             console.log("Request Failed: " + "Data Already Loaded");
         } else {
@@ -531,19 +567,25 @@ function lightenDarkenColor(col, amt) {
 }
 
 // Adds a graph as a layer in the tool
-function addGraphAsLayer(g, layer_name) {
+function addGraphAsLayer(g, layerName) {
 
 //    var color = addNewLayer(layer_name);
 //    var darkenColor = lightenDarkenColor(color, -10);
 
-    addNewLayer(layer_name);
+    addNewLayer(layerName);
     var color = '#688bd6';
     var darkenColor = lightenDarkenColor(color, -10);
 
 //    drawGraph(LAYERS[layer_name].layer, g);
-    drawGraph(layer_name, g);
-    var svg_id = $("#" + layer_name).children("svg").attr("id");
+    drawGraph(layerName, g);
+    var svg_id = $("#" + layerName).children("svg").attr("id");
     SVG.get(svg_id).select("circle").attr({fill: color, stroke: darkenColor, 'stroke-width': 2});
+    
+    
+            var tools = document.getElementsByClassName("tool");
+        for (var i =0; i<tools.length; i++){
+            addToolEvents(tools[i],LAYERS[layerName].layer);
+        }
 }
 
 function drawGraph(layer_name, g) {
@@ -565,19 +607,47 @@ function drawGraph(layer_name, g) {
 //        }
 
         var radius = 50;
+        
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
         var y = getRandomBetween(30,600);
         var x = getRandomBetween(30,800);
+        
         //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
         var labelName = nodeData.authorInfo.name;
-        // elements: itself and its label
-        var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId,layer_name);
+        
+        //CREATION OF THE GROUP
+        var group = draw.group().attr({id:"group-"+nodeKey});
+        group.layerName = layer_name;
+        group.firstTime = true;
+        
+        // creation of the elements
+        var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId);
+        var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + (radius/2), graphId,labelName);
+        var r = circle.attr('r') + circle.attr('stroke-width') / 2 ;
+        var ear = drawEarInCircle(draw,r,circle.cx(),circle.cy(),LAYERS[layer_name]["color"]);
+        
+        //addition of the elements
+        group.add(ear);
+        group.add(circle);
+        group.add(label);
+        
+        //set the distance between the group and the circle
+        group.childDX = group.cx()-getElementFromGroup(group,'circle').cx();
+        group.childDY = group.cy()-getElementFromGroup(group,'circle').cy();
+        
+        //set the distance between the group and its label
+        group.textDX = group.cx()-getElementFromGroup(group,'text').cx();
+        group.textDY = group.cy()-getElementFromGroup(group,'text').cy();
+        
+        distLabelGroup  = radius/2;
+        
+        //addition of highlights and events
+        createHighlight(group);
+        addTouchEvents(group);
 
-        var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + 25, graphId, labelName,circle.parent());
+        //circular references
         nodeData.svg = circle;
         nodeData.label = label;
-
-
         circle.nodeData = nodeData;
 
     });
@@ -602,6 +672,12 @@ function drawGraph(layer_name, g) {
 
         var edgePath = drawPathInLayer(draw, fromCenterX, fromCenterY,
                 controlX, controlY, toCenterX, toCenterY, id, graphId,layer_name);
+                
+        var group = draw.group().attr({id:"path-"+id});
+    //    console.log(group);
+        group.add(edgePath);
+        group.layerName = layer_name;
+        group.back();
 
 
 //        if (directed){
@@ -627,7 +703,8 @@ function addHighlightToGroups(groups){
     }
 }
 
-function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId,layerName) {
+function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
+    
     var nodeGraphics = drawer.circle(radius)
             .attr({cx: cx,
                 cy: cy,
@@ -635,41 +712,11 @@ function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId,layerNa
                 graph: graphId
             })
             .move(cx, cy);
+    
     //Add context_menu to the element using the selector, in this case the id
-
-//    nodeGraphics.layerName = layerName;
-    let distance = 1;
-    let r = nodeGraphics.attr('r') + nodeGraphics.attr('stroke-width') / 2 ;
-    var ear = drawEarInCircle(drawer,r,nodeGraphics.cx(),nodeGraphics.cy(),LAYERS[layerName]["color"]);
-
-//    console.log(cx);
-//        let r = nodeGraphics.attr('r') + nodeGraphics.attr('stroke-width') / 2 +2;
-//    var halo = drawHaloInCircle(drawer,r,nodeGraphics.cx(),nodeGraphics.cy(),distance,LAYERS[layerName]["color"]);
-
-    var group = drawer.group().attr({id:"group-"+id});
-    group.layerName = layerName;
-
-    
-//    console.log(group);
-//nodeGraphics.forward();
-    group.add(nodeGraphics);
-//    ear.back()
-    group.add(ear);
-    ear.back();
-    
-//    group.add(halo);
-
-    
     addContextMenu("#" + id);
-//    addMouseEvents(nodeGraphics, directed);
-//    addMovingEvents(nodeGraphics);
-    addTouchEvents(nodeGraphics.parent());
-    createHighlight(group);
-
-//    addHoveringEvents(nodeGraphics);
-//    return [fabricObject,label];
+ 
     return nodeGraphics;
-
 }
 
 function drawHaloInCircle(drawer,r,cx,cy,distance,color){
@@ -688,6 +735,7 @@ function drawHaloInCircle(drawer,r,cx,cy,distance,color){
                 
     return halo;
 }
+
 function drawEarInCircle(drawer,r,cx,cy,color){
     var ear = drawer.path()
                     .M({x: cx , y: cy-r})
@@ -718,16 +766,10 @@ function drawPathInLayer(drawer, fromCenterX, fromCenterY,
                 'pointer-events': 'visibleStroke'
             }).off();
 //    edgePath.layerName = layerName;
-
-    var group = drawer.group().attr({id:"path-"+id});
-//    console.log(group);
-    group.add(edgePath);
-    group.layerName = layerName;
-    edgePath.back();
     return edgePath;
 }
 
-function drawLabel(drawer, id, x, y, graphId, label,group) {
+function drawLabel(drawer, id, x, y, graphId, label) {
     var labelText = drawer.text(label).attr({
         id: "label-" + id,
         graph: graphId,
@@ -736,7 +778,6 @@ function drawLabel(drawer, id, x, y, graphId, label,group) {
         fill: 'black'
     });
     labelText.move(x, y);
-    group.add(labelText);
     return labelText;
 }
 
@@ -795,23 +836,29 @@ function updateHighlights(object) {
 }
 
 function updateEdgesEnds(nodeGraphics, coordX, coordY,directed) {
-    let x = !coordX ? nodeGraphics.cx() : coordX;
-    let y = !coordY ? nodeGraphics.cy() : coordY;
-    let segment;
+    var x = !coordX ? nodeGraphics.cx() : coordX;
+    var y = !coordY ? nodeGraphics.cy() : coordY;
+    var segment;
 
 //    if (directed){
     nodeGraphics.nodeData.inEdges.forEach(function (inEdge) {
         segment = inEdge.getSegment(1);
+//        console.log(x,y);
+//        console.log(inEdge.getSegment(1));
         // TMP: to make it straight, we just set the control point at the ending point
         segment.coords[0] = x;
         segment.coords[1] = y;
         segment.coords[2] = x;
         segment.coords[3] = y;
         inEdge.replaceSegment(1, segment);
+//        console.log(inEdge.getSegment(1));
+
         inEdge.highlight.replaceSegment(1,inEdge.getSegment(1))
+//        break;
 
     });
     nodeGraphics.nodeData.outEdges.forEach(function (outEdge, i) {
+//        console.log(outEdge);
 
         segment = outEdge.getSegment(0);
         segment.coords[0] = x;
@@ -1401,48 +1448,74 @@ function main() {
     var bodies = [];
     var Composite = Matter.Composite;
 
-    (function render() {
-        for (let layer in LAYERS) {
+    function render() {
+        for (var layer in LAYERS) {
             //        console.log(LAYERS[layer])
             if (LAYERS[layer]["physics-engine"]) {
                 bodies = Composite.allBodies(LAYERS[layer]["physics-engine"].world);
+//                console.log(bodies.length);
 
                 /*console.log('LAYERS[layer]["physics-engine"].world.gravity.scale');
                  console.log(LAYERS[layer]["physics-engine"].world.gravity.scale);*/
 
-                for (let i = 0; i < bodies.length; i += 1) {
+                for (var i = 0; i < bodies.length; i += 1) {
 
-                    let currentBody = bodies[i];
-                    let nodeGraphics = currentBody.svg;
-
+                    var currentBody = bodies[i];
+                    var nodeGraphics = currentBody.svg;
+ 
                     if (nodeGraphics) {
                         let newX = currentBody.position.x;
                         let newY = currentBody.position.y;
-                        nodeGraphics.attr("cx", newX);
-                        nodeGraphics.attr("cy", newY);
+//                        nodeGraphics.cx(newX-nodeGraphics.initX);
+//                        nodeGraphics.cy(newY-nodeGraphics.initY);
+//                        nodeGraphics.center(,newY-nodeGraphics.initY);
 
-                        updateEdgesEnds(nodeGraphics);
-                        updateLabelPosition(nodeGraphics);
-                        updateHighlights(nodeGraphics.parent());
+                        nodeGraphics.dmove(newX-nodeGraphics.initX,newY-nodeGraphics.initY);
+                        nodeGraphics.initX = nodeGraphics.cx()-nodeGraphics.childDX;
+                          nodeGraphics.initY = nodeGraphics.cy()-nodeGraphics.childDY;
+//                        console.log(newX-nodeGraphics.initX,newY-nodeGraphics.initY);
+//                        console.log(LAYERS[layer].layer.circle(5).center(newX-nodeGraphics.initX,newY-nodeGraphics.initY));;
+
+//                        if (i===0){
+//                        console.log(newX-nodeGraphics.initX,newY-nodeGraphics.initY);
+//                        console.log(newX-nodeGraphics.initX)
+////                            LAYERS[layer].layer.circle(5).center(nodeGraphics.cx(),nodeGraphics.cy());
+//
+//                        }                        
+                        updateEdgesEnds(getElementFromGroup(nodeGraphics,'circle'),nodeGraphics.cx()-nodeGraphics.childDX,nodeGraphics.cy()- nodeGraphics.childDY);
+
+                        
+//                        nodeGraphics.cx(newX)
+//                        nodeGraphics.cy(newY);
+
+//                        console.log(nodeGraphics.center());
 
 
-                        //            fabricObject.setPositionByOrigin({x: newX, y: newY}, 'center', 'center');
-                        //            fabricObject.setCoords();
+//                        console.log(nodeGraphics.cy());add
+//                        console.log(nodeGraphics.parent().cx());
+//                        console.log(nodeGraphics.parent().cy());
+                        
+                        
+//                        console.log(nodeGraphics.parent());
+//                        nodeGraphics.parent().center(newX,newY);
+//                        console.log()
+
+//                        updateEdgesEnds(getElementFromGroup(nodeGraphics,'circle'));
+//                        updateHighlights(nodeGraphics.parent());
+
                     }
-                }
+                }            
             }
         }
+        
         window.requestAnimationFrame(render);
-    })();
+    };
+    
+    render();
 
     loadGraph(datafile, "authors2016", false).then(function () {
-        addGraphAsLayer(GRAPHS["authors2016"], "colab");
-            var tools = document.getElementsByClassName("tool");
-            console.log(LAYERS["colab"]);
-            console.log(LAYERS);
-    for (var i =0; i<tools.length; i++){
-        addToolEvents(tools[i],LAYERS["colab"].layer);
-    }
+        addGraphAsLayer(GRAPHS["authors2016"], "1");
+        activateLayer("1");
     });
 
 //    loadGraph(datafile2,"authors2015",false).then(function(){
@@ -1452,15 +1525,17 @@ function main() {
 
 
     $("#new-layer").click(function () {
-        addNewLayer("" + (Object.keys(LAYERS).length + 1));
+        let layerName = "" + (Object.keys(LAYERS).length + 1);
+        addNewLayer(layerName);
         //    readDataColab(datafile,random_id());
         sort_layers(el.getElementsByTagName("li"));
+                /*setting events to the tools*/
+        var tools = document.getElementsByClassName("tool");
+        for (var i =0; i<tools.length; i++){
+            addToolEvents(tools[i]);
+        }
     });
     
-    
-    /*setting events to the tools*/
-    
-
 }
 
 main();

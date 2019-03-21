@@ -8,19 +8,14 @@ function beginSliding(e) {
   this.node.allowed = true;
   this.node.dx = event.pageX-this.cx();
   this.node.dy = event.pageY-this.cy();
-  // this sets the original distance between the group center and the circle center
-  // it is just set the first time it is moved. Then it will be kept during the session
-  if (!this.node.childDX){
-      this.node.childDX = this.cx()-this.children()[0].cx();
-  }
-  if (!this.node.childDY){
-      this.node.childDY = this.cy()-this.children()[0].cy();
-  }
+
   this.node.setPointerCapture(e.pointerId);
 }
 
 function stopSliding(e) {
   this.node.allowed = null;
+//  console.log(this.cx(),this.cy());
+//  window.draw.circle(5).center(this.cx()-this.node.childDX,this.cy()-this.node.childDY);
   this.node.releasePointerCapture(e.pointerId);
 }
 
@@ -29,7 +24,9 @@ function slide(event) {
         let x = event.pageX-this.cx()-this.node.dx;
         let y = event.pageY-this.cy()-this.node.dy;
         this.dmove(x,y);
-        updateEdgesEnds(getElementFromGroup(this,'circle'),this.cx()-this.node.childDX,this.cy()-this.node.childDY);
+        updateEdgesEnds(getElementFromGroup(this,'circle'),this.cx()-this.childDX,this.cy()-this.childDY);
+        this.node.initX = this.cx()-this.childDX;
+        this.node.initY = this.cy()-this.childDY;
     }
 }
 
@@ -102,7 +99,7 @@ function addLayerEvents(layer, drawer) {
         verifier.height = 1;
         let elements = layer.getIntersectionList(verifier,null);
         for (var i =0; i <elements.length; i++){
-            if (elements[i].tagName  === "circle"){
+            if (elements[i].tagName  === "circle" || $(elements[i]).attr("tool")){
                 touchCanvas = false ;
                 break;
             }
@@ -224,7 +221,108 @@ function addLayerEvents(layer, drawer) {
 
 }
 
-function addToolEvents(tool,drawer) {
+function addPressEvents(mc,toolGraphics,drawer) {
+
+    mc.get('press').set({time: 500});
+    mc.on('press', function(event) {
+        event.preventDefault();
+        $(event.target).attr('oncontextmenu', 'return false');
+        mc.off('panmove');
+        
+        let line = null;
+        let startingPoint = null;
+        let currentPoint = null;
+
+        mc.on("panstart", function (ev) {
+            startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+            line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y)
+                    .stroke({color: '#f06', width: 1, linecap: 'round'})
+                    .attr({'stroke-dasharray': [8, 3], stroke: 'red'});
+        });
+
+        mc.on("panmove", function (ev) {
+            currentPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+            line.attr("x2", currentPoint.x);
+            line.attr("y2", currentPoint.y);
+            line.stroke({color: '#f06000', width: 1, linecap: 'round'});
+            //CHANGE GRAVITY HERE
+            var x = line.attr("x2")-line.attr("x1");
+            var y = line.attr("y2")-line.attr("y1");
+            var x2 = Math.pow(Math.abs(x),2);
+            var y2 = Math.pow(Math.abs(y),2);
+            var magnitude = Math.sqrt(x2+y2);
+//            console.log(x/magnitude,y/magnitude,magnitude);
+            addGravity(activatePhysics(getActiveLayer().layer.node.id),x/magnitude,y/magnitude,magnitude);
+
+        });
+
+        mc.on("panend", function (ev) {
+            line.remove();
+            mc.off('panstart');
+            mc.off('panmove');
+            mc.off('panend');
+            addDragEvents(mc,toolGraphics);
+
+        });
+    });
+    mc.on('pressup',function(event) {
+        mc.off('panstart');
+        mc.off('panmove');
+        mc.off('panend');
+        console.log(mc);
+
+        addDragEvents(mc,toolGraphics);
+    });
+}
+
+function moveElements(ev, nodeGraphics){
+    let currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+//        console.log(ghost.cx(),ghost.cy());
+    nodeGraphics.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
+}
+
+function addDragEvents(hammer,toolGraphics){
+
+    // let the pan gesture support all directions.
+    // this will block the vertical scrolling on a touch-device while on the element
+    hammer.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
+    
+    
+
+//    mc.on("panstart", function (ev) {
+//
+//        startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+//        
+//        console.log(startingPoint.x,startingPoint.y);
+////        console.log(startingPoint);
+//        path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
+//        ghost = drawer.path(path).center(-20,-20).attr({"tool":true});
+////        ghost.draggable();
+//        let relationAspect = ghost.width()/ghost.height();
+//        ghost.height(25);
+//        ghost.width(25*relationAspect)
+//
+////        ghost = drawer.circle(5).center(-startingPoint.x,-startingPoint.y);
+//        
+//    });
+
+    hammer.on("panmove", function (ev) {
+        moveElements(ev,toolGraphics);
+    });
+
+//    mc.on("panend", function (ev) {
+//        ghost.front();
+//        ghost.draggable();
+//        console.log(ghost);
+//        addPressEvents(ghost.node,ghost);
+////        console.log(activeLayer);
+//    });
+}
+function getActiveLayer(){
+    return activeLayer;
+}
+
+function addToolEvents(tool) {
     let mc = new Hammer(tool);
 
     // let the pan gesture support all directions.
@@ -245,10 +343,11 @@ function addToolEvents(tool,drawer) {
         console.log(startingPoint.x,startingPoint.y);
 //        console.log(startingPoint);
         path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
-        ghost = drawer.path(path).center(-20,-20);
+        ghost = getActiveLayer().layer.path(path).center(-20,-20).attr({"tool":true});
+//        ghost.draggable();
         let relationAspect = ghost.width()/ghost.height();
-        ghost.height(25);
-        ghost.width(25*relationAspect)
+        ghost.height(50);
+        ghost.width(50*relationAspect);
 
 //        ghost = drawer.circle(5).center(-startingPoint.x,-startingPoint.y);
         
@@ -258,10 +357,19 @@ function addToolEvents(tool,drawer) {
         currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
         console.log(ghost.cx(),ghost.cy());
         ghost.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
+
     });
 
     mc.on("panend", function (ev) {
-        console.log(ev);
+        ghost.front();
+//        ghost.draggable();
+        let mc = new Hammer(ghost.node);
+
+        addDragEvents(mc,ghost);
+        console.log(ghost);
+
+        addPressEvents(mc,ghost,getActiveLayer().layer);
+//        console.log(activeLayer);
     });
 
 }
