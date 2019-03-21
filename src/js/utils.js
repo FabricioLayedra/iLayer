@@ -48,11 +48,17 @@ function getMinArray(array){
 }
 
 function getElementFromGroup(group,type){
-    let children = group.children();
-    for (var i = 0; i < children.length; i++){
-        if (children[i].type === type){
-            return children[i];
+    
+    try{
+        var children = group.children();
+        
+        for (var i = 0; i < children.length; i++){
+            if (children[i].type === type){
+                return children[i];
+            }
         }
+        return null;
+    }catch(err){
+        return null;
     }
-    return null;
 }
