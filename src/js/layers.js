@@ -2,6 +2,8 @@
 /*--------------------------------CONSTANTS-------------------------------------*/
 var count = 0;
 
+var distLabelGroup = 0;
+
 var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 
@@ -24,7 +26,6 @@ var activeLayer = null;
 
 var setCanvases = $("#content");
 
-console.log("DIMENSIONS");
 var generalWidth = setCanvases.width();
 var generalHeight = $(document).height()-70;
 console.log(generalWidth,generalHeight);
@@ -310,27 +311,37 @@ function createPhysicsWorld(layer_name, boundaries) {
 
 //    var render = Render.create({
 //        element: document.body,
-//        engine: engine
+//        engine: engine,
+//        options: {
+//         width: generalWidth,
+//         height: generalHeight
+//       }
 //    });
 //    Render.run(render);
-    
+//    
 
     // create demo scene
     var world = engine.world;
     world.gravity.scale = 0;
+    
+    var strongness = 300;
+    
 //   var length = 120000;
 //   var dimensions = [1200,800];
 //   var tickerLength = 300;
 //    
-//    var roof = Bodies.rectangle(0,-tickerLength+160, length, tickerLength, {isStatic: true});
-//    var leftWall = Bodies.rectangle(-tickerLength+160,0, tickerLength, length, {isStatic: true});
-//    var rightWall = Bodies.rectangle(1200, tickerLength, length, {isStatic: true});
-//    var ground = Bodies.rectangle(0,800, length, tickerLength, {isStatic: true});
+    var roof = Bodies.rectangle(generalWidth/2,-(strongness/2)+5, generalWidth,strongness, {isStatic: true});
+    var leftWall = Bodies.rectangle(-(strongness/2)+10,0+generalHeight/2,  strongness, generalHeight, {isStatic: true});
+    var rightWall = Bodies.rectangle(0+generalWidth+strongness/2-20, 0+generalHeight/2, strongness, generalHeight, {isStatic: true});
+    console.log(generalWidth);
+    
+    var ground = Bodies.rectangle(0+generalWidth/2,generalHeight+100-distLabelGroup/2,generalWidth,200, {isStatic: true});
+    console.log(ground);
 //
-//    World.add(world, roof);
-//    World.add(world, leftWall);
-//    World.add(world, rightWall);
-//    World.add(world, ground);
+    World.add(world, roof);
+    World.add(world, leftWall);
+    World.add(world, rightWall);
+    World.add(world, ground);
 
     //Add more boundaries
     Engine.run(engine);
@@ -353,7 +364,7 @@ function stop_physics(engine) {
     engine.enabled = false;
 }
 
-function addGravity(engine, value) {
+function addGravity(engine,x,y,factor) {
 //    if (engine.world.gravity.scale !== 0) {
 ////        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Add gravity" ;
 //        engine.world.gravity.scale = 0;
@@ -361,8 +372,14 @@ function addGravity(engine, value) {
 ////        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Remove gravity" ;
 //        engine.world.gravity.scale = 0.01;
 //    } else if (up) {
-        engine.world.gravity.scale = value;
+//    if (factor){
+//      engine.world.gravity.scale = factor;
+//      return;
 //    }
+    engine.world.gravity.x =x;
+    engine.world.gravity.y = y;
+    engine.world.gravity.scale = factor * 0.00001;
+//    console.log(engine.world.gravity);
 }
 
 
@@ -381,24 +398,25 @@ function addElementsToWorld(world, layer) {
 //        console.log(circle);
 //        if (element.type === "circle") {  
         if (circle){
-            //Todo: Add pixels of difference between group and circle
-            var x = circle.cx();
+            var x = group.cx()-group.childDX;
+//            console.log(circle.cx());
+//            console.log(group.cx()-group.childDX);
 
-
-            var y = circle.cy();
-            
+            var y = group.cy()-group.childDY;
+//            console.log(circle.cy());
+//            console.log(group.cy()-group.childDY)
 //            LAYERS[layer].layer.circle(5).center(x,y).attr({fill:"red",opacity:0.25});
            
             var radius = circle.attr("r");
-            var deltaX = group.cx()-circle.cx();
-            var deltaY = group.cy()-circle.cy();
+//            var deltaX = group.cx()-circle.cx();
+//            var deltaY = group.cy()-circle.cy();
             
             var matterObject = Bodies.circle(x, y, radius);
 
             //nodeData.matter = matterObject;
             matterObject.svg = group;
             group.matter = matterObject;
-            console.log(group.x());
+//            console.log(group.x());
             group.initX = x;
             group.initY = y;
 
@@ -499,10 +517,6 @@ function loadGraph(filename, key, directed) {
             g.setEdge(format_id(data["source"]), format_id(data["target"]), {colabInfo: {value: data["value"], id: data["id"]}});
         });
 
-//        var color = "#"+ addNewLayer(layer_name);
-//        drawGraph(LAYERS[layer_name].layer,g,layer_name);
-//        var svg_id = $("#"+layer_name).children("svg").attr("id");
-//        SVG.get(svg_id).select("circle").fill(color);
         if (Object.keys(GRAPHS).includes(key)) {
             console.log("Request Failed: " + "Data Already Loaded");
         } else {
@@ -620,6 +634,12 @@ function drawGraph(layer_name, g) {
         //set the distance between the group and the circle
         group.childDX = group.cx()-getElementFromGroup(group,'circle').cx();
         group.childDY = group.cy()-getElementFromGroup(group,'circle').cy();
+        
+        //set the distance between the group and its label
+        group.textDX = group.cx()-getElementFromGroup(group,'text').cx();
+        group.textDY = group.cy()-getElementFromGroup(group,'text').cy();
+        
+        distLabelGroup  = radius/2;
         
         //addition of highlights and events
         createHighlight(group);
@@ -1433,7 +1453,7 @@ function main() {
             //        console.log(LAYERS[layer])
             if (LAYERS[layer]["physics-engine"]) {
                 bodies = Composite.allBodies(LAYERS[layer]["physics-engine"].world);
-                console.log(bodies.length);
+//                console.log(bodies.length);
 
                 /*console.log('LAYERS[layer]["physics-engine"].world.gravity.scale');
                  console.log(LAYERS[layer]["physics-engine"].world.gravity.scale);*/
@@ -1446,16 +1466,24 @@ function main() {
                     if (nodeGraphics) {
                         let newX = currentBody.position.x;
                         let newY = currentBody.position.y;
+//                        nodeGraphics.cx(newX-nodeGraphics.initX);
+//                        nodeGraphics.cy(newY-nodeGraphics.initY);
+//                        nodeGraphics.center(,newY-nodeGraphics.initY);
+
                         nodeGraphics.dmove(newX-nodeGraphics.initX,newY-nodeGraphics.initY);
+                        nodeGraphics.initX = nodeGraphics.cx()-nodeGraphics.childDX;
+                          nodeGraphics.initY = nodeGraphics.cy()-nodeGraphics.childDY;
 //                        console.log(newX-nodeGraphics.initX,newY-nodeGraphics.initY);
 //                        console.log(LAYERS[layer].layer.circle(5).center(newX-nodeGraphics.initX,newY-nodeGraphics.initY));;
 
 //                        if (i===0){
-//                            LAYERS[layer].layer.circle(5).center(nodeGraphics.cx(),nodeGraphics.cy());
+//                        console.log(newX-nodeGraphics.initX,newY-nodeGraphics.initY);
+//                        console.log(newX-nodeGraphics.initX)
+////                            LAYERS[layer].layer.circle(5).center(nodeGraphics.cx(),nodeGraphics.cy());
+//
+//                        }                        
                         updateEdgesEnds(getElementFromGroup(nodeGraphics,'circle'),nodeGraphics.cx()-nodeGraphics.childDX,nodeGraphics.cy()- nodeGraphics.childDY);
 
-//                        }                        
-                        
                         
 //                        nodeGraphics.cx(newX)
 //                        nodeGraphics.cy(newY);
