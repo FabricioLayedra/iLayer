@@ -8,19 +8,14 @@ function beginSliding(e) {
   this.node.allowed = true;
   this.node.dx = event.pageX-this.cx();
   this.node.dy = event.pageY-this.cy();
-  // this sets the original distance between the group center and the circle center
-  // it is just set the first time it is moved. Then it will be kept during the session
-  if (!this.node.childDX){
-      this.node.childDX = this.cx()-this.children()[0].cx();
-  }
-  if (!this.node.childDY){
-      this.node.childDY = this.cy()-this.children()[0].cy();
-  }
+
   this.node.setPointerCapture(e.pointerId);
 }
 
 function stopSliding(e) {
   this.node.allowed = null;
+//  console.log(this.cx(),this.cy());
+//  window.draw.circle(5).center(this.cx()-this.node.childDX,this.cy()-this.node.childDY);
   this.node.releasePointerCapture(e.pointerId);
 }
 
@@ -29,7 +24,9 @@ function slide(event) {
         let x = event.pageX-this.cx()-this.node.dx;
         let y = event.pageY-this.cy()-this.node.dy;
         this.dmove(x,y);
-        updateEdgesEnds(getElementFromGroup(this,'circle'),this.cx()-this.node.childDX,this.cy()-this.node.childDY);
+        updateEdgesEnds(getElementFromGroup(this,'circle'),this.cx()-this.childDX,this.cy()-this.childDY);
+        this.node.initX = this.cx()-this.childDX;
+        this.node.initY = this.cy()-this.childDY;
     }
 }
 
@@ -352,6 +349,7 @@ function addToolEvents(tool) {
         currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
         console.log(ghost.cx(),ghost.cy());
         ghost.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
+
     });
 
     mc.on("panend", function (ev) {
@@ -361,6 +359,8 @@ function addToolEvents(tool) {
 
         addDragEvents(mc,ghost);
         console.log(ghost);
+        addGravity(activatePhysics(getActiveLayer().layer.node.id),0.000001);
+
         addPressEvents(mc,ghost,getActiveLayer().layer);
 //        console.log(activeLayer);
     });
