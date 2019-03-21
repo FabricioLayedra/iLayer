@@ -246,6 +246,14 @@ function addPressEvents(mc,toolGraphics,drawer) {
             line.attr("y2", currentPoint.y);
             line.stroke({color: '#f06000', width: 1, linecap: 'round'});
             //CHANGE GRAVITY HERE
+            var x = line.attr("x2")-line.attr("x1");
+            var y = line.attr("y2")-line.attr("y1");
+            var x2 = Math.pow(Math.abs(x),2);
+            var y2 = Math.pow(Math.abs(y),2);
+            var magnitude = Math.sqrt(x2+y2);
+//            console.log(x/magnitude,y/magnitude,magnitude);
+            addGravity(activatePhysics(getActiveLayer().layer.node.id),x/magnitude,y/magnitude,magnitude);
+
         });
 
         mc.on("panend", function (ev) {
@@ -338,8 +346,8 @@ function addToolEvents(tool) {
         ghost = getActiveLayer().layer.path(path).center(-20,-20).attr({"tool":true});
 //        ghost.draggable();
         let relationAspect = ghost.width()/ghost.height();
-        ghost.height(25);
-        ghost.width(25*relationAspect)
+        ghost.height(50);
+        ghost.width(50*relationAspect);
 
 //        ghost = drawer.circle(5).center(-startingPoint.x,-startingPoint.y);
         
@@ -359,7 +367,6 @@ function addToolEvents(tool) {
 
         addDragEvents(mc,ghost);
         console.log(ghost);
-        addGravity(activatePhysics(getActiveLayer().layer.node.id),0.000001);
 
         addPressEvents(mc,ghost,getActiveLayer().layer);
 //        console.log(activeLayer);
