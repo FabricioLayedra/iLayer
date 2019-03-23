@@ -4,6 +4,8 @@ var count = 0;
 
 var distLabelGroup = 0;
 
+var selectionMode = false;
+
 var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 
@@ -36,7 +38,7 @@ var sortable = new Sortable(el, {
 
     onEnd: function (evt) {
         var list = document.getElementById("layers-table").getElementsByTagName("li");
-        sort_layers(list);
+        sortLayers(list);
     }});
 
 function getRandomColor() {
@@ -57,7 +59,7 @@ function addNewLayer(layer_name) {
     $(layer.querySelector(' div > div:nth-child(1) > div.col-2-auto')).attr("style", "background-color: " + color + "; height: auto; width: 15px");
     $(layer.querySelector('div > div:nth-child(1) > div.col-8.my-auto')).attr("style","border:  solid 1px "+color);
     $("#layers-table").append(layer);
-    sort_layers($("#layers-table"));
+    sortLayers($("#layers-table"));
     LAYERS[layer_name].color = color;
     return color;
 }
@@ -84,7 +86,7 @@ function createLayer(layer) {
 
 function createSVG(layerName, width, height) {
     var draw = SVG(layerName).size(width, height).attr({"id":"layer-"+layerName});
-    window.draw = draw;
+//    window.draw = draw;
     LAYERS[layerName] = {"layer": draw, "physics-engine": null};
     addLayerEvents(draw.node, draw);
     
@@ -131,14 +133,15 @@ function addEvents(item, layerName) {
         console.log("run");
         opacityChanger(this);
     });
-    $(item.querySelector('#p-'+layerName)).mouseenter(function () {
-        highlightLayer(layerName, true);
-    });
-    $(item.querySelector('#p-'+layerName)).mouseleave(function () {
-        highlightLayer(layerName);
-    });
+//    $(item.querySelector('#p-'+layerName)).mouseenter(function () {
+//        highlightLayer(layerName, true);
+//    });
+//    $(item.querySelector('#p-'+layerName)).mouseleave(function () {
+//        highlightLayer(layerName);
+//    });
     $(item.querySelector('#p-'+layerName)).on('pointerdown', function(){
         activateLayer(layerName);
+        includeSelection(layerName);
     });
 }
 
@@ -259,7 +262,7 @@ function highlightLayer(layerName, blurOthers) {
 
     Object.keys(LAYERS).forEach(function (aLayer) {
         if (aLayer !== layerName) {
-            let currentLayer = SVG.get(get_svg_id(aLayer));
+            let currentLayer = SVG.get(getSvgId(aLayer));
             let elements = currentLayer.select("*");
             if (blurOthers) {
                 currentLayer.attr('opacity', currentLayer.attr('opacity') / 2);
@@ -284,12 +287,12 @@ function opacityChanger(range) {
     var layer_name = range.id.split("-")[1];
     $("#opacity-" + layer_name).html(range.value);
     // changing the opacity of the entire SVG element so that we don't have to iterate
-    SVG.get(get_svg_id(layer_name)).attr('opacity', range.value / 100);
+    SVG.get(getSvgId(layer_name)).attr('opacity', range.value / 100);
 }
 ;
 
-function sort_layers(list) {
-    for (var element of Array.prototype.slice.apply(list)) {
+function sortLayers(list) {
+    for (var element of Array.prototype.slice.apply(list).reverse()) {
         var layer = element.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input:nth-child(1)').getAttribute("value").toLowerCase().split(" ")[1];
         // render the layers
 //      console.log(layer);
@@ -616,7 +619,7 @@ function drawGraph(layer_name, g) {
         var labelName = nodeData.authorInfo.name;
         
         //CREATION OF THE GROUP
-        var group = draw.group().attr({id:"group-"+nodeKey});
+        var group = draw.group().attr({id:"group-"+nodeKey,class:"node"});
         group.layerName = layer_name;
         group.firstTime = true;
         
@@ -644,6 +647,7 @@ function drawGraph(layer_name, g) {
         //addition of highlights and events
         createHighlight(group);
         addTouchEvents(group);
+        addSelectionEvents(group);
 
         //circular references
         nodeData.svg = circle;
@@ -691,6 +695,7 @@ function drawGraph(layer_name, g) {
     });
     
     addHighlightToGroups(SVG.select('g').members);
+    
 //    forceLayout(g, pxs, pys);
 }
 
@@ -719,11 +724,11 @@ function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
     return nodeGraphics;
 }
 
-function drawHaloInCircle(drawer,r,cx,cy,distance,color){
+function drawHaloInCircle(drawer,circle,distance,color){
     var halo = drawer.path()
-                    .M({x: cx - (r +distance), y: cy})
-                    .a(r+distance, r+distance, 0, 1, 0, {x: (r+distance) * 2, y: 0})
-                    .a(r+distance, r+distance, 0, 1, 0, {x: -((r+distance) * 2), y: 0})
+                    .M({x: circle.cx() - (circle.attr('r') +distance), y: circle.cy()})
+                    .a(circle.attr('r')+distance, circle.attr('r')+distance, 0, 1, 0, {x: (circle.attr('r')+distance) * 2, y: 0})
+                    .a(circle.attr('r')+distance, circle.attr('r')+distance, 0, 1, 0, {x: -((circle.attr('r')+distance) * 2), y: 0})
                     .attr({
                         stroke: color,
                         fill: 'transparent',
@@ -745,9 +750,9 @@ function drawEarInCircle(drawer,r,cx,cy,color){
 //                    .L({x: cx, y: cy-r})
 //                    .a(r, r, 0, 1, 0, {x: r , y: r})
                     .attr({
-                        stroke: color,
+//                        stroke: color,
                         fill: color,
-                        'stroke-width': 2,
+//                        'stroke-width': 2,
                         'pointer-events': 'none'
                     });
     return ear;
@@ -978,7 +983,7 @@ function addMouseEvents(object) {
 
 }
 
-function get_svg_id(layer_name) {
+function getSvgId(layer_name) {
     return $("#" + layer_name).children("svg").attr("id");
 }
 
@@ -1083,7 +1088,7 @@ function addContextMenu(sel) {
                                 newLayerItem(function(){
                                     var destination = prompt("Enter the name of the layer:","");
                                     addNewLayer(destination);
-                                    sort_layers(el.getElementsByTagName("li"));
+                                    sortLayers(el.getElementsByTagName("li"));
                                     sendElementToLayer(sel,destination);
                                 }))
                     },
@@ -1099,7 +1104,7 @@ function addContextMenu(sel) {
                                 newLayerItem(function(){
                                     var destination = prompt("Enter the name of the layer:","");
                                     addNewLayer(destination);
-                                    sort_layers(el.getElementsByTagName("li"));
+                                    sortLayers(el.getElementsByTagName("li"));
                                     sendAdjacentsToLayer(sel,destination);
                                 }))
                     },
@@ -1149,7 +1154,7 @@ function addContextMenuSelection(sel) {
                                 newLayerItem(function(){
                                     var destination = prompt("Enter the name of the layer:","");
                                     addNewLayer(destination);
-                                    sort_layers(el.getElementsByTagName("li"));
+                                    sortLayers(el.getElementsByTagName("li"));
                                     sendSelectionToLayer(destination);
                                 }))
                     }
@@ -1171,7 +1176,7 @@ function newLayerItem(callback){
 function sendSelectionToLayer(destination){
     for (var i =0; i<SELECTION.length; i++){
         let object = SELECTION[i];
-        let svg_destination = get_svg_id(destination);
+        let svg_destination = getSvgId(destination);
         SVG.get(svg_destination).put(object.remove());
         SVG.get(svg_destination).put(object.nodeData.label.remove());
             // this need revision, as the highlight might exist already, so it only has to change of color and be animated
@@ -1183,14 +1188,59 @@ function sendSelectionToLayer(destination){
     }
 }
 
+function includeSelection(layerName){
+    if (selectionMode){
+        
+        
+        for (var i =0; i<SELECTION.length; i++){
+            let object = SELECTION[i];
+            let svgDestination = getSvgId(layerName);
+            object = SVG.get(svgDestination).put(object.remove());
+//            getElementFromGroup(object,'circle').highlight = null;
+            
+            getElementFromGroup(object,'path').remove();
+            
+            getElementFromGroup(object,'path').attr({fill:LAYERS[layerName].color,"stroke-fill":LAYERS[layerName].color});
+            
+            createHighlight(object);
+            
+//            createHighlight(object, true, true, LAYERS[layerName].color);
+            
+            object.off("pointerdown");
+            addTouchEvents(object);
+            addSelectionEvents(object);
+            
+//            console.log(highlight);
+//            console.log(object.node);
+//            highlight.drawAnimated({
+//                duration: 500
+//            });
+//
+//            setTimeout(function () {
+//                highlight.animate().attr({opacity: 0});
+//            }, waitingTime);
+        }
+            
+//            SVG.get(svg_destination).put(object.nodeData.label.remove());
+                // this need revision, as the highlight might exist already, so it only has to change of color and be animated
+//            if (object.highlight){
+//                object.highlight.remove();
+//                object.highlight = null;
+//            }
+//            createHighlight(object.parent(), true, true, LAYERS[destination].color);
+        
+        selectionMode = false;
+    }
+}
+
 
 function generateLayersNamesMenu(list, callback,layerName) {
     var items = {};
     var count = list.length;
     for (var i = 0; i < count; i++) {
         var text = list[i];
-        console.log("Comparing...");
-        console.log(text,layerName);
+//        console.log("Comparing...");
+//        console.log(text,layerName);
         if (text !== layerName){
             var item = {};
             item["name"] = "Layer " + text;
@@ -1210,7 +1260,7 @@ function sendElementToLayer(selector, destination) {
     let object = SVG.get(selector);
     createHighlight(object.parent(), true, true, LAYERS[destination].color);
 
-    let svg_destination = get_svg_id(destination);
+    let svg_destination = getSvgId(destination);
     SVG.get(svg_destination).put(object.remove());
     SVG.get(svg_destination).put(object.nodeData.label.remove());
 
@@ -1389,8 +1439,8 @@ function forceLayout(g) {
 
     pxs = {};
     pys = {};
-//    console.log(get_svg_id("colab"));
-//    svgPanZoom(get_svg_id("colab"));
+//    console.log(getSvgId("colab"));
+//    svgPanZoom(getSvgId("colab"));
 //  
 //     var springy = window.springy = jQuery('#springydemo').springy({
 //        graph: graph,
@@ -1528,7 +1578,7 @@ function main() {
         let layerName = "" + (Object.keys(LAYERS).length + 1);
         addNewLayer(layerName);
         //    readDataColab(datafile,random_id());
-        sort_layers(el.getElementsByTagName("li"));
+        sortLayers(el.getElementsByTagName("li"));
                 /*setting events to the tools*/
         var tools = document.getElementsByClassName("tool");
         for (var i =0; i<tools.length; i++){
@@ -1682,7 +1732,6 @@ function createHighlight(object, animate, hideAfter, color) {
         }
     }
     object.add(highlight);
-    highlight.hide();
 
     highlight.filter(function (add) {
         add.gaussianBlur(2)
@@ -1703,5 +1752,8 @@ function createHighlight(object, animate, hideAfter, color) {
             highlight.animate().attr({opacity: 0});
         }, waitingTime);
     }
+    
+        highlight.hide();
+
 
 }
