@@ -34,27 +34,34 @@ function highlight(event,node,show){
     event.preventDefault();
     var child = getElementFromGroup(node,'circle');
     if (show){
-        child.highlight.show();
-
-        child.nodeData.inEdges.forEach(function (inEdge) {
-            inEdge.highlight.show();
-        });
-
-        child.nodeData.outEdges.forEach(function (outEdge) {
-            outEdge.highlight.show();
-        });
+        showHighlight(child);
     }else{
-
-        child.highlight.hide();
-
-        child.nodeData.inEdges.forEach(function (inEdge) {
-            inEdge.highlight.hide();
-        });
-
-        child.nodeData.outEdges.forEach(function (outEdge) {
-            outEdge.highlight.hide();
-        });
+        hideHighlight(child);
     }   
+}
+
+function showHighlight(child){
+    child.highlight.show();
+
+    child.nodeData.inEdges.forEach(function (inEdge) {
+        inEdge.highlight.show();
+    });
+
+    child.nodeData.outEdges.forEach(function (outEdge) {
+        outEdge.highlight.show();
+    });
+}
+
+function hideHighlight(child){
+    child.highlight.hide();
+
+    child.nodeData.inEdges.forEach(function (inEdge) {
+        inEdge.highlight.hide();
+    });
+
+    child.nodeData.outEdges.forEach(function (outEdge) {
+        outEdge.highlight.hide();
+    });
 }
 
 function addTouchEvents(nodeParent){
@@ -63,6 +70,18 @@ function addTouchEvents(nodeParent){
     nodeParent.on('pointermove',slide);
     nodeParent.on('pointerup',stopSliding);
     nodeParent.on('pointerup',function(e){highlight(e,nodeParent,false)});
+//    nodeParent.on('pointerenter',function(){console.log("Data enter")});
+//    nodeParent.on('pointerleave',function(){console.log("Data leave")});
+
+}
+
+function removeTouchEvents(nodeParent){
+//      var layerName = nodeParent.parent().node.id.split("layer-")[1];
+//    nodeParent.off('pointerdown');    
+    nodeParent.off('pointerdown');
+    nodeParent.off('pointermove');
+    nodeParent.off('pointerup');
+//    nodeParent.off('pointerup');
 }
 
 // the idea here is that we will have different modes and depending on the mode we are, the same gesture will do different things
@@ -130,38 +149,49 @@ function addLayerEvents(layer, drawer) {
          segment.coords[1] = currentPoint.y;
          line.replaceSegment(1, segment);*/
         if (touchCanvas){
+            line.attr("x2", currentPoint.x);
+            line.attr("y2", currentPoint.y);
+            line.stroke({color: '#f06000', width: 1, linecap: 'round'});
 
-        line.attr("x2", currentPoint.x);
-        line.attr("y2", currentPoint.y);
-        line.stroke({color: '#f06000', width: 1, linecap: 'round'});
+            rect.x = Math.min(startingPoint.x, currentPoint.x);
+            rect.y = Math.min(startingPoint.y, currentPoint.y);
+            rect.width = Math.abs(currentPoint.x - startingPoint.x);
+            rect.height = Math.abs(currentPoint.y - startingPoint.y);
+    //        drawer.rect(rect.width,rect.height).move(rect.x,rect.y);
+            let list = layer.getIntersectionList(rect, null);
+    //        console.log(layer);
+    //        console.log(list);
 
-        rect.x = Math.min(startingPoint.x, currentPoint.x);
-        rect.y = Math.min(startingPoint.y, currentPoint.y);
-        rect.width = Math.abs(currentPoint.x - startingPoint.x);
-        rect.height = Math.abs(currentPoint.y - startingPoint.y);
-//        drawer.rect(rect.width,rect.height).move(rect.x,rect.y);
-        let list = layer.getIntersectionList(rect, null);
-//        console.log(layer);
-//        console.log(list);
-
-        list.forEach(function (element) {
-            let edge = SVG.get(element.id);
-//            console.log(edge);
-            if (edge.type === "path") {
-//                console.log(edge);
-//                console.log(line);
-                intersection = line.intersectsPath(edge);
-                if (intersection.length) {
-//                    console.log("intersections:");
-                    segment2 = edge.getSegment(1);
-                    segment2.coords[0] = currentPoint.x;
-                    segment2.coords[1] = currentPoint.y;
-                    edge.replaceSegment(1, segment2);
-                    edge.highlight.replaceSegment(1, segment2);
-                    edge.highlight.show();
+            list.forEach(function (element) {
+                let edge = SVG.get(element.id);
+    //            console.log(edge);
+                if (edge.type === "path") {
+    //                console.log(edge);
+    //                console.log(line);
+                    intersection = line.intersectsPath(edge);
+                    if (intersection.length) {
+    //                    console.log("intersections:");
+                        segment2 = edge.getSegment(1);
+                        segment2.coords[0] = currentPoint.x;
+                        segment2.coords[1] = currentPoint.y;
+                        edge.replaceSegment(1, segment2);
+                        edge.highlight.replaceSegment(1, segment2);
+                        edge.highlight.show();
+                    }
+                }else if(edge.type === "circle"){
+                    console.log(edge);
+                    let direction = line.attr("x2")-line.attr("x1");
+                    if (direction > 0){
+                        console.log(direction);
+                        
+                        console.log("GOING DOWN");
+                    }else if (direction <0){
+                        console.log(direction);
+                        console.log("GOING UP");
+                    }
                 }
-            }
-        });}
+            });
+        }
     });
 
     mc.on("panend", function (ev) {
@@ -221,9 +251,64 @@ function addLayerEvents(layer, drawer) {
 
 }
 
+function addSelectionEvents(nodeParent){
+    var mc = new Hammer(nodeParent.node);
+    var layerName = nodeParent.parent().node.id.split("layer-")[1];
+    var draw = LAYERS[layerName].layer;
+    var color = LAYERS[layerName].color;
+
+    nodeParent.node.hammer = mc;
+    
+    mc.get('press').set({time:300});
+    
+    mc.on('press',function(event){
+//        selectionMode = true;
+        console.log(layerName);
+        hideHighlight(getElementFromGroup(nodeParent,'circle'))
+        var halo = drawHaloInCircle(draw,getElementFromGroup(nodeParent,'circle'),5,color);
+        nodeParent.add(halo);
+        halo.back();
+        SELECTION.push(nodeParent);
+        
+//        var groups = draw.select('g.node').members;
+//        for (var index in groups){
+//            let group = groups[index];
+//        }
+    });
+    
+    mc.on('pressup',function(event){
+        selectionMode = true;
+
+        var groups = draw.select('g.node').members;
+        for (var index in groups){
+            let group = groups[index];   
+            removeTouchEvents(group);
+
+            group.on('pointerdown',function(){
+//                if (!SELECTION.includes(group)){
+                    console.log(group + "being added");
+                    var halo = drawHaloInCircle(draw,getElementFromGroup(group,'circle'),5,color);
+                    group.add(halo);
+                    halo.back();
+                    SELECTION.push(group);
+                    console.log(SELECTION);
+//                }
+//                else{
+//                    console.log("");
+//                    arrayRemove(SELECTION,group);
+//                    
+//                    console.log(SELECTION);
+//                }
+            });
+//            console.log(group.node.hammer);
+        }
+    });
+    
+}
+
 function addPressEvents(mc,toolGraphics,drawer) {
 
-    mc.get('press').set({time: 500});
+    mc.get('press').set({time: 300});
     mc.on('press', function(event) {
         event.preventDefault();
         $(event.target).attr('oncontextmenu', 'return false');
@@ -269,10 +354,10 @@ function addPressEvents(mc,toolGraphics,drawer) {
         mc.off('panstart');
         mc.off('panmove');
         mc.off('panend');
-        console.log(mc);
 
         addDragEvents(mc,toolGraphics);
     });
+    
 }
 
 function moveElements(ev, nodeGraphics){
