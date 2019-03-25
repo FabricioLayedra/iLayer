@@ -11,7 +11,7 @@ var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/ma
 
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
-var datafile2 = "./data/authors_relations_2015.json";
+var datafile2 = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_19nodes_sample2016.json";
 
 
 var LAYERS = {};
@@ -621,11 +621,6 @@ function addGraphAsLayer(g, layerName) {
     console.log(svg_id);
     SVG.get(svg_id).select("circle").attr({fill: color, stroke: darkenColor, 'stroke-width': 2});
     
-    
-    var tools = document.getElementsByClassName("tool");
-        for (var i =0; i<tools.length; i++){
-            addToolEvents(tools[i],LAYERS[layerName].layer);
-        }
 }
 
 function drawGraph(layer_name, g) {
@@ -1228,6 +1223,12 @@ function sendSelectionToLayer(destination){
 function includeSelection(layerName){
     console.log(getActiveLayer());
     selectionMode(false);
+    
+    $("#container-item-"+layerName).addClass('item-animated');
+
+    
+//    $("#container-item-"+layerName).animate({height: '+=10px',width: '+=10px'});
+//    $("#container-item-"+layerName).animate({height: '-=10px',width: '-=10px'});
 
         
     for (var i =0; i<SELECTION.length; i++){
@@ -1580,10 +1581,17 @@ function main() {
     };
     
     render();
+    
+        
+    var tools = document.getElementsByClassName("tool");
+    for (var i =0; i<tools.length; i++){
+        var type  = $(tools[i]).attr("id");
+        addToolEvents(tools[i],type);
+    }
 
     loadGraph(datafile, "authors2016", false).then(function () {
         addGraphAsLayer(GRAPHS["authors2016"], "1");
-        loadGraph(datafile, "authors2015", false).then(function () {
+        loadGraph(datafile2, "authors2015", false).then(function () {
             addGraphAsLayer(GRAPHS["authors2015"], "2");
 
     //        addGraphAsLayer(GRAPHS["authors2016"], "3");
@@ -1608,11 +1616,11 @@ function main() {
         addNewLayer(layerName);
         //    readDataColab(datafile,random_id());
         sortLayers(el);
-                /*setting events to the tools*/
-        var tools = document.getElementsByClassName("tool");
-        for (var i =0; i<tools.length; i++){
-            addToolEvents(tools[i]);
-        }
+//                /*setting events to the tools*/
+//        var tools = document.getElementsByClassName("tool");
+//        for (var i =0; i<tools.length; i++){
+//            addToolEvents(tools[i]);
+//        }
     });
     
 }
@@ -1638,16 +1646,16 @@ main();
 //    }
 //});
 //
-$("input[id|='p']").dblclick(function () {
-  // body...
-    console.log("Doble_Clickeando");
-    // console.log();
-    $(this).attr("previous-layer-name",$(this).val().toLowerCase());
-    $(this).attr("readonly",false);
-    // console.log(this);
-
-});
+//$("input[id|='p']").dblclick(function () {
+//  // body...
+//    console.log("Doble_Clickeando");
+//    // console.log();
+//    $(this).attr("previous-layer-name",$(this).val().toLowerCase());
+//    $(this).attr("readonly",false);
+//    // console.log(this);
 //
+//});
+////
 //$("input[id|='p']").on('keypress',function(e) {
 //    $(this).attr("readonly",true);
 //    d3.select("."+$(this).attr("previous-layer-name")).attr("class",className);
