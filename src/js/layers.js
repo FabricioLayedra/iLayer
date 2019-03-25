@@ -64,7 +64,7 @@ function getColor() {
 
 function addNewLayer(layerName) {
     var color = getColor();
-    console.log(color);
+//    console.log(color);
     var layer = createLayer(layerName,color);
     $("#layers-table").append(layer);
     addColorsAndBorders(layerName,color);
@@ -618,7 +618,7 @@ function addGraphAsLayer(g, layerName) {
 //    var svg_id = $("#" + layerName).children("svg").attr("id");
     var svg_id = "layer-" + layerName;
 
-    console.log(svg_id);
+//    console.log(svg_id);
     SVG.get(svg_id).select("circle").attr({fill: color, stroke: darkenColor, 'stroke-width': 2});
     
 }
@@ -644,8 +644,8 @@ function drawGraph(layer_name, g) {
         var radius = 50;
         
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
-        var y = getRandomBetween(30,600);
-        var x = getRandomBetween(30,800);
+        var y = getRandomBetween(30,generalWidth-200);
+        var x = getRandomBetween(30,generalHeight-100);
         
         //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
         var labelName = nodeData.authorInfo.name;

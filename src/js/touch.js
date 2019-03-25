@@ -315,7 +315,7 @@ function addSelectionEvents(nodeParent){
         selectionMode(true);
     });
 }
-function addPressEvents(mc,toolGraphics,drawer,type) {
+function addPressEvents(mc,toolGraphics,drawer,type,child) {
     if (type==='gravity'){
         console.log(type);
         mc.get('press').set({time: 300});
@@ -356,7 +356,7 @@ function addPressEvents(mc,toolGraphics,drawer,type) {
                 mc.off('panstart');
                 mc.off('panmove');
                 mc.off('panend');
-                addDragEvents(mc,toolGraphics);
+                addDragEvents(mc,toolGraphics.parent(),toolGraphics);
 
             });
         });
@@ -365,7 +365,7 @@ function addPressEvents(mc,toolGraphics,drawer,type) {
             mc.off('panmove');
             mc.off('panend');
 
-            addDragEvents(mc,toolGraphics);
+            addDragEvents(mc,toolGraphics.parent(),toolGraphics);
         });
     }else if(type==='bending'){
 //        console.log();
@@ -373,13 +373,27 @@ function addPressEvents(mc,toolGraphics,drawer,type) {
     }
 }
 
-function moveElements(ev, nodeGraphics){
-    let currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-//        console.log(ghost.cx(),ghost.cy());
-    nodeGraphics.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
+function moveElements(event, nodeGraphics,child){
+    let currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
+    var x = currentPoint.x-$("#accordionSidebar").width();
+    var y = currentPoint.y-70;
+    console.log("Previous");
+    console.log(x,y);
+
+    var x = currentPoint.x-$("#accordionSidebar").width() - child.previousX;
+    var y = currentPoint.y-70 - child.previousY;
+    nodeGraphics.dmove(x,y);
+    child.previousX = nodeGraphics.cx();
+    child.previousY = nodeGraphics.cy();
+    
+//    
+//    
+//    let currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+////        console.log(ghost.cx(),ghost.cy());
+//    nodeGraphics.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
 }
 
-function addDragEvents(hammer,toolGraphics){
+function addDragEvents(hammer,ghostFather,ghost){
 
     // let the pan gesture support all directions.
     // this will block the vertical scrolling on a touch-device while on the element
@@ -387,25 +401,24 @@ function addDragEvents(hammer,toolGraphics){
     
     
 
-//    mc.on("panstart", function (ev) {
-//
-//        startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
-//        
-//        console.log(startingPoint.x,startingPoint.y);
-////        console.log(startingPoint);
-//        path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
-//        ghost = drawer.path(path).center(-20,-20).attr({"tool":true});
-////        ghost.draggable();
-//        let relationAspect = ghost.width()/ghost.height();
-//        ghost.height(25);
-//        ghost.width(25*relationAspect)
-//
-////        ghost = drawer.circle(5).center(-startingPoint.x,-startingPoint.y);
-//        
-//    });
+        let startingPoint = null;
+
+        let testCircle = null;
+
+        hammer.on("panstart", function (ev) {
+
+            startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+            var initX = startingPoint.x-$("#accordionSidebar").width();
+            var initY = startingPoint.y-70;
+            console.log("INIT POS");
+            console.log(initX,initY);
+            ghost.previousX = initX;
+            ghost.previousY = initY;
+
+        });
 
     hammer.on("panmove", function (ev) {
-        moveElements(ev,toolGraphics);
+        moveElements(ev,ghostFather,ghost);
     });
 
 //    mc.on("panend", function (ev) {
@@ -421,7 +434,7 @@ function getActiveLayer(){
 }
 
 function addToolEvents(tool,type) {
-    console.log($(tool).prop('disabled'));
+//    console.log($(tool).prop('disabled'));
     if (!$(tool).prop('disabled')){
         let mc = new Hammer(tool);
 
@@ -431,33 +444,66 @@ function addToolEvents(tool,type) {
 
         let startingPoint = null;
         let currentPoint = null;
-        let path = null;
+        let path= null;
         let ghost = null;
+        let ghostFather = null;
 
 
+        let testCircle = null;
 
         mc.on("panstart", function (ev) {
 
-            startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
-
-            console.log(startingPoint.x,startingPoint.y);
+            startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+//tool.getBoundingClientRect().x;
+            var initX = startingPoint.x-$("#accordionSidebar").width();
+            var initY = startingPoint.y-70;
+            console.log("INIT POS");
+            console.log(initX,initY);
     //        console.log(startingPoint);
             path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
-            ghost = getActiveLayer().layer.path(path).center(-20,-20).attr({"tool":true});
+            ghostFather = getActiveLayer().layer.group();
+            
+
+            
+            
+            ghost = getActiveLayer().layer.path(path).move(initX,initY).attr({"tool":true,fill:getActiveLayer().color});
     //        ghost.draggable();
-            let relationAspect = ghost.width()/ghost.height();
+            var relationAspect = ghost.width()/ghost.height();
             ghost.height(50);
             ghost.width(50*relationAspect);
+            
+            ghostFather.add(ghost);
+            ghostFather.add(getActiveLayer().layer
+                .text(type)
+                .center(ghost.cx(),ghost.cy()+ghost.height()*0.6)
+                );
+        
+            console.log(ghost.cx(),ghost.cy());
+            
+            ghost.previousX = initX;
+            ghost.previousY = initY;
+            
+//            testCircle = getActiveLayer().layer.circle(5).center(ghost.previousX,ghost.previousY);
 
-    //        ghost = drawer.circle(5).center(-startingPoint.x,-startingPoint.y);
+            //set the distance between the group and the tool
+            ghostFather.childDX = ghostFather.cx()-getElementFromGroup(ghostFather,'path').cx();
+            ghostFather.childDY = ghostFather.cy()-getElementFromGroup(ghostFather,'path').cy();
+
 
         });
 
-        mc.on("panmove", function (ev) {
-            currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-            console.log(ghost.cx(),ghost.cy());
-            ghost.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
+        mc.on("panmove", function (event) {
+            currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
+            var x = currentPoint.x-$("#accordionSidebar").width();
+            var y = currentPoint.y-70;
+            console.log("Previous");
+            console.log(x,y);
 
+            var x = currentPoint.x-$("#accordionSidebar").width() - ghost.previousX;
+            var y = currentPoint.y-70 - ghost.previousY;
+            ghostFather.dmove(x,y);
+            ghost.previousX = ghostFather.cx();
+            ghost.previousY = ghostFather.cy();
         });
 
         mc.on("panend", function (ev) {
@@ -465,9 +511,7 @@ function addToolEvents(tool,type) {
     //        ghost.draggable();
             let mc = new Hammer(ghost.node);
 
-            addDragEvents(mc,ghost);
-            console.log(ghost);
-
+            addDragEvents(mc,ghostFather,ghost);
             addPressEvents(mc,ghost,getActiveLayer().layer,type);
     //        console.log(activeLayer);
         });
