@@ -41,56 +41,75 @@
 
       <!-- Templates -->
       <template id="li-element">
-        <li class="nav-item" style="margin: 0 0 10px 0">
+        <!--id ="layer-untitled"-->
+        <li id ="layerItem" >
+            <div class="container p-0 mb-2" >
+                <div class="row">
+                    <div class="col-md-2 pr-0" id = "color-untitled">
+                    </div>
+                    <div class="col-md-8 py-1 pl-3 pr-0 pb-0" id="container-item-untitled">
+                        <input type="text"  id = "item-untitled" class="form-control-plaintext text-white my-auto" readonly="true" value="">
+                    </div>
+                    <div class="col-md-2 pl-2">
+                        <!--<i class="fas fa-eye" style="fill: white;"></i>-->
+                            <div class="row-fluid">
 
-          <div class="container">
-            <div class="row">
+                                <i id ="visibility-untitled" class="fas fa-eye" style="fill: white;"></i>
+
+                                <i id ="delete-untitled" class="fas fa-trash" style="fill: white;"></i>
+                            </div>
+
+                    </div>
+                </div>
+            </div>
+        </li>
+<!--          <div class="container-fluid">
+            <div class="row-fluid">
               <div class="col-sm-auto pr-0">
-                <!--CHANGE THE NAME-->
+                CHANGE THE NAME
                 <input class="form-check-input my-auto" type="checkbox"  checked="true" layer="untitled">
               </div>
-              <!--CHANGE THE NAME-->
-              <div class="col-2-auto" id = "color-untitled"  style="background-color:orange; height: auto; width: 5px">
-              </div> 
-              <div class="col-8 my-auto">
-                <!--CHANGE THE NAME-->
-                <input type="text"  class="form-control-plaintext text-white" readonly="true">
+              CHANGE THE NAME
+           <div class="col-2" id = "color-untitled"  style="background-color:orange; height: 5px; width: 5px"></div> 
+              <div class="col-10">
+                <input type="text"  id = "item-untitled" class="form-control-plaintext text-white" readonly="true">
               </div>
               <div class="col-2">
-                <!--CHANGE THE NAME-->
+                CHANGE THE NAME
                 <button class="btn btn-light-outline stop-drag" type="button" data-toggle="collapse" data-target="#collapse_untitled" aria-expanded="false" aria-controls="collapse_untitled" >
                   <i class="fas fa-arrow-down" style="fill: white;"></i>
                 </button> 
-              </div>
-            </div>
-              <!--CHANGE THE NAME-->
+              
+            </div>-->
+            <!--</div>-->
+<!--              CHANGE THE NAME
 
             <div class="row collapse" id="collapse_untitled">
               <div class="bg-white py-2 collapse-inner rounded">
                 <div class="row">
                   <h6 class="collapse-header">Opacity</h6>
-                  <!--CHANGE THE NAME-->
+                  CHANGE THE NAME
                   <h6 class="collapse-header" id="opacity-untitled">100</h6>
                 </div>
                 <div class="collapse-item slidecontainer">
-                  <!--CHANGE THE NAME-->
+                  CHANGE THE NAME
                   <input type="range" min="1" max="100" value="100" class="slider" id="range-untitled">
                 </div>
               </div>
               <div class="bg-white py-2 collapse-inner rounded">
                 <div class="row">
                   <h6 class="collapse-header">Physics</h6>
-    <!--                CHANGE THE NAME
-                  <h6 class="collapse-header" id="opacity-untitled">100</h6>-->
+                    CHANGE THE NAME
+                  <h6 class="collapse-header" id="opacity-untitled">100</h6>
                 </div>
                 <div class="collapse-item slidecontainer">
-                  <!--CHANGE THE NAME-->
+                  CHANGE THE NAME
                   <div class="row">
                       <div class="col-8">
                           <span>Gravity up</span>
                       </div>
                       <div class="col-4">
-                          <!--CHANGE THE NAME-->
+                          CHANGE THE NAME
 
                           <input class="form-check-input my-auto physics-creator" type="checkbox" >
                       </div>
@@ -101,19 +120,19 @@
                           <span>Gravity down</span>
                       </div>
                       <div class="col-4">
-                          <!--CHANGE THE NAME-->
+                          CHANGE THE NAME
                           <input class="form-check-input my-auto physics-creator" type="checkbox" >
                       </div>
 
                   </div>
                 </div>
               </div>
-            </div>
+            </div>-->
 
 
-          </div>
+          <!--</div>-->
 
-        </li>
+        
       </template>
 
     <!-- Page Wrapper -->
@@ -226,23 +245,66 @@
         <div id="content">
 
           <!-- Topbar -->
-          <nav class="navbar navbar-expand navbar-light bg-sidebar topbar static-top">
+          <nav class="navbar navbar-expand navbar-light bg-sidebar topbar static-top " style="border-left: #676974 solid 2px;">
             <!-- Sidebar Toggle (Topbar) -->
 <!--            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
               <i class="fa fa-bars"></i>
             </button>-->
 
-            <!-- Topbar Search -->
+            <!-- Gravity related -->
             
             <div class="mr-2">
-                <button class="btn button-color tool" type="button">
+                <button class="btn button-color tool" type="button" id="gravity">
                     <i class="fas fa-apple-alt fa-sm"></i>
                   </button>
             </div>
             
             <div class="mr-2">
-                <button class="btn button-color tool" type="button">
-                    <i class="fas fa-arrows-alt fa-sm"></i>
+                <button class="btn button-color tool" type="button" id="atractor">
+                    <i class="fas fa-compress-arrows-alt fa-sm"></i>
+                  </button>
+            </div>
+            
+            <div class="mr-2">
+                <button class="btn button-color tool" type="button" id="repulsor">
+                    <i class="fas fa-expand-arrows-alt fa-sm"></i>
+                  </button>
+            </div>
+            
+            <div class='col-divider ml-2 mr-3'></div>
+
+            <!-- Edges related -->
+
+            
+            <div class="mr-2">
+                <button class="btn button-color tool" type="button" id="bending">
+                    <i class="fas fa-bacon fa-sm"></i>
+                  </button>
+            </div>
+            
+            <div class="mr-2">
+                <button class="btn button-color tool" type="button" id="breaking">
+                    <i class="fas fa-unlink fa-sm"></i>
+                  </button>
+            </div>
+            
+            <div class='col-divider ml-2 mr-3'></div>
+            
+            <!-- Selection related -->
+
+            <div class="mr-2">
+                <button class="btn button-color tool" type="button" id="lineset">
+                    <i class="fas fa-slash fa-sm"></i>
+                  </button>
+            </div>
+            
+            <div class='col-divider ml-2 mr-3'></div>
+            
+            <!-- Panning related -->
+
+            <div class="mr-2">
+                <button class="btn button-color tool" type="button" id="lineset">
+                    <i class="fas fa-hand-paper fa-sm"></i>
                   </button>
             </div>
 <!--            
@@ -253,7 +315,7 @@
             </div>-->
             
             
-            <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+            <form class="d-none d-sm-inline-block form-inline mr-md-2 ml-auto my-2 my-md-0 mw-100 navbar-search ">
               <div class="input-group">
                 <input id="search-bar" type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search"
     aria-describedby="basic-addon2" >
@@ -268,11 +330,11 @@
             
 
             <!-- Topbar Navbar -->
-            <ul class="navbar-nav ml-auto">
+            <!--<ul class="navbar-nav ml-auto">-->
 
               <!--a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-upload fa-sm text-white-50"></i>  Upload data</a-->
 
-            </ul>
+            <!--</ul>-->
 
           </nav>
           <!-- End of Topbar -->
