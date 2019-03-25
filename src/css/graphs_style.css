@@ -1,6 +1,16 @@
 * {
     touch-action: none;
 }
+/* Standard syntax */
+@keyframes addition {
+  
+  50%  {width:initial+10px; background-color: blue;}
+}
+
+.item-animated{
+  animation-name: addition;
+  animation-duration: 1s;
+}
 
 .col-divider{
 border-left:2px solid #676974;
