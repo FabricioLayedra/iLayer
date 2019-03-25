@@ -2,8 +2,13 @@
     touch-action: none;
 }
 
+.col-divider{
+border-left:2px solid #676974;
+height:70px
+}
+
 .bg-sidebar{
-    background-color: #38383b;
+    background-color: #414451	;
     /* background-image: -webkit-gradient(linear, left top, left bottom, color-stop(10%, #4e73df), to(#224abe)); */
     /* background-image: linear-gradient(180deg, #4e73df 10%, #224abe 100%); */
     background-size: cover;
@@ -11,8 +16,8 @@
 
 .button-color{
     color: #fff;
-    background-color: #606062;
-    border-color: #606062;
+    background-color: #676974;
+    border-color: #676974;
 
 }
 
@@ -76,7 +81,7 @@ line {
 }
 
 .node circle{
-  pointer-events: all;
+  /*pointer-events: all;*/
   stroke: none;
   stroke-width: 40px;
   cursor: pointer;
