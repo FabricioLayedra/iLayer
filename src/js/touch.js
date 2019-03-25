@@ -251,6 +251,51 @@ function addLayerEvents(layer, drawer) {
 
 }
 
+function nodeInSelection(nodeParent){
+    for (var i = 0; i<SELECTION.length; i++){
+        if(SELECTION[i]===nodeParent){
+            return true;
+        }
+    }
+    return false;
+}
+
+function addNodeToSelection(group){
+    if (!nodeInSelection(group)){
+        var circle = getElementFromGroup(group,'circle');
+        hideHighlight(circle);
+        circle.animate(100).attr({"r":circle.attr("r")+10});
+        circle.animate(100).attr({"r":circle.attr("r")});
+        var halo = drawHaloInCircle(getActiveLayer().layer,circle,5,getActiveLayer().color);
+        group.add(halo);
+        halo.back();
+        SELECTION.push(group);
+    }else{
+        getElementFromGroup(group,'path').remove();
+    }
+}
+
+function selectionMode(mode){
+    if (mode){        
+        var groups = getActiveLayer().layer.select('g.node').members;
+        for (var index in groups){
+            let group = groups[index];   
+            removeTouchEvents(group);
+            group.on('pointerdown',function(){
+                addNodeToSelection(group);
+            });
+        }  
+        selectionFlag = mode;
+    }else{
+        var groups = getActiveLayer().layer.select('g.node').members;
+        for (var index in groups){
+            let group = groups[index];   
+            group.off('pointerdown');
+        }
+        selectionFlag = mode;
+    }
+}
+
 function addSelectionEvents(nodeParent){
     var mc = new Hammer(nodeParent.node);
     var layerName = nodeParent.parent().node.id.split("layer-")[1];
@@ -262,50 +307,13 @@ function addSelectionEvents(nodeParent){
     mc.get('press').set({time:300});
     
     mc.on('press',function(event){
-//        selectionMode = true;
-        console.log(layerName);
-        hideHighlight(getElementFromGroup(nodeParent,'circle'))
-        var halo = drawHaloInCircle(draw,getElementFromGroup(nodeParent,'circle'),5,color);
-        nodeParent.add(halo);
-        halo.back();
-        SELECTION.push(nodeParent);
-        
-//        var groups = draw.select('g.node').members;
-//        for (var index in groups){
-//            let group = groups[index];
-//        }
+        addNodeToSelection(nodeParent);
     });
     
     mc.on('pressup',function(event){
-        selectionMode = true;
-
-        var groups = draw.select('g.node').members;
-        for (var index in groups){
-            let group = groups[index];   
-            removeTouchEvents(group);
-
-            group.on('pointerdown',function(){
-//                if (!SELECTION.includes(group)){
-                    console.log(group + "being added");
-                    var halo = drawHaloInCircle(draw,getElementFromGroup(group,'circle'),5,color);
-                    group.add(halo);
-                    halo.back();
-                    SELECTION.push(group);
-                    console.log(SELECTION);
-//                }
-//                else{
-//                    console.log("");
-//                    arrayRemove(SELECTION,group);
-//                    
-//                    console.log(SELECTION);
-//                }
-            });
-//            console.log(group.node.hammer);
-        }
+        selectionMode(true);
     });
-    
 }
-
 function addPressEvents(mc,toolGraphics,drawer) {
 
     mc.get('press').set({time: 300});
