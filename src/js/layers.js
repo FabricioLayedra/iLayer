@@ -4,7 +4,7 @@ var count = 0;
 
 var distLabelGroup = 0;
 
-var selectionMode = false;
+var selectionFlag = false;
 
 var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/authors_relations_SC_JD_sample2015.json";
@@ -158,8 +158,11 @@ function addEvents(id) {
     
     $("#container-item-"+id).on('pointerdown', function(){
         console.log(this);
+        if (selectionFlag){
+            includeSelection(id);
+        }
         activateLayer(id);
-//        includeSelection(layerName);
+
     });
 }
 
@@ -1018,7 +1021,7 @@ function addMouseEvents(object) {
 }
 
 function getSvgId(layer_name) {
-    return $("#" + layer_name).children("svg").attr("id");
+    return "#layer-" + layer_name;
 }
 
 function getGraphFromSVGElement(svgElement) {
@@ -1223,50 +1226,31 @@ function sendSelectionToLayer(destination){
 }
 
 function includeSelection(layerName){
-    if (selectionMode){
-        
-        
-        for (var i =0; i<SELECTION.length; i++){
-            let object = SELECTION[i];
-            let svgDestination = getSvgId(layerName);
-            object = SVG.get(svgDestination).put(object.remove());
-//            getElementFromGroup(object,'circle').highlight = null;
-            
-            getElementFromGroup(object,'path').remove();
-            
-            getElementFromGroup(object,'path').attr({fill:LAYERS[layerName].color,"stroke-fill":LAYERS[layerName].color});
-            
-            createHighlight(object);
-            
-//            createHighlight(object, true, true, LAYERS[layerName].color);
-            
-            object.off("pointerdown");
-            addTouchEvents(object);
-            addSelectionEvents(object);
-            
-//            console.log(highlight);
-//            console.log(object.node);
-//            highlight.drawAnimated({
-//                duration: 500
-//            });
-//
-//            setTimeout(function () {
-//                highlight.animate().attr({opacity: 0});
-//            }, waitingTime);
-        }
-            
-//            SVG.get(svg_destination).put(object.nodeData.label.remove());
-                // this need revision, as the highlight might exist already, so it only has to change of color and be animated
-//            if (object.highlight){
-//                object.highlight.remove();
-//                object.highlight = null;
-//            }
-//            createHighlight(object.parent(), true, true, LAYERS[destination].color);
-        
-        selectionMode = false;
-    }
-}
+    console.log(getActiveLayer());
+    selectionMode(false);
 
+        
+    for (var i =0; i<SELECTION.length; i++){
+        let object = SELECTION[i];
+        let svgDestination = getSvgId(layerName);
+        object = SVG.get(svgDestination).put(object.remove());
+//            getElementFromGroup(object,'circle').highlight = null;
+
+        getElementFromGroup(object,'path').remove();
+
+        getElementFromGroup(object,'path').attr({fill:LAYERS[layerName].color,"stroke-fill":LAYERS[layerName].color});
+
+        createHighlight(object);
+
+//            createHighlight(object, true, true, LAYERS[layerName].color);
+
+        object.off("pointerdown");
+        addTouchEvents(object);
+        addSelectionEvents(object);
+    }
+    SELECTION = [];
+    selectionFlag = false;
+}
 
 function generateLayersNamesMenu(list, callback,layerName) {
     var items = {};
