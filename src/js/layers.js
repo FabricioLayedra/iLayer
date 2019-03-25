@@ -20,6 +20,8 @@ var GRAPHS = {};
 
 var SELECTION = [];
 
+var COLORS = ["#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD","#8C564B","#E3775E","#7F7F7F","#BCBD22","#17BECF"];
+
 var el = document.getElementById("layers-table");
 
 var active = null;
@@ -37,7 +39,7 @@ console.log(generalWidth,generalHeight);
 var sortable = new Sortable(el, {
 
     onEnd: function (evt) {
-        var list = document.getElementById("layers-table").getElementsByTagName("li");
+        var list = document.getElementById("layers-table");
         sortLayers(list);
     }});
 
@@ -50,120 +52,148 @@ function getRandomColor() {
     return color;
 }
 
+function getColor() {
+    if (Object.keys(LAYERS).length < 10){
+        return COLORS[Object.keys(LAYERS).length];
+    }else{
+        alert("No more available layers.")
+    }
+}
 
 /*----------------------------CREATION OF LAYERS--------------------------------*/
 
-function addNewLayer(layer_name) {
-    var color = getRandomColor();
-    var layer = createLayer(layer_name);
-    $(layer.querySelector(' div > div:nth-child(1) > div.col-2-auto')).attr("style", "background-color: " + color + "; height: auto; width: 15px");
-    $(layer.querySelector('div > div:nth-child(1) > div.col-8.my-auto')).attr("style","border:  solid 1px "+color);
+function addNewLayer(layerName) {
+    var color = getColor();
+    console.log(color);
+    var layer = createLayer(layerName,color);
     $("#layers-table").append(layer);
+    addColorsAndBorders(layerName,color);
+    addEvents(layerName);
     sortLayers($("#layers-table"));
-    LAYERS[layer_name].color = color;
-    return color;
 }
 
-function createLayer(layer) {
-
-    var canvas = document.createElement("div");
+function createLayer(layerName,color) {
+//    var canvas = document.createElement("div");
     var container = document.getElementById("set-canvases");
-    canvas.setAttribute("id", layer);
+    var canvas = createSVG(container,layerName, generalWidth, generalHeight,color);
+
+    canvas.setAttribute("id", "layer-" + layerName);
     canvas.setAttribute("style", "position: absolute;");
     container.appendChild(canvas);
-    createSVG(layer, generalWidth, generalHeight);
-    var template = document.getElementById('li-element').content.cloneNode(true);
-    if (typeof layer === "undefined") {
+    var layer = document.getElementById('li-element').content.cloneNode(true);
+    if (typeof layerName === "undefined") {
         var id = Object.keys(LAYERS).length;
     } else {
-        var id = layer;
+        var id = layerName;
     }
-    changeLayerNames(template, id);
-    addEvents(template, layer);
-
-    return template;
+    changeLayerNames(layer, id);
+    return layer;
 }
 
-function createSVG(layerName, width, height) {
-    var draw = SVG(layerName).size(width, height).attr({"id":"layer-"+layerName});
+function createSVG(container,layerName, width, height, color) {
+    var draw = SVG(container).size(width, height).attr({"id":"layer-"+layerName});
 //    window.draw = draw;
-    LAYERS[layerName] = {"layer": draw, "physics-engine": null};
-    addLayerEvents(draw.node, draw);
-    
+    LAYERS[layerName] = {"layer": draw, "physics-engine": null, color:color};
+//    addLayerEvents(draw.node, draw);
+    return draw.node;
 }
 
 function changeLayerNames(item, id) {
-    //Change this function is anything changes at the nav-item html template
-    $(item.querySelector('div > div:nth-child(1) > div.col-sm-auto.pr-0 > input')).attr("layer", id);
-    $(item.querySelector('div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("id", "color-" + id);
-    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("id", "p-" + id);
-    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("value", "Layer " + id);
-    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("style", "cursor: grab");
-    $(item.querySelector('div > div:nth-child(1) > div.col-2 > button')).attr("data-target", "#collapse-" + id);
-    $(item.querySelector('div > div:nth-child(1) > div.col-2 > button')).attr("aria-controls", "collapse-" + id);
-    $(item.querySelector('div > div.row.collapse')).attr("id", "collapse-" + id);
-    $(item.querySelector('div > div.row.collapse > div > div.row > h6:nth-child(2)')).attr("id", "opacity-" + id);
-    $(item.querySelector('div > div.row.collapse > div > div.collapse-item.slidecontainer > input')).attr("id", "range-" + id);
-    $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div > div.col-4 > input')).attr("id", "gravity-handler-" + id);
-    $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div:nth-child(2) > div.col-4 > input')).attr("id", "gravity-handler-" + id);
-
+        
+    $(item.querySelector("li[id^='layer']")).attr("id", "layerItem-" + id);
+    $(item.querySelector("div[id^='color']")).attr("id", "color-" + id);
+    $(item.querySelector("div[id^='container-item']")).attr("id", "container-item-" + id);
+    $(item.querySelector("input[id^='item']")).attr("id", "item-" + id);
+    $(item.querySelector("input[id^='item']")).attr("value", "Layer " + id);
+    $(item.querySelector("i[id^='visibility']")).attr("id", "visibility-" + id);
+    $(item.querySelector("i[id^='delete']")).attr("id", "delete-" + id);
+//    $(item.querySelector('div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("id", "color-" + id);
+//    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("id", "p-" + id);
+//    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("value", "Layer " + id);
+//    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-aut > input')).attr("style", "cursor: grab");
+//    $(item.querySelector('div > div:nth-child(1) > div.col-2 > button')).attr("data-target", "#collapse-" + id);
+//    $(item.querySelector('div > div:nth-child(1) > div.col-2 > button')).attr("aria-controls", "collapse-" + id);
+//    $(item.querySelector('div > div.row.collapse')).attr("id", "collapse-" + id);
+//    $(item.querySelector('div > div.row.collapse > div > div.row > h6:nth-child(2)')).attr("id", "opacity-" + id);
+//    $(item.querySelector('div > div.row.collapse > div > div.collapse-item.slidecontainer > input')).attr("id", "range-" + id);
+//    $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div > div.col-4 > input')).attr("id", "gravity-handler-" + id);
+//    $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div:nth-child(2) > div.col-4 > input')).attr("id", "gravity-handler-" + id);
 }
-document.querySelector('#layers-table > li > div > div:nth-child(1) > div.col-8.my-auto')
-function addEvents(item, layerName) {
 
-    //checkbox opacity
-    $(item.querySelector('div > div:nth-child(1) > div.col-sm-auto.pr-0 > input')).change(function () {
-        showHideLayer(this);
-    });
-    //checkbox physics up
-    $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div > div.col-4 > input')).change(function () {
-        gravityHandler(this, true);
-    });
+function addColorsAndBorders(layerName,color){
+    $("#color-"+layerName).attr("style", "background-color: " + color + "; height: auto; width: 5px; background-clip: content-box");
+    $("#container-item-"+layerName).attr("style","border:  solid 1px "+color);
+}
 
-    //checkbox physics down
-    $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div:nth-child(2) > div.col-4 > input')).change(function () {
-        gravityHandler(this, false);
-    });
-    //button
-    $(item.querySelector('div > div:nth-child(1) > div.col-2 > button')).click(function () {
-        stopDrag();
-    });
-    //range
-    $(item.querySelector('div > div.row.collapse > div > div.collapse-item.slidecontainer > input')).on("input", function () {
-        console.log("run");
-        opacityChanger(this);
-    });
-//    $(item.querySelector('#p-'+layerName)).mouseenter(function () {
-//        highlightLayer(layerName, true);
+function addEvents(id) {
+
+//    //checkbox opacity
+//    $(item.querySelector('div > div:nth-child(1) > div.col-sm-auto.pr-0 > input')).change(function () {
+//        showHideLayer(this);
 //    });
-//    $(item.querySelector('#p-'+layerName)).mouseleave(function () {
-//        highlightLayer(layerName);
+//    //checkbox physics up
+//    $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div > div.col-4 > input')).change(function () {
+//        gravityHandler(this, true);
 //    });
-    $(item.querySelector('#p-'+layerName)).on('pointerdown', function(){
-        activateLayer(layerName);
-        includeSelection(layerName);
+//
+//    //checkbox physics down
+//    $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div:nth-child(2) > div.col-4 > input')).change(function () {
+//        gravityHandler(this, false);
+//    });
+//    //button
+//    $(item.querySelector('div > div:nth-child(1) > div.col-2 > button')).click(function () {
+//        stopDrag();
+//    });
+//    //range
+//    $(item.querySelector('div > div.row.collapse > div > div.collapse-item.slidecontainer > input')).on("input", function () {
+//        console.log("run");
+//        opacityChanger(this);
+//    });
+////    $(item.querySelector('#p-'+layerName)).mouseenter(function () {
+////        highlightLayer(layerName, true);
+////    });
+////    $(item.querySelector('#p-'+layerName)).mouseleave(function () {
+////        highlightLayer(layerName);
+////    })
+    
+    $("#container-item-"+id).on('pointerdown', function(){
+        console.log(this);
+        activateLayer(id);
+//        includeSelection(layerName);
     });
 }
 
 function activateLayer(layerName){
-    let item = $("#p-"+layerName);
-    console.log(item.parent());
+//    console.logitem);
     if (active){
         $(active).css("background-color","");
     }
-    active = $(item).parent();
+    active = $("#container-item-"+layerName);
     activeLayer = LAYERS[layerName];
+    
+    var layers = getLayersNames(LAYERS);
+    for (var i = 0; i < layers.length; i++) {
+	let layer = "#layer-" + layers[i];
+        if (layers[i]===layerName){
+            SVG.get(layer).attr({'pointer-events':'auto'});
+        }else{
+            SVG.get(layer).attr({'pointer-events':'none'});
+        }
+//        $("#set-canvases").prepend($("#layer-" + layer).detach());
+    }
+       
 
     $(active).css("background-color",lightenDarkenColor(LAYERS[layerName]["color"],20));
 }
 
-function showHideLayer(checkbox) {
-    var layer = "#" + $(checkbox).attr("layer").toLowerCase().split(" ");
-    if (checkbox.checked) {
-        $(layer).css("display", "block");
-    } else {
-        $(layer).css("display", "none");
-    }
+function showHideLayer(layerName) {
+    var layer = "#" + layerName;
+    
+//    if (checkbox.checked) {
+//        $(layer).css("display", "block");
+//    } else {
+//        $(layer).css("display", "none");
+//    }
 }
 
 function activatePhysics(layerTag) {
@@ -292,12 +322,13 @@ function opacityChanger(range) {
 ;
 
 function sortLayers(list) {
-    for (var element of Array.prototype.slice.apply(list).reverse()) {
-        var layer = element.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input:nth-child(1)').getAttribute("value").toLowerCase().split(" ")[1];
-        // render the layers
-//      console.log(layer);
-        $("#set-canvases").prepend($("#" + layer).detach());
+    var children = $(list).children();
+    for (var i = 0; i <children.length; i++) {
+	let layer = children[i].getAttribute("id").toLowerCase().split("-")[1];
+        $("#set-canvases").prepend($("#layer-" + layer).detach());
     }
+       
+    
 }
 
 /*---------------------------------PHYSICS--------------------------------------*/
@@ -581,11 +612,14 @@ function addGraphAsLayer(g, layerName) {
 
 //    drawGraph(LAYERS[layer_name].layer, g);
     drawGraph(layerName, g);
-    var svg_id = $("#" + layerName).children("svg").attr("id");
+//    var svg_id = $("#" + layerName).children("svg").attr("id");
+    var svg_id = "layer-" + layerName;
+
+    console.log(svg_id);
     SVG.get(svg_id).select("circle").attr({fill: color, stroke: darkenColor, 'stroke-width': 2});
     
     
-            var tools = document.getElementsByClassName("tool");
+    var tools = document.getElementsByClassName("tool");
         for (var i =0; i<tools.length; i++){
             addToolEvents(tools[i],LAYERS[layerName].layer);
         }
@@ -1088,7 +1122,7 @@ function addContextMenu(sel) {
                                 newLayerItem(function(){
                                     var destination = prompt("Enter the name of the layer:","");
                                     addNewLayer(destination);
-                                    sortLayers(el.getElementsByTagName("li"));
+                                    sortLayers(el);
                                     sendElementToLayer(sel,destination);
                                 }))
                     },
@@ -1104,7 +1138,7 @@ function addContextMenu(sel) {
                                 newLayerItem(function(){
                                     var destination = prompt("Enter the name of the layer:","");
                                     addNewLayer(destination);
-                                    sortLayers(el.getElementsByTagName("li"));
+                                    sortLayers(el);
                                     sendAdjacentsToLayer(sel,destination);
                                 }))
                     },
@@ -1154,7 +1188,7 @@ function addContextMenuSelection(sel) {
                                 newLayerItem(function(){
                                     var destination = prompt("Enter the name of the layer:","");
                                     addNewLayer(destination);
-                                    sortLayers(el.getElementsByTagName("li"));
+                                    sortLayers(el);
                                     sendSelectionToLayer(destination);
                                 }))
                     }
@@ -1565,8 +1599,19 @@ function main() {
 
     loadGraph(datafile, "authors2016", false).then(function () {
         addGraphAsLayer(GRAPHS["authors2016"], "1");
+        loadGraph(datafile, "authors2015", false).then(function () {
+            addGraphAsLayer(GRAPHS["authors2015"], "2");
+
+    //        addGraphAsLayer(GRAPHS["authors2016"], "3");
+
+    //        activateLayer("1");
+        });
+        
+//        addGraphAsLayer(GRAPHS["authors2016"], "3");
+
         activateLayer("1");
     });
+
 
 //    loadGraph(datafile2,"authors2015",false).then(function(){
 //        console.log(GRAPHS);
@@ -1578,7 +1623,7 @@ function main() {
         let layerName = "" + (Object.keys(LAYERS).length + 1);
         addNewLayer(layerName);
         //    readDataColab(datafile,random_id());
-        sortLayers(el.getElementsByTagName("li"));
+        sortLayers(el);
                 /*setting events to the tools*/
         var tools = document.getElementsByClassName("tool");
         for (var i =0; i<tools.length; i++){
