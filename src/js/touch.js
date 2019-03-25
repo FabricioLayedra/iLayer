@@ -88,6 +88,7 @@ function removeTouchEvents(nodeParent){
 // modes are often set by the user or even the layer itself
 
 function addLayerEvents(layer, drawer) {
+    console.log(drawer);
     let mc = new Hammer(layer);
 
     // let the pan gesture support all directions.
@@ -314,58 +315,62 @@ function addSelectionEvents(nodeParent){
         selectionMode(true);
     });
 }
-function addPressEvents(mc,toolGraphics,drawer) {
+function addPressEvents(mc,toolGraphics,drawer,type) {
+    if (type==='gravity'){
+        console.log(type);
+        mc.get('press').set({time: 300});
+        mc.on('press', function(event) {
+            event.preventDefault();
+            $(event.target).attr('oncontextmenu', 'return false');
+            mc.off('panmove');
 
-    mc.get('press').set({time: 300});
-    mc.on('press', function(event) {
-        event.preventDefault();
-        $(event.target).attr('oncontextmenu', 'return false');
-        mc.off('panmove');
-        
-        let line = null;
-        let startingPoint = null;
-        let currentPoint = null;
+            let line = null;
+            let startingPoint = null;
+            let currentPoint = null;
 
-        mc.on("panstart", function (ev) {
-            startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
-            line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y)
-                    .stroke({color: '#f06', width: 1, linecap: 'round'})
-                    .attr({'stroke-dasharray': [8, 3], stroke: 'red'});
+            mc.on("panstart", function (ev) {
+                startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+                line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y)
+                        .stroke({color: '#f06', width: 1, linecap: 'round'})
+                        .attr({'stroke-dasharray': [8, 3], stroke: 'red'});
+            });
+
+            mc.on("panmove", function (ev) {
+                currentPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+                line.attr("x2", currentPoint.x);
+                line.attr("y2", currentPoint.y);
+                line.stroke({color: '#f06000', width: 1, linecap: 'round'});
+                //CHANGE GRAVITY HERE
+                var x = line.attr("x2")-line.attr("x1");
+                var y = line.attr("y2")-line.attr("y1");
+                var x2 = Math.pow(Math.abs(x),2);
+                var y2 = Math.pow(Math.abs(y),2);
+                var magnitude = Math.sqrt(x2+y2);
+    //            console.log(x/magnitude,y/magnitude,magnitude);
+                addGravity(activatePhysics(getActiveLayer().layer.node.id),x/magnitude,y/magnitude,magnitude);
+
+            });
+
+            mc.on("panend", function (ev) {
+                line.remove();
+                mc.off('panstart');
+                mc.off('panmove');
+                mc.off('panend');
+                addDragEvents(mc,toolGraphics);
+
+            });
         });
-
-        mc.on("panmove", function (ev) {
-            currentPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
-            line.attr("x2", currentPoint.x);
-            line.attr("y2", currentPoint.y);
-            line.stroke({color: '#f06000', width: 1, linecap: 'round'});
-            //CHANGE GRAVITY HERE
-            var x = line.attr("x2")-line.attr("x1");
-            var y = line.attr("y2")-line.attr("y1");
-            var x2 = Math.pow(Math.abs(x),2);
-            var y2 = Math.pow(Math.abs(y),2);
-            var magnitude = Math.sqrt(x2+y2);
-//            console.log(x/magnitude,y/magnitude,magnitude);
-            addGravity(activatePhysics(getActiveLayer().layer.node.id),x/magnitude,y/magnitude,magnitude);
-
-        });
-
-        mc.on("panend", function (ev) {
-            line.remove();
+        mc.on('pressup',function(event) {
             mc.off('panstart');
             mc.off('panmove');
             mc.off('panend');
+
             addDragEvents(mc,toolGraphics);
-
         });
-    });
-    mc.on('pressup',function(event) {
-        mc.off('panstart');
-        mc.off('panmove');
-        mc.off('panend');
-
-        addDragEvents(mc,toolGraphics);
-    });
-    
+    }else if(type==='bending'){
+//        console.log();
+        addLayerEvents(getActiveLayer().layer.node,getActiveLayer().layer);
+    }
 }
 
 function moveElements(ev, nodeGraphics){
@@ -415,56 +420,57 @@ function getActiveLayer(){
     return activeLayer;
 }
 
-function addToolEvents(tool) {
-    let mc = new Hammer(tool);
+function addToolEvents(tool,type) {
+    console.log($(tool).prop('disabled'));
+    if (!$(tool).prop('disabled')){
+        let mc = new Hammer(tool);
 
-    // let the pan gesture support all directions.
-    // this will block the vertical scrolling on a touch-device while on the element
-    mc.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
-    
-    let startingPoint = null;
-    let currentPoint = null;
-    let path = null;
-    let ghost = null;
-    
-    
+        // let the pan gesture support all directions.
+        // this will block the vertical scrolling on a touch-device while on the element
+        mc.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
 
-    mc.on("panstart", function (ev) {
+        let startingPoint = null;
+        let currentPoint = null;
+        let path = null;
+        let ghost = null;
 
-        startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
-        
-        console.log(startingPoint.x,startingPoint.y);
-//        console.log(startingPoint);
-        path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
-        ghost = getActiveLayer().layer.path(path).center(-20,-20).attr({"tool":true});
-//        ghost.draggable();
-        let relationAspect = ghost.width()/ghost.height();
-        ghost.height(50);
-        ghost.width(50*relationAspect);
 
-//        ghost = drawer.circle(5).center(-startingPoint.x,-startingPoint.y);
-        
-    });
 
-    mc.on("panmove", function (ev) {
-        currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-        console.log(ghost.cx(),ghost.cy());
-        ghost.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
+        mc.on("panstart", function (ev) {
 
-    });
+            startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
 
-    mc.on("panend", function (ev) {
-        ghost.front();
-//        ghost.draggable();
-        let mc = new Hammer(ghost.node);
+            console.log(startingPoint.x,startingPoint.y);
+    //        console.log(startingPoint);
+            path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
+            ghost = getActiveLayer().layer.path(path).center(-20,-20).attr({"tool":true});
+    //        ghost.draggable();
+            let relationAspect = ghost.width()/ghost.height();
+            ghost.height(50);
+            ghost.width(50*relationAspect);
 
-        addDragEvents(mc,ghost);
-        console.log(ghost);
+    //        ghost = drawer.circle(5).center(-startingPoint.x,-startingPoint.y);
 
-        addPressEvents(mc,ghost,getActiveLayer().layer);
-//        console.log(activeLayer);
-    });
+        });
+
+        mc.on("panmove", function (ev) {
+            currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+            console.log(ghost.cx(),ghost.cy());
+            ghost.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
+
+        });
+
+        mc.on("panend", function (ev) {
+            ghost.front();
+    //        ghost.draggable();
+            let mc = new Hammer(ghost.node);
+
+            addDragEvents(mc,ghost);
+            console.log(ghost);
+
+            addPressEvents(mc,ghost,getActiveLayer().layer,type);
+    //        console.log(activeLayer);
+        });
+    }
 
 }
-
-
