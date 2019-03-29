@@ -2,39 +2,67 @@
     "nodes": [
         {
             "group": 1, 
-            "id": "Alice Thudt"
+            "id": "Alice Thudt",
+            "affiliation": "University of Calgary",
+            "number of papers": 3,
+            "citations": 15
         }, 
         {
             "group": 1, 
-            "id": "Mona Hosseinkhani Loorak"
+            "id": "Mona Hosseinkhani Loorak",
+            "affiliation": "University of Calgary",
+            "number of papers": 4,
+            "citations": 5
         }, 
         {
             "group": 1, 
-            "id": "Sheelagh Carpendale"
+            "id": "Sheelagh Carpendale",
+            "affiliation": "Simon Fraser University",
+            "number of papers": 33,
+            "citations": 45
         }, 
         {
             "group": 1, 
-            "id": "Charles Perin"
+            "id": "Charles Perin",
+            "affiliation": "University of Toronto",
+            "number of papers": 8,
+            "citations": 11
         }, 
         {
             "group": 1, 
-            "id": "Dominikus Baur"
+            "id": "Dominikus Baur",
+            "affiliation": "University of British Columbia",
+            "number of papers": 2,
+            "citations": 15
         }, 
         {
             "group": 1, 
-            "id": "Christopher Collins"
+            "id": "Christopher Collins",
+            "affiliation": "University of Ontario",
+            "number of papers": 12,
+            "citations": 15
         }, 
         {
             "group": 1, 
-            "id": "Samuel Huron"
+            "id": "Samuel Huron",
+            "affiliation": "INRIA",
+            "number of papers": 2,
+            "citations": 1
         }, 
         {
             "group": 1, 
-            "id": "Michael Hill"
+            "id": "Michael Hill",
+            
+            "affiliation": "INRIA",
+            "number of papers": 2,
+            "citations": 1
         }, 
         {
             "group": 1, 
-            "id": "Noreen Kamal"
+            "id": "Noreen Kamal",
+            "affiliation": "INRIA",
+            "number of papers": 2,
+            "citations": 1
         }
     ], 
     "links": [
