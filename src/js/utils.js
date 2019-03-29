@@ -62,3 +62,7 @@ function getElementFromGroup(group,type){
         return null;
     }
 }
+
+function getRectMiddle(rect){
+    return [rect.x()+rect.width()/2,rect.y()+rect.height()/2];
+}
