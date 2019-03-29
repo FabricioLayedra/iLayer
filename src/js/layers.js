@@ -6,8 +6,8 @@ var distLabelGroup = 0;
 
 var selectionFlag = false;
 
-var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
-//var datafile = "./data/authors_relations_SC_JD_sample2015.json";
+//var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
+var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
@@ -105,8 +105,8 @@ function changeLayerNames(item, id) {
     $(item.querySelector("div[id^='container-item']")).attr("id", "container-item-" + id);
     $(item.querySelector("input[id^='item']")).attr("id", "item-" + id);
     $(item.querySelector("input[id^='item']")).attr("value", "Layer " + id);
-    $(item.querySelector("i[id^='visibility']")).attr("id", "visibility-" + id);
-    $(item.querySelector("i[id^='delete']")).attr("id", "delete-" + id);
+    $(item.querySelector("button[id^='visibility']")).attr("id", "visibility-" + id);
+    $(item.querySelector("button[id^='delete']")).attr("id", "delete-" + id);
 //    $(item.querySelector('div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("id", "color-" + id);
 //    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("id", "p-" + id);
 //    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("value", "Layer " + id);
@@ -164,6 +164,12 @@ function addEvents(id) {
         activateLayer(id);
 
     });
+    
+    $("#visibility-"+id).on('pointerdown', function(){
+        console.log("Touching");
+        showHideLayer(id);
+
+    });
 }
 
 function activateLayer(layerName){
@@ -190,12 +196,22 @@ function activateLayer(layerName){
 }
 
 function showHideLayer(layerName) {
-    var layer = "#" + layerName;
+    var layer = "#layer-" + layerName;
     
+            console.log($(layer).css('display')==='block');
+
+    
+    if ($(layer).css("display")==='none'){
+        $(layer).css("display", "block");
+    }else if($(layer).css("display")==='block'){
+        console.log("fs");
+        $(layer).css("display", "none");
+    }else{
+        console.log("YRS");
+    }
 //    if (checkbox.checked) {
 //        $(layer).css("display", "block");
 //    } else {
-//        $(layer).css("display", "none");
 //    }
 }
 
@@ -346,15 +362,15 @@ function createPhysicsWorld(layer_name, boundaries) {
     // create an engine
     var engine = Engine.create();
 
-//    var render = Render.create({
-//        element: document.body,
-//        engine: engine,
-//        options: {
-//         width: generalWidth,
-//         height: generalHeight
-//       }
-//    });
-//    Render.run(render);
+    var render = Render.create({
+        element: document.body,
+        engine: engine,
+        options: {
+         width: generalWidth,
+         height: generalHeight
+       }
+    });
+    Render.run(render);
 //    
 
     // create demo scene
@@ -465,12 +481,18 @@ function addElementsToWorld(world, layer) {
 function add_element_to_world(world, element) {
     var Bodies = Matter.Bodies;
     var World = Matter.World;
+    
+    var circle = getElementFromGroup(element,"circle");
 
-    if (element.type === "circle" && !element.matter) {
 
-        var x = element.cx();
-        var y = element.cy();
-        var radius = element.attr("r");
+    if (!element.matter) {
+
+        var x = circle.cx();
+        var y = circle.cy();
+        var radius = circle.attr("r");
+        
+        console.log("Parameters child");
+        console.log(x,y,radius);
 
         var matterObject = Bodies.circle(x, y, radius);
         matterObject.frictionAir = 0.025;
@@ -522,8 +544,34 @@ function add_attractor_to_world(world, element) {
         World.add(world, matterObject);
 
 
-    } else if (element.type === "path") {
-        // Edges
+    } else if (element.type === "rect") {
+        
+        var x = element.attr('x');
+        var y = element.attr('y');
+        var width = element.width();
+        var height = element.height();
+        
+        var matterObject = Bodies.rectangle(x+width/2,y,width,height, {isStatic: true,
+            plugin: {
+                attractors: [
+                    function (theAttractor, theBody) {
+                        let x = 0, y = 0, angle, d = 100;
+                        if (theBody.attractedTo && theBody.attractedTo.includes(theAttractor)) {
+                            let deltaX = theAttractor.position.x - theBody.position.x;
+                            let deltaY = theAttractor.position.y - theBody.position.y;
+                            angle = Math.atan(-deltaY, -deltaX);
+                            x = (deltaX + d * Math.cos(angle)) * 1e-5;
+                            y = (deltaY + d * Math.sin(angle)) * 1e-5;
+                        }
+                        return {x: x, y: y};
+                    }
+                ]
+            }
+        });
+//
+        matterObject.svg = element;
+        element.matter = matterObject;
+        World.add(world, matterObject);
     }
     return matterObject;
 }
@@ -546,7 +594,16 @@ function loadGraph(filename, key, directed) {
         var nodes = json.nodes;
 
         nodes.forEach(function (data) {
-            g.setNode(format_id(data["id"]), {authorInfo: {name: data["id"], group: data["group"]}});
+//            console.log(data);
+            var keys = Object.keys(data);
+            dataInfo = {};
+            dataInfo["name"] = data["id"];
+            for (var index in keys){
+                dataInfo[keys[index]] = data[keys[index]];
+            }
+//            console.log(dataInfo);
+            
+            g.setNode(format_id(data["id"]), {authorInfo: dataInfo});
         });
 
         edges.forEach(function (data) {
@@ -610,7 +667,7 @@ function addGraphAsLayer(g, layerName) {
 //    var darkenColor = lightenDarkenColor(color, -10);
 
     addNewLayer(layerName);
-    var color = '#688bd6';
+    var color = '#dddfe2';
     var darkenColor = lightenDarkenColor(color, -10);
 
 //    drawGraph(LAYERS[layer_name].layer, g);
@@ -620,7 +677,7 @@ function addGraphAsLayer(g, layerName) {
 
 //    console.log(svg_id);
     SVG.get(svg_id).select("circle").attr({fill: color, stroke: darkenColor, 'stroke-width': 2});
-    
+        
 }
 
 function drawGraph(layer_name, g) {
@@ -629,6 +686,7 @@ function drawGraph(layer_name, g) {
     var directed = g.directed;
     var nodeKeys = g.nodes();
     var edges = g.edges();
+    var dataKeys = null;
 
     // adding to the nodes objects of the graph both the fabric and the matter associated objects
     nodeKeys.forEach(function (nodeKey) {
@@ -641,11 +699,11 @@ function drawGraph(layer_name, g) {
 //            nodeData.edges = new Array();
 //        }
 
-        var radius = 50;
+        var radius =50;
         
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
-        var y = getRandomBetween(30,generalWidth-200);
-        var x = getRandomBetween(30,generalHeight-100);
+        var y = getRandomBetween(30,600);
+        var x = getRandomBetween(30,1200);
         
         //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
         var labelName = nodeData.authorInfo.name;
@@ -685,8 +743,18 @@ function drawGraph(layer_name, g) {
         nodeData.svg = circle;
         nodeData.label = label;
         circle.nodeData = nodeData;
+        
+        dataKeys = Object.keys(nodeData.authorInfo);
+        //removing the keys I do not want
+        dataKeys = arrayRemove(dataKeys,'id');
+        dataKeys = arrayRemove(dataKeys,'group');
+        dataKeys = arrayRemove(dataKeys,'name');
+        dataKeys = arrayRemove(dataKeys,'number of papers')
 
     });
+    
+    LAYERS[layer_name].attributes = dataKeys;
+    addAttributesAsTools(dataKeys);
 
     edges.forEach(function (edge) {
 
@@ -751,7 +819,7 @@ function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
             .move(cx, cy);
     
     //Add context_menu to the element using the selector, in this case the id
-    addContextMenu("#" + id);
+//    addContextMenu("#" + id);
  
     return nodeGraphics;
 }
@@ -766,10 +834,7 @@ function drawHaloInCircle(drawer,circle,distance,color){
                         fill: 'transparent',
                         'stroke-width': 2,
                         'pointer-events': 'none'
-                    });
-                
-
-                
+                    });     
     return halo;
 }
 
@@ -1229,20 +1294,25 @@ function includeSelection(layerName){
     
 //    $("#container-item-"+layerName).animate({height: '+=10px',width: '+=10px'});
 //    $("#container-item-"+layerName).animate({height: '-=10px',width: '-=10px'});
+    //Todo has to be changed!
+    var nodes = SVG.select('g.node').members;
+    
+    console.log(nodes);
+    
+    for (var i =0; i<nodes.length; i++){
+        let object = nodes[i];
+        console.log(SELECTION.includes(nodes[i]));
+        if (SELECTION.includes(nodes[i])){
+            let svgDestination = getSvgId(layerName);
+            object = SVG.get(svgDestination).put(object.remove());
+    //            getElementFromGroup(object,'circle').highlight = null;
 
-        
-    for (var i =0; i<SELECTION.length; i++){
-        let object = SELECTION[i];
-        let svgDestination = getSvgId(layerName);
-        object = SVG.get(svgDestination).put(object.remove());
-//            getElementFromGroup(object,'circle').highlight = null;
+            getElementFromGroup(object,'path').remove();
 
-        getElementFromGroup(object,'path').remove();
+            getElementFromGroup(object,'path').attr({fill:LAYERS[layerName].color,"stroke-fill":LAYERS[layerName].color});
 
-        getElementFromGroup(object,'path').attr({fill:LAYERS[layerName].color,"stroke-fill":LAYERS[layerName].color});
-
-        createHighlight(object);
-
+            createHighlight(object);
+        }
 //            createHighlight(object, true, true, LAYERS[layerName].color);
 
         object.off("pointerdown");
@@ -1522,7 +1592,7 @@ function main() {
             //        console.log(LAYERS[layer])
             if (LAYERS[layer]["physics-engine"]) {
                 bodies = Composite.allBodies(LAYERS[layer]["physics-engine"].world);
-//                console.log(bodies.length);
+//                console.log(bodies);
 
                 /*console.log('LAYERS[layer]["physics-engine"].world.gravity.scale');
                  console.log(LAYERS[layer]["physics-engine"].world.gravity.scale);*/
@@ -1530,9 +1600,13 @@ function main() {
                 for (var i = 0; i < bodies.length; i += 1) {
 
                     var currentBody = bodies[i];
+
                     var nodeGraphics = currentBody.svg;
- 
                     if (nodeGraphics) {
+
+                    if(nodeGraphics.type!=='rect'){
+//                     console.log(currentBody.svg);
+
                         let newX = currentBody.position.x;
                         let newY = currentBody.position.y;
 //                        nodeGraphics.cx(newX-nodeGraphics.initX);
@@ -1572,7 +1646,7 @@ function main() {
 //                        updateEdgesEnds(getElementFromGroup(nodeGraphics,'circle'));
 //                        updateHighlights(nodeGraphics.parent());
 
-                    }
+                    }}
                 }            
             }
         }
@@ -1591,17 +1665,18 @@ function main() {
 
     loadGraph(datafile, "authors2016", false).then(function () {
         addGraphAsLayer(GRAPHS["authors2016"], "1");
-        loadGraph(datafile2, "authors2015", false).then(function () {
-            addGraphAsLayer(GRAPHS["authors2015"], "2");
-
-    //        addGraphAsLayer(GRAPHS["authors2016"], "3");
-
-    //        activateLayer("1");
-        });
+//        loadGraph(datafile2, "authors2015", false).then(function () {
+//            addGraphAsLayer(GRAPHS["authors2015"], "2");
+//
+//    //        addGraphAsLayer(GRAPHS["authors2016"], "3");
+//
+//    //        activateLayer("1");
+//        });
         
 //        addGraphAsLayer(GRAPHS["authors2016"], "3");
 
         activateLayer("1");
+//        addAttractorsToWorld(['affiliation','citations'],100,'affiliation')
     });
 
 
@@ -1626,6 +1701,12 @@ function main() {
 }
 
 main();
+
+$(function() {
+	$(this).bind("contextmenu", function(e) {
+		e.preventDefault();
+	});
+});
 
 
 /*---------------------------------GARBAGE--------------------------------------*/
@@ -1794,3 +1875,140 @@ function createHighlight(object, animate, hideAfter, color) {
 
 
 }
+
+
+function addAttributesAsTools(attributesSet){
+    for (var index in attributesSet){
+        let attribute = attributesSet[index];
+        var bar = document.getElementById('set-tools');
+        var attrTool = document.getElementById('tool-element').content.cloneNode(true);
+//        var last  = ;
+//        console.log(last);
+        $(attrTool.querySelector("button")).html(attribute);
+        $(attrTool.querySelector("button")).attr("id",attribute);
+        $("#search-bar-container").before(attrTool);
+        
+        $("#"+attribute).on('pointerdown',function(){
+             console.log("dado");
+             addAttractorsToWorld(attributesSet,100,attribute)
+         });
+//        console.log(attrTool);   
+    }
+}
+
+
+//function textAttractors(textSet){
+//    
+//    
+//    
+//    for (var index in textSet){
+//        var text = textSet[index];
+//        
+//    }
+//}
+//
+//function calculateAttractorsDistance(ammount){
+//    // set taking into account radius of the nodes
+//    var attractorWidth = 70;
+//    return (generalWidth - ammount*attractorWidth) / (ammount + 1);    
+//}
+//
+function addAttractorsToWorld(textSet,distance,chosen){
+    var Bodies = Matter.Bodies;
+    var World = Matter.World;
+    var Composite = Matter.Composite;
+    
+    createPhysicsWorld('1');
+    
+    var world = getActiveLayer()["physics-engine"].world;
+
+    var elements = getActiveLayer().layer.select('g.node').members;
+
+    
+    var uniqueAttrValues = {};
+    
+    for (var index in textSet){
+        var text = textSet[index];
+//        console.log(text.toString());
+        uniqueAttrValues[text] = {};
+
+        for (var elIndex in elements){
+            var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
+            if (Object.keys(data).includes(text)){
+                
+                if (Object.keys(uniqueAttrValues[text]).includes(data[text])){
+                    console.log(uniqueAttrValues[text][data[text]]);
+                    uniqueAttrValues[text][data[text]].push(elements[elIndex]);
+//                    uniqueAttrValues[text.toString()].push("prueba");
+
+                }else{
+                    uniqueAttrValues[text][data[text]] = [elements[elIndex]];  
+//                    uniqueAttrValues[text][data[text]] = [elements[elIndex]];  
+
+                }
+            }
+        }
+    }
+
+    var attractees = uniqueAttrValues[chosen];
+
+//    console.log(attractees);
+    
+    var x = 50;
+    var width = 130;
+    var height = 50;
+    var y = generalHeight/1.2-height +distLabelGroup/2;
+
+    
+//    console.log(Object.keys(attractees));
+    for (var attractIndex in Object.keys(attractees)){
+
+        var attractorGraphics = getActiveLayer().layer.rect(width,height).move(x,y).fill(getActiveLayer().color);
+
+            add_attractor_to_world(world, attractorGraphics);
+
+        //    addElementsToWorld(world,'1');
+
+            var attractor = attractorGraphics.matter;
+            var aff = Object.keys(attractees)[attractIndex];
+
+            var label = drawLabel(getActiveLayer().layer, aff, x+width/2,y+height/2-5, 'authors2016', aff);
+//            label.center(x+width/2,y+height/2);
+            
+            for (var elIndex in elements){
+                var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
+
+            
+                var body = elements[elIndex].matter;
+
+                if (Object.keys(data).includes(chosen)){
+//                    console.log(aff);
+//                    console.logdata[chosen]);
+//                    console.log(data[chosen].toString()===aff);
+                    if (data[chosen].toString()=== aff){
+                    //add attractee
+                    //        console.log(attractee);
+                        if (!body) {
+                            add_element_to_world(world, elements[elIndex]);
+                            body = elements[elIndex].matter;
+                        } else {
+                            // IMPORTANT: we need to do this to update objects that are attracted to more than one attractor
+                            Matter.Composite.remove(world, body);
+                            World.add(world, body);
+                        }
+
+                        if (!body.attractedTo) {
+                            body.attractedTo = new Array();
+                        }
+                        body.attractedTo.push(attractor);
+                    }
+                }
+            }
+            
+            x  = x + 50 + distance;
+        
+    }
+
+}
+
+
