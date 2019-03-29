@@ -267,12 +267,19 @@ function addNodeToSelection(group){
         hideHighlight(circle);
         circle.animate(100).attr({"r":circle.attr("r")+10});
         circle.animate(100).attr({"r":circle.attr("r")});
+//        console.log(circle);
+//        console.log(getActiveLayer());
+//        console.log(getActiveLayer().layer);
         var halo = drawHaloInCircle(getActiveLayer().layer,circle,5,getActiveLayer().color);
+//        console.log(halo);
+        console.log(group.add(halo));
         group.add(halo);
+        console.log(group);;
         halo.back();
         SELECTION.push(group);
     }else{
         getElementFromGroup(group,'path').remove();
+        SELECTION = arrayRemove(SELECTION,group);
     }
 }
 
@@ -280,9 +287,12 @@ function selectionMode(mode){
     if (mode){        
         var groups = getActiveLayer().layer.select('g.node').members;
         for (var index in groups){
-            let group = groups[index];   
+            let group = groups[index];
+            console.log(group);
             removeTouchEvents(group);
             group.on('pointerdown',function(){
+//                console.log(group.node.id);
+                console.log(group);
                 addNodeToSelection(group);
             });
         }  
@@ -299,20 +309,18 @@ function selectionMode(mode){
 
 function addSelectionEvents(nodeParent){
     var mc = new Hammer(nodeParent.node);
-    var layerName = nodeParent.parent().node.id.split("layer-")[1];
-    var draw = LAYERS[layerName].layer;
-    var color = LAYERS[layerName].color;
 
     nodeParent.node.hammer = mc;
     
     mc.get('press').set({time:300});
     
     mc.on('press',function(event){
-        addNodeToSelection(nodeParent);
+        selectionMode(true);
     });
     
     mc.on('pressup',function(event){
-        selectionMode(true);
+        addNodeToSelection(nodeParent);
+
     });
 }
 function addPressEvents(mc,toolGraphics,drawer,type,child) {
@@ -414,6 +422,8 @@ function addDragEvents(hammer,ghostFather,ghost){
             console.log(initX,initY);
             ghost.previousX = initX;
             ghost.previousY = initY;
+            
+            $(ghost).css("zIndex","-1000000");
 
         });
 
