@@ -1903,12 +1903,48 @@ function addAttributesAsTools(attributesSet){
 //        console.log(last);
         $(attrTool.querySelector("button")).html(attribute);
         $(attrTool.querySelector("button")).attr("id",attribute);
+
         $("#search-bar-container").before(attrTool);
         
-        $("#"+attribute).on('pointerdown',function(){
-             console.log("dado");
-             addAttractorsToWorld(100,attribute)
-         });
+        $("#"+attribute).on('pointerdown',function(node){
+            
+            var previous = $("#"+attribute);    //             addAttractorsToWorld(100,attribute);
+            console.log(previous);
+            var orientations = document.getElementById('direction-element').content.cloneNode(true);
+
+            $(orientations.querySelector("span")).attr("id",attribute+"-title");
+
+            $(orientations.querySelector("span")).text(toFirstCapital(attribute)+": orientation");
+
+            $(orientations.querySelector("button[id^='go-back']")).on('pointerdown',function(){
+                console.log("Sending...");
+//                console.log($("#go-back").parent().parent().replaceWith(previous));
+                $("#go-back").parent().parent().empty().append(previous);
+            });
+
+            $(orientations.querySelector("button[id^='up']")).on('pointerdown',function(){
+                console.log("Put the axis up");
+            });
+
+            $(orientations.querySelector("button[id^='down']")).on('pointerdown',function(){
+                console.log("Put the axis down");
+            });
+
+            $(orientations.querySelector("button[id^='left']")).on('pointerdown',function(){
+                console.log("Put the axis left");
+            });
+
+            $(orientations.querySelector("button[id^='right']")).on('pointerdown',function(){
+                console.log("Put the axis right");
+            });
+
+
+                    //.attr("id",attribute+"-"+);
+            this.replaceWith(orientations);
+
+        });
+         
+
 //        console.log(attrTool);   
     }
 }
