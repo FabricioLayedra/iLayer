@@ -66,3 +66,8 @@ function getElementFromGroup(group,type){
 function getRectMiddle(rect){
     return [rect.x()+rect.width()/2,rect.y()+rect.height()/2];
 }
+
+function toFirstCapital(string) 
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
