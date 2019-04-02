@@ -1,23 +1,53 @@
 * {
     touch-action: none;
 }
+/* Standard syntax */
+@keyframes addition {
+  
+  50%  {width:initial+10px; background-color: blue;}
+}
+
+.item-animated{
+  animation-name: addition;
+  animation-duration: 1s;
+}
 
 .col-divider{
-border-left:2px solid #676974;
+border-left:1px solid black;
 height:70px
 }
 
 .bg-sidebar{
-    background-color: #414451	;
+    background-color: #dddfe2	;
     /* background-image: -webkit-gradient(linear, left top, left bottom, color-stop(10%, #4e73df), to(#224abe)); */
     /* background-image: linear-gradient(180deg, #4e73df 10%, #224abe 100%); */
     background-size: cover;
 }
 
+.sidebar-dark #sidebarToggle::after{
+    color:black;
+}
+
+.border-0{
+    border: 1px solid black !important;
+}
+
+.sidebar-dark #sidebarToggle::before{
+    color:black;
+}
+
+.rule-back-color{
+    background-color:black;
+}
+
+.rule-text-color{
+    color:black;
+}
+
 .button-color{
-    color: #fff;
-    background-color: #676974;
-    border-color: #676974;
+    color: black;
+    background-color: #67697;
+    border-color: black;
 
 }
 
@@ -47,7 +77,7 @@ line {
 }
 
 .fa-arrow-down {
-  color: white;
+    color: #999999;
 }
 
 .square-color {

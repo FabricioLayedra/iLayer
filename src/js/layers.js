@@ -4,14 +4,14 @@ var count = 0;
 
 var distLabelGroup = 0;
 
-var selectionMode = false;
+var selectionFlag = false;
 
-var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
-//var datafile = "./data/authors_relations_SC_JD_sample2015.json";
+//var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
+var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
-var datafile2 = "./data/authors_relations_2015.json";
+var datafile2 = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_19nodes_sample2016.json";
 
 
 var LAYERS = {};
@@ -64,7 +64,7 @@ function getColor() {
 
 function addNewLayer(layerName) {
     var color = getColor();
-    console.log(color);
+//    console.log(color);
     var layer = createLayer(layerName,color);
     $("#layers-table").append(layer);
     addColorsAndBorders(layerName,color);
@@ -93,7 +93,7 @@ function createLayer(layerName,color) {
 function createSVG(container,layerName, width, height, color) {
     var draw = SVG(container).size(width, height).attr({"id":"layer-"+layerName});
 //    window.draw = draw;
-    LAYERS[layerName] = {"layer": draw, "physics-engine": null, color:color};
+    LAYERS[layerName] = {layer: draw, "physics-engine": null, color:color, axis:{x:false,y:false}};
 //    addLayerEvents(draw.node, draw);
     return draw.node;
 }
@@ -105,8 +105,8 @@ function changeLayerNames(item, id) {
     $(item.querySelector("div[id^='container-item']")).attr("id", "container-item-" + id);
     $(item.querySelector("input[id^='item']")).attr("id", "item-" + id);
     $(item.querySelector("input[id^='item']")).attr("value", "Layer " + id);
-    $(item.querySelector("i[id^='visibility']")).attr("id", "visibility-" + id);
-    $(item.querySelector("i[id^='delete']")).attr("id", "delete-" + id);
+    $(item.querySelector("button[id^='visibility']")).attr("id", "visibility-" + id);
+    $(item.querySelector("button[id^='delete']")).attr("id", "delete-" + id);
 //    $(item.querySelector('div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("id", "color-" + id);
 //    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("id", "p-" + id);
 //    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("value", "Layer " + id);
@@ -157,9 +157,18 @@ function addEvents(id) {
 ////    })
     
     $("#container-item-"+id).on('pointerdown', function(){
-        console.log(this);
+//        console.log(this);
+        if (selectionFlag){
+            includeSelection(id);
+        }
         activateLayer(id);
-//        includeSelection(layerName);
+
+    });
+    
+    $("#visibility-"+id).on('pointerdown', function(){
+        console.log("Touching");
+        showHideLayer(id);
+
     });
 }
 
@@ -181,26 +190,51 @@ function activateLayer(layerName){
         }
 //        $("#set-canvases").prepend($("#layer-" + layer).detach());
     }
+    
+
        
 
     $(active).css("background-color",lightenDarkenColor(LAYERS[layerName]["color"],20));
 }
 
 function showHideLayer(layerName) {
-    var layer = "#" + layerName;
+    var layer = "#layer-" + layerName;
     
+            console.log($(layer).css('display')==='block');
+
+    
+    if ($(layer).css("display")==='none'){
+        $(layer).css("display", "block");
+    }else if($(layer).css("display")==='block'){
+        console.log("fs");
+        $(layer).css("display", "none");
+    }else{
+        console.log("YRS");
+    }
 //    if (checkbox.checked) {
 //        $(layer).css("display", "block");
 //    } else {
-//        $(layer).css("display", "none");
 //    }
 }
+
+function getPhysicsEngine(layerName){
+    var engine = null;
+    if (!LAYERS[layerName]["physics-engine"]) {
+        engine = createPhysicsWorld(layerName);
+    } else {
+        engine = LAYERS[layerName]["physics-engine"];
+    }
+    return engine;
+}
+
+
 
 function activatePhysics(layerTag) {
     let layer = layerTag.split("-")[1];
 //    console.log(LAYERS);
 //    console.log(layer);
     var engine;
+    
     if (!LAYERS[layer]["physics-engine"]) {
         engine = createPhysicsWorld(layer);
         addElementsToWorld(engine.world, layer);
@@ -343,15 +377,15 @@ function createPhysicsWorld(layer_name, boundaries) {
     // create an engine
     var engine = Engine.create();
 
-//    var render = Render.create({
-//        element: document.body,
-//        engine: engine,
-//        options: {
-//         width: generalWidth,
-//         height: generalHeight
-//       }
-//    });
-//    Render.run(render);
+    var render = Render.create({
+        element: document.body,
+        engine: engine,
+        options: {
+         width: generalWidth,
+         height: generalHeight
+       }
+    });
+    Render.run(render);
 //    
 
     // create demo scene
@@ -462,12 +496,18 @@ function addElementsToWorld(world, layer) {
 function add_element_to_world(world, element) {
     var Bodies = Matter.Bodies;
     var World = Matter.World;
+    
+    var circle = getElementFromGroup(element,"circle");
 
-    if (element.type === "circle" && !element.matter) {
 
-        var x = element.cx();
-        var y = element.cy();
-        var radius = element.attr("r");
+    if (!element.matter) {
+
+        var x = circle.cx();
+        var y = circle.cy();
+        var radius = circle.attr("r");
+        
+        console.log("Parameters child");
+        console.log(x,y,radius);
 
         var matterObject = Bodies.circle(x, y, radius);
         matterObject.frictionAir = 0.025;
@@ -519,8 +559,34 @@ function add_attractor_to_world(world, element) {
         World.add(world, matterObject);
 
 
-    } else if (element.type === "path") {
-        // Edges
+    } else if (element.type === "rect") {
+        
+        var x = element.attr('x');
+        var y = element.attr('y');
+        var width = element.width();
+        var height = element.height();
+        
+        var matterObject = Bodies.rectangle(x+width/2,y,width,height, {isStatic: true,
+            plugin: {
+                attractors: [
+                    function (theAttractor, theBody) {
+                        let x = 0, y = 0, angle, d = 100;
+                        if (theBody.attractedTo && theBody.attractedTo.includes(theAttractor)) {
+                            let deltaX = theAttractor.position.x - theBody.position.x;
+                            let deltaY = theAttractor.position.y - theBody.position.y;
+                            angle = Math.atan(-deltaY, -deltaX);
+                            x = (deltaX + d * Math.cos(angle)) * 1e-5;
+                            y = (deltaY + d * Math.sin(angle)) * 1e-5;
+                        }
+                        return {x: x, y: y};
+                    }
+                ]
+            }
+        });
+//
+        matterObject.svg = element;
+        element.matter = matterObject;
+        World.add(world, matterObject);
     }
     return matterObject;
 }
@@ -543,7 +609,16 @@ function loadGraph(filename, key, directed) {
         var nodes = json.nodes;
 
         nodes.forEach(function (data) {
-            g.setNode(format_id(data["id"]), {authorInfo: {name: data["id"], group: data["group"]}});
+//            console.log(data);
+            var keys = Object.keys(data);
+            dataInfo = {};
+            dataInfo["name"] = data["id"];
+            for (var index in keys){
+                dataInfo[keys[index]] = data[keys[index]];
+            }
+//            console.log(dataInfo);
+            
+            g.setNode(format_id(data["id"]), {authorInfo: dataInfo});
         });
 
         edges.forEach(function (data) {
@@ -607,7 +682,9 @@ function addGraphAsLayer(g, layerName) {
 //    var darkenColor = lightenDarkenColor(color, -10);
 
     addNewLayer(layerName);
-    var color = '#688bd6';
+    var color = LAYERS[layerName].color;
+    console.log("COLOR NODES");
+    console.log(color);
     var darkenColor = lightenDarkenColor(color, -10);
 
 //    drawGraph(LAYERS[layer_name].layer, g);
@@ -615,22 +692,20 @@ function addGraphAsLayer(g, layerName) {
 //    var svg_id = $("#" + layerName).children("svg").attr("id");
     var svg_id = "layer-" + layerName;
 
-    console.log(svg_id);
+//    console.log(svg_id);
     SVG.get(svg_id).select("circle").attr({fill: color, stroke: darkenColor, 'stroke-width': 2});
-    
-    
-    var tools = document.getElementsByClassName("tool");
-        for (var i =0; i<tools.length; i++){
-            addToolEvents(tools[i],LAYERS[layerName].layer);
-        }
+        
 }
 
 function drawGraph(layer_name, g) {
     var draw = LAYERS[layer_name].layer;
+    var color = LAYERS[layer_name].color;
+    console.log(color);
     var graphId = g._label;
     var directed = g.directed;
     var nodeKeys = g.nodes();
     var edges = g.edges();
+    var dataKeys = null;
 
     // adding to the nodes objects of the graph both the fabric and the matter associated objects
     nodeKeys.forEach(function (nodeKey) {
@@ -643,11 +718,11 @@ function drawGraph(layer_name, g) {
 //            nodeData.edges = new Array();
 //        }
 
-        var radius = 50;
+        var radius =40;
         
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
         var y = getRandomBetween(30,600);
-        var x = getRandomBetween(30,800);
+        var x = getRandomBetween(30,1200);
         
         //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
         var labelName = nodeData.authorInfo.name;
@@ -658,7 +733,7 @@ function drawGraph(layer_name, g) {
         group.firstTime = true;
         
         // creation of the elements
-        var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId);
+        var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId,color);
         var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + (radius/2), graphId,labelName);
         var r = circle.attr('r') + circle.attr('stroke-width') / 2 ;
         var ear = drawEarInCircle(draw,r,circle.cx(),circle.cy(),LAYERS[layer_name]["color"]);
@@ -687,8 +762,19 @@ function drawGraph(layer_name, g) {
         nodeData.svg = circle;
         nodeData.label = label;
         circle.nodeData = nodeData;
+        
+        dataKeys = Object.keys(nodeData.authorInfo);
+        //removing the keys I do not want
+        dataKeys = arrayRemove(dataKeys,'id');
+        dataKeys = arrayRemove(dataKeys,'group');
+        dataKeys = arrayRemove(dataKeys,'name');
+        dataKeys = arrayRemove(dataKeys,'number of papers')
 
     });
+    
+    LAYERS[layer_name].attributes = dataKeys;
+                addAttributesAsTools(dataKeys);
+
 
     edges.forEach(function (edge) {
 
@@ -711,7 +797,7 @@ function drawGraph(layer_name, g) {
         var edgePath = drawPathInLayer(draw, fromCenterX, fromCenterY,
                 controlX, controlY, toCenterX, toCenterY, id, graphId,layer_name);
                 
-        var group = draw.group().attr({id:"path-"+id});
+        var group = draw.group().attr({id:"path-"+id,});
     //    console.log(group);
         group.add(edgePath);
         group.layerName = layer_name;
@@ -742,7 +828,7 @@ function addHighlightToGroups(groups){
     }
 }
 
-function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
+function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId,color) {
     
     var nodeGraphics = drawer.circle(radius)
             .attr({cx: cx,
@@ -750,10 +836,10 @@ function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
                 id: id,
                 graph: graphId
             })
-            .move(cx, cy);
+            .move(cx, cy).fill(color);
     
     //Add context_menu to the element using the selector, in this case the id
-    addContextMenu("#" + id);
+//    addContextMenu("#" + id);
  
     return nodeGraphics;
 }
@@ -768,10 +854,7 @@ function drawHaloInCircle(drawer,circle,distance,color){
                         fill: 'transparent',
                         'stroke-width': 2,
                         'pointer-events': 'none'
-                    });
-                
-
-                
+                    });     
     return halo;
 }
 
@@ -798,9 +881,9 @@ function drawPathInLayer(drawer, fromCenterX, fromCenterY,
             .M({x: fromCenterX, y: fromCenterY})
             .Q({x: controlX, y: controlY}, {x: toCenterX, y: toCenterY})
             .attr({
-                stroke: 'gray',
+                stroke: LAYERS[layerName].color,
                 fill: 'transparent',
-                strokeWidth: 1,
+                'stroke-width':3.5,
                 id: id,
                 'pointer-events': 'visibleStroke'
             }).off();
@@ -1018,7 +1101,7 @@ function addMouseEvents(object) {
 }
 
 function getSvgId(layer_name) {
-    return $("#" + layer_name).children("svg").attr("id");
+    return "#layer-" + layer_name;
 }
 
 function getGraphFromSVGElement(svgElement) {
@@ -1093,6 +1176,10 @@ function getSpanningTree(selector, n_levels) {
 
 function getParentLayerName(svgElement) {
     return $(svgElement).parent().parent().parent().attr("id");
+}
+
+function getActiveLayerName(){
+    return getActiveLayer().layer.node.id.split("-")[1];
 }
 /*-----------------------------CONTEXT MENU-------------------------------------*/
 
@@ -1222,51 +1309,87 @@ function sendSelectionToLayer(destination){
     }
 }
 
-function includeSelection(layerName){
-    if (selectionMode){
-        
-        
-        for (var i =0; i<SELECTION.length; i++){
-            let object = SELECTION[i];
-            let svgDestination = getSvgId(layerName);
-            object = SVG.get(svgDestination).put(object.remove());
-//            getElementFromGroup(object,'circle').highlight = null;
+function getNodesNames(nodes){
+    var names = [];
+    for (var nodeIndex in nodes){
+        names.push(nodes[nodeIndex].node.id.split("-")[1]);
+    }
+    return names;
+}
+
+function sendEdgesToLayer(source,nodesNames,edges,destination){
+    var layerName = destination.split("-")[1];
+//    console.log("neighbour");
+    for (var index in edges){
+//        console.log(edges[index]);
+//        console.log(edges[index].node.id);
+//        console.log(edges[index].node.id.split("#")[1]);
+//        console.log();
+        if (nodesNames.includes(edges[index].node.id.replace(source.node.id,""))){
             
-            getElementFromGroup(object,'path').remove();
-            
-            getElementFromGroup(object,'path').attr({fill:LAYERS[layerName].color,"stroke-fill":LAYERS[layerName].color});
-            
-            createHighlight(object);
-            
-//            createHighlight(object, true, true, LAYERS[layerName].color);
-            
-            object.off("pointerdown");
-            addTouchEvents(object);
-            addSelectionEvents(object);
-            
-//            console.log(highlight);
-//            console.log(object.node);
-//            highlight.drawAnimated({
-//                duration: 500
-//            });
-//
-//            setTimeout(function () {
-//                highlight.animate().attr({opacity: 0});
-//            }, waitingTime);
+            SVG.get(edges[index].node.id).attr({"stroke":LAYERS[layerName].color});
+            SVG.get(destination).put(SVG.get(edges[index].node.id).remove()).back();
+            console.log("Included");
         }
-            
-//            SVG.get(svg_destination).put(object.nodeData.label.remove());
-                // this need revision, as the highlight might exist already, so it only has to change of color and be animated
-//            if (object.highlight){
-//                object.highlight.remove();
-//                object.highlight = null;
-//            }
-//            createHighlight(object.parent(), true, true, LAYERS[destination].color);
-        
-        selectionMode = false;
     }
 }
 
+function includeSelection(layerName){
+//    console.log(getActiveLayer());
+    selectionMode(false);
+    
+
+    var dataKeys = [];
+    var names = getNodesNames(SELECTION);
+    
+    $("#container-item-"+layerName).addClass('item-animated');
+
+    
+//    $("#container-item-"+layerName).animate({height: '+=10px',width: '+=10px'});
+//    $("#container-item-"+layerName).animate({height: '-=10px',width: '-=10px'});
+    //Todo has to be changed!
+    var nodes = SVG.select('g.node').members;
+    
+//    console.log(nodes);
+    
+    for (var i =0; i<nodes.length; i++){
+        let object = nodes[i];
+//        console.log(SELECTION.includes(nodes[i]));
+        if (SELECTION.includes(nodes[i])){
+            let svgDestination = getSvgId(layerName);
+            object = SVG.get(svgDestination).put(object.remove());
+    //            getElementFromGroup(object,'circle').highlight = null;
+            var circle = getElementFromGroup(object,'circle');
+            
+            dataKeys = Object.keys(circle.nodeData.authorInfo);
+            //removing the keys I do not want
+            dataKeys = arrayRemove(dataKeys,'id');
+            dataKeys = arrayRemove(dataKeys,'group');
+            dataKeys = arrayRemove(dataKeys,'name');
+            dataKeys = arrayRemove(dataKeys,'number of papers')
+            console.log(dataKeys);
+            LAYERS[layerName].attributes = dataKeys;
+//            addAttributesAsTools(dataKeys);
+            circle.fill(LAYERS[layerName].color);
+            sendEdgesToLayer(circle,names,circle.nodeData.inEdges,svgDestination);
+//            isNeighbour(circle,names,circle.nodeData.outEdges);
+
+
+            getElementFromGroup(object,'path').remove();
+
+            getElementFromGroup(object,'path').attr({fill:LAYERS[layerName].color,"stroke-fill":LAYERS[layerName].color});
+
+            createHighlight(object);
+        }
+//            createHighlight(object, true, true, LAYERS[layerName].color);
+
+        object.off("pointerdown");
+        addTouchEvents(object);
+        addSelectionEvents(object);
+    }
+    SELECTION = [];
+    selectionFlag = false;
+}
 
 function generateLayersNamesMenu(list, callback,layerName) {
     var items = {};
@@ -1537,7 +1660,7 @@ function main() {
             //        console.log(LAYERS[layer])
             if (LAYERS[layer]["physics-engine"]) {
                 bodies = Composite.allBodies(LAYERS[layer]["physics-engine"].world);
-//                console.log(bodies.length);
+//                console.log(bodies);
 
                 /*console.log('LAYERS[layer]["physics-engine"].world.gravity.scale');
                  console.log(LAYERS[layer]["physics-engine"].world.gravity.scale);*/
@@ -1545,9 +1668,13 @@ function main() {
                 for (var i = 0; i < bodies.length; i += 1) {
 
                     var currentBody = bodies[i];
+
                     var nodeGraphics = currentBody.svg;
- 
                     if (nodeGraphics) {
+
+                    if(nodeGraphics.type!=='rect'){
+//                     console.log(currentBody.svg);
+
                         let newX = currentBody.position.x;
                         let newY = currentBody.position.y;
 //                        nodeGraphics.cx(newX-nodeGraphics.initX);
@@ -1587,7 +1714,7 @@ function main() {
 //                        updateEdgesEnds(getElementFromGroup(nodeGraphics,'circle'));
 //                        updateHighlights(nodeGraphics.parent());
 
-                    }
+                    }}
                 }            
             }
         }
@@ -1596,20 +1723,28 @@ function main() {
     };
     
     render();
+    
+        
+    var tools = document.getElementsByClassName("tool");
+    for (var i =0; i<tools.length; i++){
+        var type  = $(tools[i]).attr("id");
+        addToolEvents(tools[i],type);
+    }
 
     loadGraph(datafile, "authors2016", false).then(function () {
         addGraphAsLayer(GRAPHS["authors2016"], "1");
-        loadGraph(datafile, "authors2015", false).then(function () {
-            addGraphAsLayer(GRAPHS["authors2015"], "2");
-
-    //        addGraphAsLayer(GRAPHS["authors2016"], "3");
-
-    //        activateLayer("1");
-        });
+//        loadGraph(datafile2, "authors2015", false).then(function () {
+//            addGraphAsLayer(GRAPHS["authors2015"], "2");
+//
+//    //        addGraphAsLayer(GRAPHS["authors2016"], "3");
+//
+//    //        activateLayer("1");
+//        });
         
 //        addGraphAsLayer(GRAPHS["authors2016"], "3");
 
         activateLayer("1");
+//        addAttractorsToWorld(['affiliation','citations'],100,'affiliation')
     });
 
 
@@ -1624,16 +1759,22 @@ function main() {
         addNewLayer(layerName);
         //    readDataColab(datafile,random_id());
         sortLayers(el);
-                /*setting events to the tools*/
-        var tools = document.getElementsByClassName("tool");
-        for (var i =0; i<tools.length; i++){
-            addToolEvents(tools[i]);
-        }
+//                /*setting events to the tools*/
+//        var tools = document.getElementsByClassName("tool");
+//        for (var i =0; i<tools.length; i++){
+//            addToolEvents(tools[i]);
+//        }
     });
     
 }
 
 main();
+
+$(function() {
+	$(this).bind("contextmenu", function(e) {
+		e.preventDefault();
+	});
+});
 
 
 /*---------------------------------GARBAGE--------------------------------------*/
@@ -1654,16 +1795,16 @@ main();
 //    }
 //});
 //
-$("input[id|='p']").dblclick(function () {
-  // body...
-    console.log("Doble_Clickeando");
-    // console.log();
-    $(this).attr("previous-layer-name",$(this).val().toLowerCase());
-    $(this).attr("readonly",false);
-    // console.log(this);
-
-});
+//$("input[id|='p']").dblclick(function () {
+//  // body...
+//    console.log("Doble_Clickeando");
+//    // console.log();
+//    $(this).attr("previous-layer-name",$(this).val().toLowerCase());
+//    $(this).attr("readonly",false);
+//    // console.log(this);
 //
+//});
+////
 //$("input[id|='p']").on('keypress',function(e) {
 //    $(this).attr("readonly",true);
 //    d3.select("."+$(this).attr("previous-layer-name")).attr("class",className);
@@ -1801,4 +1942,290 @@ function createHighlight(object, animate, hideAfter, color) {
         highlight.hide();
 
 
+}
+
+
+function addAttributesAsTools(attributesSet){
+    for (var index in attributesSet){
+        let attribute = attributesSet[index];
+        var bar = document.getElementById('set-tools');
+        var attrTool = document.getElementById('tool-element').content.cloneNode(true);
+//        var last  = ;
+//        console.log(last);
+        $(attrTool.querySelector("button")).html(attribute);
+        $(attrTool.querySelector("button")).attr("id",attribute);
+
+        $("#search-bar-container").before(attrTool);
+        
+        $("#"+attribute).on('pointerdown',function(node){
+            
+            var original = $("#"+attribute);    //             addAttractorsToWorld(100,attribute);
+
+            var orientations = document.getElementById('direction-element').content.cloneNode(true);
+
+            $(orientations.querySelector("span")).attr("id",attribute+"-title");
+
+            $(orientations.querySelector("span")).text(toFirstCapital(attribute)+": orientation");
+
+            $(orientations.querySelector("button[id^='go-back']")).on('pointerdown',function(){
+                console.log("Sending...");
+//                console.log($("#go-back").parent().parent().replaceWith(previous));
+                $("#go-back").parent().parent().empty().append(original);
+            });
+
+            $(orientations.querySelector("button[id^='up']")).on('pointerdown',function(){
+                sortByAttribute(10,attribute,'up');
+
+            });
+
+            $(orientations.querySelector("button[id^='down']")).on('pointerdown',function(){
+                sortByAttribute(10,attribute,'down');
+            });
+
+            $(orientations.querySelector("button[id^='left']")).on('pointerdown',function(){
+                sortByAttribute(10,attribute,'left');
+            });
+
+            $(orientations.querySelector("button[id^='right']")).on('pointerdown',function(){
+                sortByAttribute(10,attribute,'right');
+            });
+
+
+                    //.attr("id",attribute+"-"+);
+            this.replaceWith(orientations);
+
+        });
+         
+
+//        console.log(attrTool);   
+    }
+}
+
+
+function getAxisBasisSpace(axisX){
+    var size = 50;
+    var spaceBtwnAttractors = 10;
+    if (axisX){
+        return generalWidth*0.01 + spaceBtwnAttractors +size;
+    }else {
+        return generalHeight*0.01 + spaceBtwnAttractors + size;
+    }
+}
+
+function calculateAttractorSizeNdStartingPoints(ammount,distance,axisLength,startingAxisPoint){
+    // set taking into account radius of the nodes
+    
+    var startingPoints = [];
+    
+    var sizeAttractor = (axisLength - (ammount+1)*distance) / ammount;
+    
+    // TODO : Change taking into account the length of the text
+    
+    for (var i = 0; i < ammount; i++){
+        if (i===0){
+            startingAxisPoint += distance;
+        }else{
+            startingAxisPoint += sizeAttractor +distance;
+        }
+        startingPoints.push(startingAxisPoint);
+    }
+
+    return [sizeAttractor,startingPoints];
+}
+//
+function getAttrDict(elements,textSet){
+    var uniqueAttrValues = {};
+    for (var index in textSet){
+        var text = textSet[index];
+        uniqueAttrValues[text] = {};
+
+        for (var elIndex in elements){
+            var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
+            if (Object.keys(data).includes(text)){
+                
+                if (Object.keys(uniqueAttrValues[text]).includes(data[text])){
+                    console.log(uniqueAttrValues[text][data[text]]);
+                    uniqueAttrValues[text][data[text]].push(elements[elIndex]);
+//                    uniqueAttrValues[text.toString()].push("prueba");
+
+                }else{
+                    uniqueAttrValues[text][data[text]] = [elements[elIndex]];  
+//                    uniqueAttrValues[text][data[text]] = [elements[elIndex]];  
+
+                }
+            }
+        }
+    }
+    return uniqueAttrValues;
+}
+
+function addAttractorsToWorld(distance,chosen){
+    var textSet = getActiveLayer().attributes;
+    
+    var Bodies = Matter.Bodies;
+    var World = Matter.World;
+    var Composite = Matter.Composite;
+    
+    var world = getPhysicsEngine(getActiveLayerName()).world;
+
+    var elements = getActiveLayer().layer.select('g.node').members;
+    
+    var uniqueAttrValues = getAttrDict(elements,textSet);
+
+    var attractees = uniqueAttrValues[chosen];
+
+//    console.log(attractees);
+
+    var positionData = calculateAttractorSizeNdStartingPoints(Object.keys(attractees).length,distance,generalWidth,0);
+    var width = positionData[0];
+    var positions = positionData[1];
+//    var width = 130;
+    console.log(width);
+    console.log(positions);
+    var height = 50;
+    var y = generalHeight/1.1-height +distLabelGroup/2;
+
+    
+//    console.log(Object.keys(attractees));
+    for (var attractIndex in Object.keys(attractees)){
+        console.log(positions[attractIndex]);
+        var attractorGraphics = getActiveLayer().layer.rect(width,height).move(positions[attractIndex],y).fill(getActiveLayer().color);
+
+            add_attractor_to_world(world, attractorGraphics);
+
+        //    addElementsToWorld(world,'1');
+
+            var attractor = attractorGraphics.matter;
+            var aff = Object.keys(attractees)[attractIndex];
+
+            var label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex]+width/2,y+height/2-5, 'authors2016', aff).attr({fill:"white"});
+//            label.center(x+width/2,y+height/2);
+            
+            for (var elIndex in elements){
+                var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
+
+            
+                var body = elements[elIndex].matter;
+
+                if (Object.keys(data).includes(chosen)){
+//                    console.log(aff);
+//                    console.logdata[chosen]);
+//                    console.log(data[chosen].toString()===aff);
+                    if (data[chosen].toString()=== aff){
+                    //add attractee
+                    //        console.log(attractee);
+                        if (!body) {
+                            add_element_to_world(world, elements[elIndex]);
+                            body = elements[elIndex].matter;
+                        } else {
+                            // IMPORTANT: we need to do this to update objects that are attracted to more than one attractor
+                            Matter.Composite.remove(world, body);
+                            World.add(world, body);
+                        }
+
+                        if (!body.attractedTo) {
+                            body.attractedTo = new Array();
+                        }
+                        body.attractedTo.push(attractor);
+                    }
+                }
+            }
+            
+//              = x + 50 + distance;
+        
+    }
+
+}
+
+function calculatePositionsByOrientation(ammount,distance,width,height,orientation){
+    var axisX = null;
+    var zeroPoint = null;
+    var positionData = null;
+    
+    if (orientation === 'down'){
+        positionData = calculateAttractorSizeNdStartingPoints(ammount,distance,width-getAxisBasisSpace(true),getAxisBasisSpace(true));
+        axisX = true;
+        zeroPoint = height*0.95;
+
+    }else if(orientation ==='left'){
+        positionData = calculateAttractorSizeNdStartingPoints(ammount,distance,height,0);
+        axisX = false;
+        zeroPoint = height*0.01;
+    }else if (orientation === 'right'){
+       positionData = calculateAttractorSizeNdStartingPoints(ammount,distance,height,0);
+        axisX = false;
+        zeroPoint = width*0.95;
+
+    }else if (orientation ==='up'){
+        positionData = calculateAttractorSizeNdStartingPoints(ammount,distance,width-getAxisBasisSpace(true),getAxisBasisSpace(true));
+        axisX = true;
+        zeroPoint = height*0.01;
+    }
+    console.log(axisX,zeroPoint,positionData);
+    return [axisX,zeroPoint,positionData];
+}
+
+function sortByAttribute(distance,chosen,orientation){
+    var textSet = getActiveLayer().attributes;
+    var elements = getActiveLayer().layer.select('g.node').members;
+    var uniqueAttrValues = getAttrDict(elements,textSet);
+    var attractees = uniqueAttrValues[chosen];
+    var positionData = calculatePositionsByOrientation(Object.keys(attractees).length,distance,generalWidth,generalHeight,orientation);
+    
+    var width = positionData[2][0];
+    var height = 50;
+    var positions = positionData[2][1];
+    var fixedAxis = positionData[1];
+    var axisX = positionData[0];
+                        
+    for (var attractIndex in Object.keys(attractees)){
+        var aff = Object.keys(attractees)[attractIndex];
+        var attractorGraphics = null;
+        var label = null;
+        if (axisX && !getActiveLayer().axis.x){;
+            attractorGraphics = getActiveLayer().layer.rect(width,height).move(positions[attractIndex],fixedAxis).fill(getActiveLayer().color).attr({"class":"attractor"});
+            label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex]+width/2,fixedAxis+height/2-5, 'authors2016', aff).attr({fill:"white"});
+            for (var elIndex in elements){
+                var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
+                let element = elements[elIndex];
+                if (Object.keys(data).includes(chosen)){
+                    if (data[chosen].toString()=== aff){
+                    //add attractee
+                        let pointX = getRectMiddle(attractorGraphics)[0]-element.cx();
+                        elements[elIndex].animate(500).dx(pointX).during(function(){
+                            updateEdgesEnds(getElementFromGroup(element,'circle'),element.cx()-element.childDX,element.cy()-element.childDY);
+                        });
+                    }
+                }
+            } 
+        }else if (!axisX && !getActiveLayer().axis.y){
+            attractorGraphics = getActiveLayer().layer.rect(height,width).move(fixedAxis,positions[attractIndex]).fill(getActiveLayer().color);
+            label = drawLabel(getActiveLayer().layer, aff, fixedAxis+height/2-5,positions[attractIndex]+width/2, 'authors2016', aff).attr({fill:"white"}).transform({ rotation: 270 });
+            for (var elIndex in elements){
+                var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
+                let element = elements[elIndex];
+                if (Object.keys(data).includes(chosen)){
+                    if (data[chosen].toString()=== aff){
+                    //add attractee
+                        let pointY = getRectMiddle(attractorGraphics)[1]-element.cy();
+                        elements[elIndex].animate(500).dy(pointY).during(function(){
+                            updateEdgesEnds(getElementFromGroup(element,'circle'),element.cx()-element.childDX,element.cy()-element.childDY);
+                        });
+                    }
+                }
+            }
+
+        }
+
+    }
+    
+    if (axisX){
+        getActiveLayer().axis.x =true;
+    }else{
+        getActiveLayer().axis.y = true;
+    }
+}
+
+function verifyNodesHit(){
+    
 }

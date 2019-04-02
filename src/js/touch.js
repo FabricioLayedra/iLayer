@@ -88,6 +88,7 @@ function removeTouchEvents(nodeParent){
 // modes are often set by the user or even the layer itself
 
 function addLayerEvents(layer, drawer) {
+    console.log(drawer);
     let mc = new Hammer(layer);
 
     // let the pan gesture support all directions.
@@ -251,122 +252,156 @@ function addLayerEvents(layer, drawer) {
 
 }
 
+function nodeInSelection(nodeParent){
+    for (var i = 0; i<SELECTION.length; i++){
+        if(SELECTION[i]===nodeParent){
+            return true;
+        }
+    }
+    return false;
+}
+
+function addNodeToSelection(group){
+    if (!nodeInSelection(group)){
+        var circle = getElementFromGroup(group,'circle');
+        hideHighlight(circle);
+        circle.animate(100).attr({"r":circle.attr("r")+10});
+        circle.animate(100).attr({"r":circle.attr("r")});
+//        console.log(circle);
+//        console.log(getActiveLayer());
+//        console.log(getActiveLayer().layer);
+        var halo = drawHaloInCircle(getActiveLayer().layer,circle,5,getActiveLayer().color);
+//        console.log(halo);
+        console.log(group.add(halo));
+        group.add(halo);
+        console.log(group);;
+        halo.back();
+        SELECTION.push(group);
+    }else{
+        getElementFromGroup(group,'path').remove();
+        SELECTION = arrayRemove(SELECTION,group);
+    }
+}
+
+function selectionMode(mode){
+    if (mode){        
+        var groups = getActiveLayer().layer.select('g.node').members;
+        for (var index in groups){
+            let group = groups[index];
+//            console.log(group);
+            removeTouchEvents(group);
+            group.on('pointerdown',function(){
+//                console.log(group.node.id);
+                console.log(group);
+                addNodeToSelection(group);
+            });
+        }  
+        selectionFlag = mode;
+    }else{
+        var groups = getActiveLayer().layer.select('g.node').members;
+        for (var index in groups){
+            let group = groups[index];   
+            group.off('pointerdown');
+        }
+        selectionFlag = mode;
+    }
+}
+
 function addSelectionEvents(nodeParent){
     var mc = new Hammer(nodeParent.node);
-    var layerName = nodeParent.parent().node.id.split("layer-")[1];
-    var draw = LAYERS[layerName].layer;
-    var color = LAYERS[layerName].color;
 
     nodeParent.node.hammer = mc;
     
     mc.get('press').set({time:300});
     
     mc.on('press',function(event){
-//        selectionMode = true;
-        console.log(layerName);
-        hideHighlight(getElementFromGroup(nodeParent,'circle'))
-        var halo = drawHaloInCircle(draw,getElementFromGroup(nodeParent,'circle'),5,color);
-        nodeParent.add(halo);
-        halo.back();
-        SELECTION.push(nodeParent);
-        
-//        var groups = draw.select('g.node').members;
-//        for (var index in groups){
-//            let group = groups[index];
-//        }
+        selectionMode(true);
     });
     
     mc.on('pressup',function(event){
-        selectionMode = true;
+        addNodeToSelection(nodeParent);
 
-        var groups = draw.select('g.node').members;
-        for (var index in groups){
-            let group = groups[index];   
-            removeTouchEvents(group);
-
-            group.on('pointerdown',function(){
-//                if (!SELECTION.includes(group)){
-                    console.log(group + "being added");
-                    var halo = drawHaloInCircle(draw,getElementFromGroup(group,'circle'),5,color);
-                    group.add(halo);
-                    halo.back();
-                    SELECTION.push(group);
-                    console.log(SELECTION);
-//                }
-//                else{
-//                    console.log("");
-//                    arrayRemove(SELECTION,group);
-//                    
-//                    console.log(SELECTION);
-//                }
-            });
-//            console.log(group.node.hammer);
-        }
     });
-    
 }
+function addPressEvents(mc,toolGraphics,drawer,type,child) {
+    if (type==='gravity'){
+        console.log(type);
+        mc.get('press').set({time: 300});
+        mc.on('press', function(event) {
+            event.preventDefault();
+            $(event.target).attr('oncontextmenu', 'return false');
+            mc.off('panmove');
 
-function addPressEvents(mc,toolGraphics,drawer) {
+            let line = null;
+            let startingPoint = null;
+            let currentPoint = null;
 
-    mc.get('press').set({time: 300});
-    mc.on('press', function(event) {
-        event.preventDefault();
-        $(event.target).attr('oncontextmenu', 'return false');
-        mc.off('panmove');
-        
-        let line = null;
-        let startingPoint = null;
-        let currentPoint = null;
+            mc.on("panstart", function (ev) {
+                startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+                line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y)
+                        .stroke({color: '#f06', width: 1, linecap: 'round'})
+                        .attr({'stroke-dasharray': [8, 3], stroke: 'red'});
+            });
 
-        mc.on("panstart", function (ev) {
-            startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
-            line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y)
-                    .stroke({color: '#f06', width: 1, linecap: 'round'})
-                    .attr({'stroke-dasharray': [8, 3], stroke: 'red'});
+            mc.on("panmove", function (ev) {
+                currentPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+                line.attr("x2", currentPoint.x);
+                line.attr("y2", currentPoint.y);
+                line.stroke({color: '#f06000', width: 1, linecap: 'round'});
+                //CHANGE GRAVITY HERE
+                var x = line.attr("x2")-line.attr("x1");
+                var y = line.attr("y2")-line.attr("y1");
+                var x2 = Math.pow(Math.abs(x),2);
+                var y2 = Math.pow(Math.abs(y),2);
+                var magnitude = Math.sqrt(x2+y2);
+    //            console.log(x/magnitude,y/magnitude,magnitude);
+                addGravity(activatePhysics(getActiveLayer().layer.node.id),x/magnitude,y/magnitude,magnitude);
+
+            });
+
+            mc.on("panend", function (ev) {
+                line.remove();
+                mc.off('panstart');
+                mc.off('panmove');
+                mc.off('panend');
+                addDragEvents(mc,toolGraphics.parent(),toolGraphics);
+
+            });
         });
-
-        mc.on("panmove", function (ev) {
-            currentPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
-            line.attr("x2", currentPoint.x);
-            line.attr("y2", currentPoint.y);
-            line.stroke({color: '#f06000', width: 1, linecap: 'round'});
-            //CHANGE GRAVITY HERE
-            var x = line.attr("x2")-line.attr("x1");
-            var y = line.attr("y2")-line.attr("y1");
-            var x2 = Math.pow(Math.abs(x),2);
-            var y2 = Math.pow(Math.abs(y),2);
-            var magnitude = Math.sqrt(x2+y2);
-//            console.log(x/magnitude,y/magnitude,magnitude);
-            addGravity(activatePhysics(getActiveLayer().layer.node.id),x/magnitude,y/magnitude,magnitude);
-
-        });
-
-        mc.on("panend", function (ev) {
-            line.remove();
+        mc.on('pressup',function(event) {
             mc.off('panstart');
             mc.off('panmove');
             mc.off('panend');
-            addDragEvents(mc,toolGraphics);
 
+            addDragEvents(mc,toolGraphics.parent(),toolGraphics);
         });
-    });
-    mc.on('pressup',function(event) {
-        mc.off('panstart');
-        mc.off('panmove');
-        mc.off('panend');
+    }else if(type==='bending'){
+//        console.log();
+        addLayerEvents(getActiveLayer().layer.node,getActiveLayer().layer);
+    }
+}
 
-        addDragEvents(mc,toolGraphics);
-    });
+function moveElements(event, nodeGraphics,child){
+    let currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
+    var x = currentPoint.x-$("#accordionSidebar").width();
+    var y = currentPoint.y-70;
+    console.log("Previous");
+    console.log(x,y);
+
+    var x = currentPoint.x-$("#accordionSidebar").width() - child.previousX;
+    var y = currentPoint.y-70 - child.previousY;
+    nodeGraphics.dmove(x,y);
+    child.previousX = nodeGraphics.cx();
+    child.previousY = nodeGraphics.cy();
     
+//    
+//    
+//    let currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+////        console.log(ghost.cx(),ghost.cy());
+//    nodeGraphics.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
 }
 
-function moveElements(ev, nodeGraphics){
-    let currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-//        console.log(ghost.cx(),ghost.cy());
-    nodeGraphics.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
-}
-
-function addDragEvents(hammer,toolGraphics){
+function addDragEvents(hammer,ghostFather,ghost){
 
     // let the pan gesture support all directions.
     // this will block the vertical scrolling on a touch-device while on the element
@@ -374,25 +409,26 @@ function addDragEvents(hammer,toolGraphics){
     
     
 
-//    mc.on("panstart", function (ev) {
-//
-//        startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
-//        
-//        console.log(startingPoint.x,startingPoint.y);
-////        console.log(startingPoint);
-//        path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
-//        ghost = drawer.path(path).center(-20,-20).attr({"tool":true});
-////        ghost.draggable();
-//        let relationAspect = ghost.width()/ghost.height();
-//        ghost.height(25);
-//        ghost.width(25*relationAspect)
-//
-////        ghost = drawer.circle(5).center(-startingPoint.x,-startingPoint.y);
-//        
-//    });
+        let startingPoint = null;
+
+        let testCircle = null;
+
+        hammer.on("panstart", function (ev) {
+
+            startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+            var initX = startingPoint.x-$("#accordionSidebar").width();
+            var initY = startingPoint.y-70;
+            console.log("INIT POS");
+            console.log(initX,initY);
+            ghost.previousX = initX;
+            ghost.previousY = initY;
+            
+            $(ghost).css("zIndex","-1000000");
+
+        });
 
     hammer.on("panmove", function (ev) {
-        moveElements(ev,toolGraphics);
+        moveElements(ev,ghostFather,ghost);
     });
 
 //    mc.on("panend", function (ev) {
@@ -407,56 +443,88 @@ function getActiveLayer(){
     return activeLayer;
 }
 
-function addToolEvents(tool) {
-    let mc = new Hammer(tool);
+function addToolEvents(tool,type) {
+//    console.log($(tool).prop('disabled'));
+    if (!$(tool).prop('disabled')){
+        let mc = new Hammer(tool);
 
-    // let the pan gesture support all directions.
-    // this will block the vertical scrolling on a touch-device while on the element
-    mc.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
-    
-    let startingPoint = null;
-    let currentPoint = null;
-    let path = null;
-    let ghost = null;
-    
-    
+        // let the pan gesture support all directions.
+        // this will block the vertical scrolling on a touch-device while on the element
+        mc.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
 
-    mc.on("panstart", function (ev) {
+        let startingPoint = null;
+        let currentPoint = null;
+        let path= null;
+        let ghost = null;
+        let ghostFather = null;
 
-        startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+
+        let testCircle = null;
+
+        mc.on("panstart", function (ev) {
+
+            startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+//tool.getBoundingClientRect().x;
+            var initX = startingPoint.x-$("#accordionSidebar").width();
+            var initY = startingPoint.y-70;
+            console.log("INIT POS");
+            console.log(initX,initY);
+    //        console.log(startingPoint);
+            path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
+            ghostFather = getActiveLayer().layer.group();
+            
+
+            
+            
+            ghost = getActiveLayer().layer.path(path).move(initX,initY).attr({"tool":true,fill:getActiveLayer().color});
+    //        ghost.draggable();
+            var relationAspect = ghost.width()/ghost.height();
+            ghost.height(50);
+            ghost.width(50*relationAspect);
+            
+            ghostFather.add(ghost);
+            ghostFather.add(getActiveLayer().layer
+                .text(type)
+                .center(ghost.cx(),ghost.cy()+ghost.height()*0.6)
+                );
         
-        console.log(startingPoint.x,startingPoint.y);
-//        console.log(startingPoint);
-        path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
-        ghost = getActiveLayer().layer.path(path).center(-20,-20).attr({"tool":true});
-//        ghost.draggable();
-        let relationAspect = ghost.width()/ghost.height();
-        ghost.height(50);
-        ghost.width(50*relationAspect);
+            console.log(ghost.cx(),ghost.cy());
+            
+            ghost.previousX = initX;
+            ghost.previousY = initY;
+            
+//            testCircle = getActiveLayer().layer.circle(5).center(ghost.previousX,ghost.previousY);
 
-//        ghost = drawer.circle(5).center(-startingPoint.x,-startingPoint.y);
-        
-    });
+            //set the distance between the group and the tool
+            ghostFather.childDX = ghostFather.cx()-getElementFromGroup(ghostFather,'path').cx();
+            ghostFather.childDY = ghostFather.cy()-getElementFromGroup(ghostFather,'path').cy();
 
-    mc.on("panmove", function (ev) {
-        currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-        console.log(ghost.cx(),ghost.cy());
-        ghost.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
 
-    });
+        });
 
-    mc.on("panend", function (ev) {
-        ghost.front();
-//        ghost.draggable();
-        let mc = new Hammer(ghost.node);
+        mc.on("panmove", function (event) {
+            currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
+            var x = currentPoint.x-$("#accordionSidebar").width();
+            var y = currentPoint.y-70;
+            console.log("Previous");
+            console.log(x,y);
 
-        addDragEvents(mc,ghost);
-        console.log(ghost);
+            var x = currentPoint.x-$("#accordionSidebar").width() - ghost.previousX;
+            var y = currentPoint.y-70 - ghost.previousY;
+            ghostFather.dmove(x,y);
+            ghost.previousX = ghostFather.cx();
+            ghost.previousY = ghostFather.cy();
+        });
 
-        addPressEvents(mc,ghost,getActiveLayer().layer);
-//        console.log(activeLayer);
-    });
+        mc.on("panend", function (ev) {
+            ghost.front();
+    //        ghost.draggable();
+            let mc = new Hammer(ghost.node);
+
+            addDragEvents(mc,ghostFather,ghost);
+            addPressEvents(mc,ghost,getActiveLayer().layer,type);
+    //        console.log(activeLayer);
+        });
+    }
 
 }
-
-

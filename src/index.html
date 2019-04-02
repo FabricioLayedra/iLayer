@@ -50,13 +50,19 @@
                     <div class="col-md-8 py-1 pl-3 pr-0 pb-0" id="container-item-untitled">
                         <input type="text"  id = "item-untitled" class="form-control-plaintext text-white my-auto" readonly="true" value="">
                     </div>
-                    <div class="col-md-2 pl-2">
+                    <div class="col-md-2 pl-0">
                         <!--<i class="fas fa-eye" style="fill: white;"></i>-->
                             <div class="row-fluid">
+                                <div class="col-6 pl-1">
+                                <button class="btn button-color p-0 mb-1 m-0 px-1 py-0" type="button" id ="visibility-untitled" >
+                                    <i class="fas fa-eye" style="fill: black;"></i>
+                                  </button>
 
-                                <i id ="visibility-untitled" class="fas fa-eye" style="fill: white;"></i>
+                               <button class="btn button-color pr-2 pl-1 py-0" type="button" id ="delete-untitled">
+                                    <i  class="fas fa-trash" style="fill: black;"></i>
+                                  </button>
+                            </div>
 
-                                <i id ="delete-untitled" class="fas fa-trash" style="fill: white;"></i>
                             </div>
 
                     </div>
@@ -134,23 +140,60 @@
 
         
       </template>
+      
+            <!-- Templates -->
+      <template id="tool-element">
+            <div class="mr-2">
+                <button class="btn button-color" type="button">
+                    
+                  </button>
+            </div>
+      </template>
 
+                        <!-- Templates -->
+      <template id="direction-element">
+          <span id='attribute-title' style = "color:black"> Attribute: orientation</span>
+          <div class="col-12 pl-1">
+            <button class="btn button-color p-0 mb-1 m-0 px-1 py-0" type="button" style = "width:2em;height:2em" id ="go-back" >
+                <i class="fas fa-long-arrow-alt-left" style="fill: black;"></i>
+            </button>
+              
+            <button class="btn button-color p-0 mb-1 m-0 px-1 py-0" type="button" style = "width:2em;height:2em" id="left">
+                <img src="img/left.svg" alt="signifier-left">
+            </button>
+              
+            <button class="btn button-color p-0 mb-1 m-0 px-1 py-0" type="button" style = "width:2em;height:2em" id="down">
+                <img src="img/down.svg" alt="signifier-down">
+            </button>
+              
+            <button class="btn button-color p-0 mb-1 m-0 px-1 py-0" type="button" style = "width:2em;height:2em" id="right">
+                <img src="img/rigth.svg" alt="signifier-right">
+            </button>
+              
+            <button class="btn button-color p-0 mb-1 m-0 px-1 py-0" type="button" style = "width:2em;height:2em" id="up">
+                <img src="img/up.svg" alt="signifier-up">
+            </button>
+          </div>
+          <!--<div class='col-divider ml-2 mr-3' ></div>-->
+
+      </template>
+            
     <!-- Page Wrapper -->
     <div id="wrapper">
 
       <!-- Sidebar -->
-      <ul class="navbar-nav  bg-sidebar sidebar sidebar-dark accordion" id="accordionSidebar">
+      <ul class="navbar-nav  bg-sidebar sidebar sidebar-dark accordion" id="accordionSidebar" style="border-right: black solid 1px">
 
         <!-- Sidebar - Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-          <div class="sidebar-brand-icon rotate-n-15">
+          <div class="sidebar-brand-icon rotate-n-15 rule-text-color">
             <i class="fas fa-network-wired"></i>
           </div>
-          <div class="sidebar-brand-text mx-3">iLayer</div>
+          <div class="sidebar-brand-text mx-3 rule-text-color">iLayer</div>
         </a>
 
         <!-- Divider -->
-        <hr class="sidebar-divider my-0">
+        <!--<hr class="sidebar-divider my-0 rule-text-color">-->
 
 
 
@@ -163,12 +206,12 @@
         </li>-->
 
         <!-- Divider -->
-        <hr class="sidebar-divider">
+        <hr class="sidebar-divider rule-back-color">
 
         <!-- Heading -->
         <div class="font-title sidebar-heading row">
             <div class = "col-md-8">
-                <span class=" align-middle">LAYERS</span>
+                <span class=" align-middle rule-text-color">LAYERS</span>
             </div>
             <div class ="col-md-4 text-center pr-0 mr-0">
                 <button type="button" class="btn btn-light px-2 py-0 " id = "new-layer" onpointerdown="event.preventDefault()">+</button>
@@ -177,39 +220,7 @@
         </div>
          <li class="nav-item active">
         <ul class="navbar-nav nav-link" id ="layers-table">
-        <!-- Nav Item - Pages Collapse Menu -->
 
-    <!--      <li class="nav-item">
-
-          <div class="container">
-            <div class="row">
-              <div class="col-sm-auto pr-0">
-                <input class="form-check-input my-auto" type="checkbox"  checked="true" layer="untitled">
-              </div>
-              <div class="col-2-auto mr-1" id = "color-nodes"  style="background-color:orange; height: auto; width: 5px">
-              </div> 
-              <div class="col-8 my-auto">
-                <input type="text" id="p-nodes" class="form-control-plaintext text-white" readonly="true" id="staticEmail" value="Untitled">
-              </div>
-              <div class="col-2">
-                <button class="btn btn-light-outline stop-drag" type="button" data-toggle="collapse" data-target="#collapse_nodes" aria-expanded="false" aria-controls="collapse_nodes" >
-                  <i class="fas fa-arrow-down" style="fill: white;"></i>
-                </button> 
-              </div>
-            </div>
-            <div class="row collapse" id="collapse_nodes">
-              <div class="bg-white py-2 collapse-inner rounded">
-                <div class="row">
-                  <h6 class="collapse-header">Opacity</h6>
-                  <h6 class="collapse-header" id="opacity_nodes">100</h6>
-                </div>
-                <div class="collapse-item slidecontainer">
-                  <input type="range" min="1" max="100" value="100" class="slider" id="range_nodes">
-                </div>
-              </div>
-            </div>
-          </div>
-        </li>-->
         </ul>
          </li>
 
@@ -218,7 +229,7 @@
 
 
         <!-- Divider -->
-        <hr class="sidebar-divider">
+        <hr class="sidebar-divider rule-back-color">
 
         <!-- Sidebar Toggler (Sidebar) -->
         <div class="text-center d-none d-md-inline">
@@ -245,7 +256,8 @@
         <div id="content">
 
           <!-- Topbar -->
-          <nav class="navbar navbar-expand navbar-light bg-sidebar topbar static-top " style="border-left: #676974 solid 2px;">
+          <nav class="navbar navbar-expand navbar-light bg-sidebar topbar static-top " style="border-bottom: black solid 1px;" id="set-tools">
+              
             <!-- Sidebar Toggle (Topbar) -->
 <!--            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
               <i class="fa fa-bars"></i>
@@ -260,13 +272,13 @@
             </div>
             
             <div class="mr-2">
-                <button class="btn button-color tool" type="button" id="atractor">
+                <button class="btn button-color tool" type="button" id="atractor" disabled>
                     <i class="fas fa-compress-arrows-alt fa-sm"></i>
                   </button>
             </div>
             
             <div class="mr-2">
-                <button class="btn button-color tool" type="button" id="repulsor">
+                <button class="btn button-color tool" type="button" id="repulsor" disabled>
                     <i class="fas fa-expand-arrows-alt fa-sm"></i>
                   </button>
             </div>
@@ -283,7 +295,7 @@
             </div>
             
             <div class="mr-2">
-                <button class="btn button-color tool" type="button" id="breaking">
+                <button class="btn button-color tool" type="button" id="breaking" disabled>
                     <i class="fas fa-unlink fa-sm"></i>
                   </button>
             </div>
@@ -293,7 +305,7 @@
             <!-- Selection related -->
 
             <div class="mr-2">
-                <button class="btn button-color tool" type="button" id="lineset">
+                <button class="btn button-color tool" type="button" id="lineset" disabled>
                     <i class="fas fa-slash fa-sm"></i>
                   </button>
             </div>
@@ -303,11 +315,15 @@
             <!-- Panning related -->
 
             <div class="mr-2">
-                <button class="btn button-color tool" type="button" id="lineset">
+                <button class="btn button-color tool" type="button" id="panning" disabled>
                     <i class="fas fa-hand-paper fa-sm"></i>
                   </button>
             </div>
+                        
+            <div class='col-divider ml-2 mr-3'></div>
+
 <!--            
+
             <div>
                 <button class="btn button-color" type="button">
                     <i class="fas fa-search fa-sm"></i>
@@ -315,7 +331,7 @@
             </div>-->
             
             
-            <form class="d-none d-sm-inline-block form-inline mr-md-2 ml-auto my-2 my-md-0 mw-100 navbar-search ">
+            <form class="d-none d-sm-inline-block form-inline mr-md-2 ml-auto my-2 my-md-0 mw-100 navbar-search " id ="search-bar-container">
               <div class="input-group">
                 <input id="search-bar" type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search"
     aria-describedby="basic-addon2" >
@@ -389,13 +405,14 @@
     <!-- Sorting plugin-->
     <script src="lib/jquery-sortable.js"></script> 
     <script src="lib/Sortable.min.js"></script>
+    <script src="lib/svg_2.7.1.js"></script>    
 
+    
     <!-- iLayer core -->
     <script src="js/utils.js"></script>
     <script src="lib/graphlib/dist/graphlib.min.js"></script>
     
     <!--<script src="lib/svg_3.0.12.js"></script>-->
-    <script src="lib/svg_2.7.1.js"></script>    
 
     <script src="lib/svg.draggable.js" charset="utf-8"></script>   
     <script src="lib/jquery-ui.js" charset="utf-8"></script>   
