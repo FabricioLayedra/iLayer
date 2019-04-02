@@ -288,7 +288,7 @@ function selectionMode(mode){
         var groups = getActiveLayer().layer.select('g.node').members;
         for (var index in groups){
             let group = groups[index];
-            console.log(group);
+//            console.log(group);
             removeTouchEvents(group);
             group.on('pointerdown',function(){
 //                console.log(group.node.id);

@@ -157,7 +157,7 @@ function addEvents(id) {
 ////    })
     
     $("#container-item-"+id).on('pointerdown', function(){
-        console.log(this);
+//        console.log(this);
         if (selectionFlag){
             includeSelection(id);
         }
@@ -190,6 +190,8 @@ function activateLayer(layerName){
         }
 //        $("#set-canvases").prepend($("#layer-" + layer).detach());
     }
+    
+
        
 
     $(active).css("background-color",lightenDarkenColor(LAYERS[layerName]["color"],20));
@@ -680,7 +682,9 @@ function addGraphAsLayer(g, layerName) {
 //    var darkenColor = lightenDarkenColor(color, -10);
 
     addNewLayer(layerName);
-    var color = '#dddfe2';
+    var color = LAYERS[layerName].color;
+    console.log("COLOR NODES");
+    console.log(color);
     var darkenColor = lightenDarkenColor(color, -10);
 
 //    drawGraph(LAYERS[layer_name].layer, g);
@@ -695,6 +699,8 @@ function addGraphAsLayer(g, layerName) {
 
 function drawGraph(layer_name, g) {
     var draw = LAYERS[layer_name].layer;
+    var color = LAYERS[layer_name].color;
+    console.log(color);
     var graphId = g._label;
     var directed = g.directed;
     var nodeKeys = g.nodes();
@@ -712,7 +718,7 @@ function drawGraph(layer_name, g) {
 //            nodeData.edges = new Array();
 //        }
 
-        var radius =50;
+        var radius =40;
         
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
         var y = getRandomBetween(30,600);
@@ -727,7 +733,7 @@ function drawGraph(layer_name, g) {
         group.firstTime = true;
         
         // creation of the elements
-        var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId);
+        var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId,color);
         var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + (radius/2), graphId,labelName);
         var r = circle.attr('r') + circle.attr('stroke-width') / 2 ;
         var ear = drawEarInCircle(draw,r,circle.cx(),circle.cy(),LAYERS[layer_name]["color"]);
@@ -767,7 +773,8 @@ function drawGraph(layer_name, g) {
     });
     
     LAYERS[layer_name].attributes = dataKeys;
-    addAttributesAsTools(dataKeys);
+                addAttributesAsTools(dataKeys);
+
 
     edges.forEach(function (edge) {
 
@@ -790,7 +797,7 @@ function drawGraph(layer_name, g) {
         var edgePath = drawPathInLayer(draw, fromCenterX, fromCenterY,
                 controlX, controlY, toCenterX, toCenterY, id, graphId,layer_name);
                 
-        var group = draw.group().attr({id:"path-"+id});
+        var group = draw.group().attr({id:"path-"+id,});
     //    console.log(group);
         group.add(edgePath);
         group.layerName = layer_name;
@@ -821,7 +828,7 @@ function addHighlightToGroups(groups){
     }
 }
 
-function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
+function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId,color) {
     
     var nodeGraphics = drawer.circle(radius)
             .attr({cx: cx,
@@ -829,7 +836,7 @@ function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId) {
                 id: id,
                 graph: graphId
             })
-            .move(cx, cy);
+            .move(cx, cy).fill(color);
     
     //Add context_menu to the element using the selector, in this case the id
 //    addContextMenu("#" + id);
@@ -874,9 +881,9 @@ function drawPathInLayer(drawer, fromCenterX, fromCenterY,
             .M({x: fromCenterX, y: fromCenterY})
             .Q({x: controlX, y: controlY}, {x: toCenterX, y: toCenterY})
             .attr({
-                stroke: 'gray',
+                stroke: LAYERS[layerName].color,
                 fill: 'transparent',
-                strokeWidth: 1,
+                'stroke-width':3.5,
                 id: id,
                 'pointer-events': 'visibleStroke'
             }).off();
@@ -1302,9 +1309,38 @@ function sendSelectionToLayer(destination){
     }
 }
 
+function getNodesNames(nodes){
+    var names = [];
+    for (var nodeIndex in nodes){
+        names.push(nodes[nodeIndex].node.id.split("-")[1]);
+    }
+    return names;
+}
+
+function sendEdgesToLayer(source,nodesNames,edges,destination){
+    var layerName = destination.split("-")[1];
+//    console.log("neighbour");
+    for (var index in edges){
+//        console.log(edges[index]);
+//        console.log(edges[index].node.id);
+//        console.log(edges[index].node.id.split("#")[1]);
+//        console.log();
+        if (nodesNames.includes(edges[index].node.id.replace(source.node.id,""))){
+            
+            SVG.get(edges[index].node.id).attr({"stroke":LAYERS[layerName].color});
+            SVG.get(destination).put(SVG.get(edges[index].node.id).remove()).back();
+            console.log("Included");
+        }
+    }
+}
+
 function includeSelection(layerName){
-    console.log(getActiveLayer());
+//    console.log(getActiveLayer());
     selectionMode(false);
+    
+
+    var dataKeys = [];
+    var names = getNodesNames(SELECTION);
     
     $("#container-item-"+layerName).addClass('item-animated');
 
@@ -1314,15 +1350,30 @@ function includeSelection(layerName){
     //Todo has to be changed!
     var nodes = SVG.select('g.node').members;
     
-    console.log(nodes);
+//    console.log(nodes);
     
     for (var i =0; i<nodes.length; i++){
         let object = nodes[i];
-        console.log(SELECTION.includes(nodes[i]));
+//        console.log(SELECTION.includes(nodes[i]));
         if (SELECTION.includes(nodes[i])){
             let svgDestination = getSvgId(layerName);
             object = SVG.get(svgDestination).put(object.remove());
     //            getElementFromGroup(object,'circle').highlight = null;
+            var circle = getElementFromGroup(object,'circle');
+            
+            dataKeys = Object.keys(circle.nodeData.authorInfo);
+            //removing the keys I do not want
+            dataKeys = arrayRemove(dataKeys,'id');
+            dataKeys = arrayRemove(dataKeys,'group');
+            dataKeys = arrayRemove(dataKeys,'name');
+            dataKeys = arrayRemove(dataKeys,'number of papers')
+            console.log(dataKeys);
+            LAYERS[layerName].attributes = dataKeys;
+//            addAttributesAsTools(dataKeys);
+            circle.fill(LAYERS[layerName].color);
+            sendEdgesToLayer(circle,names,circle.nodeData.inEdges,svgDestination);
+//            isNeighbour(circle,names,circle.nodeData.outEdges);
+
 
             getElementFromGroup(object,'path').remove();
 
