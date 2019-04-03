@@ -81,3 +81,23 @@ function blink(object) {
         object.animate(duration).scale(1, 1);
     }, duration);
 }
+
+function showPanel(id) {
+    var theElement = $('#' + id);
+    var duration = 400;
+    var easing = 'easeOutSine';
+    theElement.show({
+        duration: duration,
+        easing: easing
+    });
+}
+
+function hidePanel(id) {
+    var theElement = $('#' + id);
+    var duration = 400;
+    var easing = 'easeOutSine';
+    theElement.hide({
+        duration: duration,
+        easing: easing
+    });
+}

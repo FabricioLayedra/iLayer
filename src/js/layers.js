@@ -20,7 +20,7 @@ var GRAPHS = {};
 
 var SELECTION = [];
 
-var COLORS = ["#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD","#8C564B","#E3775E","#7F7F7F","#BCBD22","#17BECF"];
+var COLORS = ["#1F77B4", "#FF7F0E", "#2CA02C", "#D62728", "#9467BD", "#8C564B", "#E3775E", "#7F7F7F", "#BCBD22", "#17BECF"];
 
 var el = document.getElementById("layers-table");
 
@@ -31,8 +31,8 @@ var activeLayer = null;
 var setCanvases = $("#content");
 
 var generalWidth = setCanvases.width();
-var generalHeight = $(document).height()-70;
-console.log(generalWidth,generalHeight);
+var generalHeight = $(document).height() - 70;
+console.log(generalWidth, generalHeight);
 
 
 
@@ -53,9 +53,9 @@ function getRandomColor() {
 }
 
 function getColor() {
-    if (Object.keys(LAYERS).length < 10){
+    if (Object.keys(LAYERS).length < 10) {
         return COLORS[Object.keys(LAYERS).length];
-    }else{
+    } else {
         alert("No more available layers.")
     }
 }
@@ -65,17 +65,17 @@ function getColor() {
 function addNewLayer(layerName) {
     var color = getColor();
 //    console.log(color);
-    var layer = createLayer(layerName,color);
+    var layer = createLayer(layerName, color);
     $("#layers-table").append(layer);
-    addColorsAndBorders(layerName,color);
+    addColorsAndBorders(layerName, color);
     addEvents(layerName);
     sortLayers($("#layers-table"));
 }
 
-function createLayer(layerName,color) {
+function createLayer(layerName, color) {
 //    var canvas = document.createElement("div");
     var container = document.getElementById("set-canvases");
-    var canvas = createSVG(container,layerName, generalWidth, generalHeight,color);
+    var canvas = createSVG(container, layerName, generalWidth, generalHeight, color);
 
     canvas.setAttribute("id", "layer-" + layerName);
     canvas.setAttribute("style", "position: absolute;");
@@ -90,21 +90,21 @@ function createLayer(layerName,color) {
     return layer;
 }
 
-function createSVG(container,layerName, width, height, color) {
-    var draw = SVG(container).size(width, height).attr({"id":"layer-"+layerName});
+function createSVG(container, layerName, width, height, color) {
+    var draw = SVG(container).size(width, height).attr({"id": "layer-" + layerName});
 //    window.draw = draw;
-    LAYERS[layerName] = {layer: draw, "physics-engine": null, color:color, axis:{x:false,y:false}};
+    LAYERS[layerName] = {layer: draw, "physics-engine": null, color: color, axis: {x: false, y: false}};
 //    addLayerEvents(draw.node, draw);
     return draw.node;
 }
 
 function changeLayerNames(item, id) {
-        
+
     $(item.querySelector("li[id^='layer']")).attr("id", "layerItem-" + id);
     $(item.querySelector("div[id^='color']")).attr("id", "color-" + id);
     $(item.querySelector("div[id^='container-item']")).attr("id", "container-item-" + id);
     $(item.querySelector("input[id^='item']")).attr("id", "item-" + id);
-    $(item.querySelector("input[id^='item']")).attr("value", "Layer " + id);
+    $(item.querySelector("input[id^='item']")).attr("value", "Layer " + id);    
     $(item.querySelector("button[id^='visibility']")).attr("id", "visibility-" + id);
     $(item.querySelector("button[id^='delete']")).attr("id", "delete-" + id);
 //    $(item.querySelector('div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("id", "color-" + id);
@@ -120,9 +120,9 @@ function changeLayerNames(item, id) {
 //    $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div:nth-child(2) > div.col-4 > input')).attr("id", "gravity-handler-" + id);
 }
 
-function addColorsAndBorders(layerName,color){
-    $("#color-"+layerName).attr("style", "background-color: " + color + "; height: auto; width: 5px; background-clip: content-box");
-    $("#container-item-"+layerName).attr("style","border:  solid 1px "+color);
+function addColorsAndBorders(layerName, color) {
+    $("#color-" + layerName).attr("style", "background-color: " + color + "; height: auto; width: 5px; background-clip: content-box");
+    $("#container-item-" + layerName).attr("style", "background-color: #eee; border:  solid 1.5px " + color);
 }
 
 function addEvents(id) {
@@ -155,60 +155,55 @@ function addEvents(id) {
 ////    $(item.querySelector('#p-'+layerName)).mouseleave(function () {
 ////        highlightLayer(layerName);
 ////    })
-    
-    $("#container-item-"+id).on('pointerdown', function(){
+
+    $("#container-item-" + id).on('pointerdown', function () {
 //        console.log(this);
-        if (selectionFlag){
+        if (selectionFlag) {
             includeSelection(id);
         }
         activateLayer(id);
-
     });
-    
-    $("#visibility-"+id).on('pointerdown', function(){
+
+    $("#visibility-" + id).on('pointerdown', function () {
         console.log("Touching");
         showHideLayer(id);
-
     });
 }
 
-function activateLayer(layerName){
+function activateLayer(layerName) {
 //    console.logitem);
-    if (active){
-        $(active).css("background-color","");
+    if (active) {
+        $(active).css("background-color", "#eee");
     }
-    active = $("#container-item-"+layerName);
+    active = $("#container-item-" + layerName);
     activeLayer = LAYERS[layerName];
-    
+
     var layers = getLayersNames(LAYERS);
     for (var i = 0; i < layers.length; i++) {
-	let layer = "#layer-" + layers[i];
-        if (layers[i]===layerName){
-            SVG.get(layer).attr({'pointer-events':'auto'});
-        }else{
-            SVG.get(layer).attr({'pointer-events':'none'});
+        let layer = "#layer-" + layers[i];
+        if (layers[i] === layerName) {
+            SVG.get(layer).attr({'pointer-events': 'auto'});
+        } else {
+            SVG.get(layer).attr({'pointer-events': 'none'});
         }
 //        $("#set-canvases").prepend($("#layer-" + layer).detach());
     }
     
-
-       
-
-    $(active).css("background-color",lightenDarkenColor(LAYERS[layerName]["color"],20));
+    $(active).css("background-color", lightenDarkenColor(LAYERS[layerName]["color"], 20));
 }
 
 function showHideLayer(layerName) {
     var layer = "#layer-" + layerName;
-    
-            console.log($(layer).css('display')==='block');
 
-    
-    if ($(layer).css("display")==='none'){
+    console.log($(layer).css('display') === 'block');
+
+
+    if ($(layer).css("display") === 'none') {
         $(layer).css("display", "block");
-    }else if($(layer).css("display")==='block'){
+    } else if ($(layer).css("display") === 'block') {
         console.log("fs");
         $(layer).css("display", "none");
-    }else{
+    } else {
         console.log("YRS");
     }
 //    if (checkbox.checked) {
@@ -217,7 +212,7 @@ function showHideLayer(layerName) {
 //    }
 }
 
-function getPhysicsEngine(layerName){
+function getPhysicsEngine(layerName) {
     var engine = null;
     if (!LAYERS[layerName]["physics-engine"]) {
         engine = createPhysicsWorld(layerName);
@@ -234,7 +229,7 @@ function activatePhysics(layerTag) {
 //    console.log(LAYERS);
 //    console.log(layer);
     var engine;
-    
+
     if (!LAYERS[layer]["physics-engine"]) {
         engine = createPhysicsWorld(layer);
         addElementsToWorld(engine.world, layer);
@@ -307,7 +302,7 @@ function gravityHandler(checkbox, up) {
             Matter.Engine.clear(LAYERS[layer]["physics-engine"]);
 //            stop_physics(LAYERS[layer]["physics-engine"]);
             LAYERS[layer]["physics-engine"] = null;
-            
+
         }
         console.log("Removing physics...");
     }
@@ -357,12 +352,12 @@ function opacityChanger(range) {
 
 function sortLayers(list) {
     var children = $(list).children();
-    for (var i = 0; i <children.length; i++) {
-	let layer = children[i].getAttribute("id").toLowerCase().split("-")[1];
+    for (var i = 0; i < children.length; i++) {
+        let layer = children[i].getAttribute("id").toLowerCase().split("-")[1];
         $("#set-canvases").prepend($("#layer-" + layer).detach());
     }
-       
-    
+
+
 }
 
 /*---------------------------------PHYSICS--------------------------------------*/
@@ -381,9 +376,9 @@ function createPhysicsWorld(layer_name, boundaries) {
         element: document.body,
         engine: engine,
         options: {
-         width: generalWidth,
-         height: generalHeight
-       }
+            width: generalWidth,
+            height: generalHeight
+        }
     });
     Render.run(render);
 //    
@@ -391,19 +386,19 @@ function createPhysicsWorld(layer_name, boundaries) {
     // create demo scene
     var world = engine.world;
     world.gravity.scale = 0;
-    
+
     var strongness = 300;
-    
+
 //   var length = 120000;
 //   var dimensions = [1200,800];
 //   var tickerLength = 300;
 //    
-    var roof = Bodies.rectangle(generalWidth/2,-(strongness/2)+5, generalWidth,strongness, {isStatic: true});
-    var leftWall = Bodies.rectangle(-(strongness/2)+10,0+generalHeight/2,  strongness, generalHeight, {isStatic: true});
-    var rightWall = Bodies.rectangle(0+generalWidth+strongness/2-20, 0+generalHeight/2, strongness, generalHeight, {isStatic: true});
+    var roof = Bodies.rectangle(generalWidth / 2, -(strongness / 2) + 5, generalWidth, strongness, {isStatic: true});
+    var leftWall = Bodies.rectangle(-(strongness / 2) + 10, 0 + generalHeight / 2, strongness, generalHeight, {isStatic: true});
+    var rightWall = Bodies.rectangle(0 + generalWidth + strongness / 2 - 20, 0 + generalHeight / 2, strongness, generalHeight, {isStatic: true});
     console.log(generalWidth);
-    
-    var ground = Bodies.rectangle(0+generalWidth/2,generalHeight+100-distLabelGroup/2,generalWidth,200, {isStatic: true});
+
+    var ground = Bodies.rectangle(0 + generalWidth / 2, generalHeight + 100 - distLabelGroup / 2, generalWidth, 200, {isStatic: true});
     console.log(ground);
 //
     World.add(world, roof);
@@ -417,7 +412,7 @@ function createPhysicsWorld(layer_name, boundaries) {
     return engine;
 }
 
-function removeWorld(engine){
+function removeWorld(engine) {
     Matter.World.clear(engine.world);
     Matter.Engine.clear(engine);
 }
@@ -432,7 +427,7 @@ function stop_physics(engine) {
     engine.enabled = false;
 }
 
-function addGravity(engine,x,y,factor) {
+function addGravity(engine, x, y, factor) {
 //    if (engine.world.gravity.scale !== 0) {
 ////        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Add gravity" ;
 //        engine.world.gravity.scale = 0;
@@ -444,7 +439,7 @@ function addGravity(engine,x,y,factor) {
 //      engine.world.gravity.scale = factor;
 //      return;
 //    }
-    engine.world.gravity.x =x;
+    engine.world.gravity.x = x;
     engine.world.gravity.y = y;
     engine.world.gravity.scale = factor * 0.00001;
 //    console.log(engine.world.gravity);
@@ -457,28 +452,28 @@ function addElementsToWorld(world, layer) {
 
     var elements = LAYERS[layer].layer.children();
 
-     for (var i = 0; i < elements.length; i++) {
+    for (var i = 0; i < elements.length; i++) {
         var group = elements[i];
 //        console.log(group.children());
-        let circle = getElementFromGroup(group,"circle");
+        let circle = getElementFromGroup(group, "circle");
 //        count+=1;
 //        console.log(count);
 //        console.log(circle);
 //        if (element.type === "circle") {  
-        if (circle){
-            var x = group.cx()-group.childDX;
+        if (circle) {
+            var x = group.cx() - group.childDX;
 //            console.log(circle.cx());
 //            console.log(group.cx()-group.childDX);
 
-            var y = group.cy()-group.childDY;
+            var y = group.cy() - group.childDY;
 //            console.log(circle.cy());
 //            console.log(group.cy()-group.childDY)
 //            LAYERS[layer].layer.circle(5).center(x,y).attr({fill:"red",opacity:0.25});
-           
+
             var radius = circle.attr("r");
 //            var deltaX = group.cx()-circle.cx();
 //            var deltaY = group.cy()-circle.cy();
-            
+
             var matterObject = Bodies.circle(x, y, radius);
 
             //nodeData.matter = matterObject;
@@ -496,8 +491,8 @@ function addElementsToWorld(world, layer) {
 function add_element_to_world(world, element) {
     var Bodies = Matter.Bodies;
     var World = Matter.World;
-    
-    var circle = getElementFromGroup(element,"circle");
+
+    var circle = getElementFromGroup(element, "circle");
 
 
     if (!element.matter) {
@@ -505,9 +500,9 @@ function add_element_to_world(world, element) {
         var x = circle.cx();
         var y = circle.cy();
         var radius = circle.attr("r");
-        
+
         console.log("Parameters child");
-        console.log(x,y,radius);
+        console.log(x, y, radius);
 
         var matterObject = Bodies.circle(x, y, radius);
         matterObject.frictionAir = 0.025;
@@ -560,13 +555,13 @@ function add_attractor_to_world(world, element) {
 
 
     } else if (element.type === "rect") {
-        
+
         var x = element.attr('x');
         var y = element.attr('y');
         var width = element.width();
         var height = element.height();
-        
-        var matterObject = Bodies.rectangle(x+width/2,y,width,height, {isStatic: true,
+
+        var matterObject = Bodies.rectangle(x + width / 2, y, width, height, {isStatic: true,
             plugin: {
                 attractors: [
                     function (theAttractor, theBody) {
@@ -613,11 +608,11 @@ function loadGraph(filename, key, directed) {
             var keys = Object.keys(data);
             dataInfo = {};
             dataInfo["name"] = data["id"];
-            for (var index in keys){
+            for (var index in keys) {
                 dataInfo[keys[index]] = data[keys[index]];
             }
 //            console.log(dataInfo);
-            
+
             g.setNode(format_id(data["id"]), {authorInfo: dataInfo});
         });
 
@@ -694,7 +689,7 @@ function addGraphAsLayer(g, layerName) {
 
 //    console.log(svg_id);
     SVG.get(svg_id).select("circle").attr({fill: color, stroke: darkenColor, 'stroke-width': 2});
-        
+
 }
 
 function drawGraph(layer_name, g) {
@@ -718,41 +713,41 @@ function drawGraph(layer_name, g) {
 //            nodeData.edges = new Array();
 //        }
 
-        var radius =40;
-        
+        var radius = 40;
+
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
-        var y = getRandomBetween(30,600);
-        var x = getRandomBetween(30,1200);
-        
+        var y = getRandomBetween(30, 600);
+        var x = getRandomBetween(30, 1200);
+
         //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
         var labelName = nodeData.authorInfo.name;
-        
+
         //CREATION OF THE GROUP
-        var group = draw.group().attr({id:"group-"+nodeKey,class:"node"});
+        var group = draw.group().attr({id: "group-" + nodeKey, class: "node"});
         group.layerName = layer_name;
         group.firstTime = true;
-        
+
         // creation of the elements
-        var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId,color);
-        var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + (radius/2), graphId,labelName);
-        var r = circle.attr('r') + circle.attr('stroke-width') / 2 ;
-        var ear = drawEarInCircle(draw,r,circle.cx(),circle.cy(),LAYERS[layer_name]["color"]);
-        
+        var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId, color);
+        var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + (radius / 2), graphId, labelName);
+        var r = circle.attr('r') + circle.attr('stroke-width') / 2;
+        var ear = drawEarInCircle(draw, r, circle.cx(), circle.cy(), LAYERS[layer_name]["color"]);
+
         //addition of the elements
         group.add(ear);
         group.add(circle);
         group.add(label);
-        
+
         //set the distance between the group and the circle
-        group.childDX = group.cx()-getElementFromGroup(group,'circle').cx();
-        group.childDY = group.cy()-getElementFromGroup(group,'circle').cy();
-        
+        group.childDX = group.cx() - getElementFromGroup(group, 'circle').cx();
+        group.childDY = group.cy() - getElementFromGroup(group, 'circle').cy();
+
         //set the distance between the group and its label
-        group.textDX = group.cx()-getElementFromGroup(group,'text').cx();
-        group.textDY = group.cy()-getElementFromGroup(group,'text').cy();
-        
-        distLabelGroup  = radius/2;
-        
+        group.textDX = group.cx() - getElementFromGroup(group, 'text').cx();
+        group.textDY = group.cy() - getElementFromGroup(group, 'text').cy();
+
+        distLabelGroup = radius / 2;
+
         //addition of highlights and events
         createHighlight(group);
         addTouchEvents(group);
@@ -762,18 +757,18 @@ function drawGraph(layer_name, g) {
         nodeData.svg = circle;
         nodeData.label = label;
         circle.nodeData = nodeData;
-        
+
         dataKeys = Object.keys(nodeData.authorInfo);
         //removing the keys I do not want
-        dataKeys = arrayRemove(dataKeys,'id');
-        dataKeys = arrayRemove(dataKeys,'group');
-        dataKeys = arrayRemove(dataKeys,'name');
-        dataKeys = arrayRemove(dataKeys,'number of papers')
+        dataKeys = arrayRemove(dataKeys, 'id');
+        dataKeys = arrayRemove(dataKeys, 'group');
+        dataKeys = arrayRemove(dataKeys, 'name');
+        dataKeys = arrayRemove(dataKeys, 'number of papers')
 
     });
-    
+
     LAYERS[layer_name].attributes = dataKeys;
-                addAttributesAsTools(dataKeys);
+    addAttributesAsTools(dataKeys);
 
 
     edges.forEach(function (edge) {
@@ -795,10 +790,10 @@ function drawGraph(layer_name, g) {
 //        var path = "M" + fromCenterX + "," + fromCenterY + " Q" + controlX + "," + controlY + " " + toCenterX + "," + toCenterY;
 
         var edgePath = drawPathInLayer(draw, fromCenterX, fromCenterY,
-                controlX, controlY, toCenterX, toCenterY, id, graphId,layer_name);
-                
-        var group = draw.group().attr({id:"path-"+id,});
-    //    console.log(group);
+                controlX, controlY, toCenterX, toCenterY, id, graphId, layer_name);
+
+        var group = draw.group().attr({id: "path-" + id, });
+        //    console.log(group);
         group.add(edgePath);
         group.layerName = layer_name;
         group.back();
@@ -813,23 +808,23 @@ function drawGraph(layer_name, g) {
 //        }
 
     });
-    
+
     addHighlightToGroups(SVG.select('g').members);
-    
+
 //    forceLayout(g, pxs, pys);
 }
 
-function addHighlightToGroups(groups){
+function addHighlightToGroups(groups) {
 //    console.log(groups);
 
-    for (var i = 0; i<groups.length;i++){
+    for (var i = 0; i < groups.length; i++) {
 //            console.log(groups[i].type);
         createHighlight(groups[i]);
     }
 }
 
-function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId,color) {
-    
+function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId, color) {
+
     var nodeGraphics = drawer.circle(radius)
             .attr({cx: cx,
                 cy: cy,
@@ -837,53 +832,53 @@ function drawCircleInLayer(drawer, radius, cx, cy, id, directed, graphId,color) 
                 graph: graphId
             })
             .move(cx, cy).fill(color);
-    
+
     //Add context_menu to the element using the selector, in this case the id
 //    addContextMenu("#" + id);
- 
+
     return nodeGraphics;
 }
 
-function drawHaloInCircle(drawer,circle,distance,color){
+function drawHaloInCircle(drawer, circle, distance, color) {
     var halo = drawer.path()
-                    .M({x: circle.cx() - (circle.attr('r') +distance), y: circle.cy()})
-                    .a(circle.attr('r')+distance, circle.attr('r')+distance, 0, 1, 0, {x: (circle.attr('r')+distance) * 2, y: 0})
-                    .a(circle.attr('r')+distance, circle.attr('r')+distance, 0, 1, 0, {x: -((circle.attr('r')+distance) * 2), y: 0})
-                    .attr({
-                        stroke: color,
-                        fill: 'transparent',
-                        'stroke-width': 2,
-                        'pointer-events': 'none'
-                    });     
+            .M({x: circle.cx() - (circle.attr('r') + distance), y: circle.cy()})
+            .a(circle.attr('r') + distance, circle.attr('r') + distance, 0, 1, 0, {x: (circle.attr('r') + distance) * 2, y: 0})
+            .a(circle.attr('r') + distance, circle.attr('r') + distance, 0, 1, 0, {x: -((circle.attr('r') + distance) * 2), y: 0})
+            .attr({
+                stroke: color,
+                fill: 'transparent',
+                'stroke-width': 2,
+                'pointer-events': 'none'
+            });
     return halo;
 }
 
-function drawEarInCircle(drawer,r,cx,cy,color){
+function drawEarInCircle(drawer, r, cx, cy, color) {
     var ear = drawer.path()
-                    .M({x: cx , y: cy-r})
-                    .a(r, r, 0, 1, 0, {x: r, y: r})
-                    .L({x: cx+r, y: cy-r})
-                    .Z()
+            .M({x: cx, y: cy - r})
+            .a(r, r, 0, 1, 0, {x: r, y: r})
+            .L({x: cx + r, y: cy - r})
+            .Z()
 //                    .L({x: cx, y: cy-r})
 //                    .a(r, r, 0, 1, 0, {x: r , y: r})
-                    .attr({
+            .attr({
 //                        stroke: color,
-                        fill: color,
+                fill: color,
 //                        'stroke-width': 2,
-                        'pointer-events': 'none'
-                    });
+                'pointer-events': 'none'
+            });
     return ear;
 }
 
 function drawPathInLayer(drawer, fromCenterX, fromCenterY,
-        controlX, controlY, toCenterX, toCenterY, id, graphId,layerName) {
+        controlX, controlY, toCenterX, toCenterY, id, graphId, layerName) {
     var edgePath = drawer.path()
             .M({x: fromCenterX, y: fromCenterY})
             .Q({x: controlX, y: controlY}, {x: toCenterX, y: toCenterY})
             .attr({
                 stroke: LAYERS[layerName].color,
                 fill: 'transparent',
-                'stroke-width':3.5,
+                'stroke-width': 3.5,
                 id: id,
                 'pointer-events': 'visibleStroke'
             }).off();
@@ -919,7 +914,7 @@ function updateHighlight(object) {
         // so I am just replacing the path itself it using the plot method
         // How sad that positioning was not enough. Understanding this was absolutely frustrating :(
 
-        
+
 //        let newPath = "M" + x + "," + y;
 //        newPath += "M" + (x - r) + "," + y;
 //        newPath += "a" + r + "," + r + " 0 1,0 " + (r * 2) + ",0";
@@ -957,7 +952,7 @@ function updateHighlights(object) {
     });
 }
 
-function updateEdgesEnds(nodeGraphics, coordX, coordY,directed) {
+function updateEdgesEnds(nodeGraphics, coordX, coordY, directed) {
     var x = !coordX ? nodeGraphics.cx() : coordX;
     var y = !coordY ? nodeGraphics.cy() : coordY;
     var segment;
@@ -975,7 +970,7 @@ function updateEdgesEnds(nodeGraphics, coordX, coordY,directed) {
         inEdge.replaceSegment(1, segment);
 //        console.log(inEdge.getSegment(1));
 
-        inEdge.highlight.replaceSegment(1,inEdge.getSegment(1))
+        inEdge.highlight.replaceSegment(1, inEdge.getSegment(1))
 //        break;
 
     });
@@ -986,7 +981,7 @@ function updateEdgesEnds(nodeGraphics, coordX, coordY,directed) {
         segment.coords[0] = x;
         segment.coords[1] = y;
         outEdge.replaceSegment(0, segment);
-        outEdge.highlight.replaceSegment(0,outEdge.getSegment(0))
+        outEdge.highlight.replaceSegment(0, outEdge.getSegment(0))
 
 
         // to make it straight, we just set the control point at the starting one
@@ -994,7 +989,7 @@ function updateEdgesEnds(nodeGraphics, coordX, coordY,directed) {
         segment.coords[0] = x;
         segment.coords[1] = y;
         outEdge.replaceSegment(1, segment);
-        outEdge.highlight.replaceSegment(1,outEdge.getSegment(1))
+        outEdge.highlight.replaceSegment(1, outEdge.getSegment(1))
 
     });
 
@@ -1178,7 +1173,7 @@ function getParentLayerName(svgElement) {
     return $(svgElement).parent().parent().parent().attr("id");
 }
 
-function getActiveLayerName(){
+function getActiveLayerName() {
     return getActiveLayer().layer.node.id.split("-")[1];
 }
 /*-----------------------------CONTEXT MENU-------------------------------------*/
@@ -1201,45 +1196,45 @@ function addContextMenu(sel) {
                         "name": "Send to...",
                         "items": Object.assign({},
                                 generateLayersNamesMenu(
-                                    data,
-                                    function (destination) {
-                                        sendElementToLayer(sel, destination);
-                                    },layer
-                                ),
-                                newLayerItem(function(){
-                                    var destination = prompt("Enter the name of the layer:","");
+                                        data,
+                                        function (destination) {
+                                            sendElementToLayer(sel, destination);
+                                        }, layer
+                                        ),
+                                newLayerItem(function () {
+                                    var destination = prompt("Enter the name of the layer:", "");
                                     addNewLayer(destination);
                                     sortLayers(el);
-                                    sendElementToLayer(sel,destination);
+                                    sendElementToLayer(sel, destination);
                                 }))
                     },
                     "ego": {
                         "name": "Send adjacents to...",
                         "items": Object.assign({},
                                 generateLayersNamesMenu(
-                                    data,
-                                    function (destination) {
-                                        sendAdjacentsToLayer(sel, destination);
-                                    },layer
-                                ),
-                                newLayerItem(function(){
-                                    var destination = prompt("Enter the name of the layer:","");
+                                        data,
+                                        function (destination) {
+                                            sendAdjacentsToLayer(sel, destination);
+                                        }, layer
+                                        ),
+                                newLayerItem(function () {
+                                    var destination = prompt("Enter the name of the layer:", "");
                                     addNewLayer(destination);
                                     sortLayers(el);
-                                    sendAdjacentsToLayer(sel,destination);
+                                    sendAdjacentsToLayer(sel, destination);
                                 }))
                     },
                     "transform": {
                         "name": "Attract..",
-                        "items":{
-                            "neighbours": {"name":"Adjacent nodes",
+                        "items": {
+                            "neighbours": {"name": "Adjacent nodes",
                                 "callback": function () {
                                     makeAttractor(this);
                                 }
                             }
                         }
                     }
-                        
+
 //                    ,
 //                    "select": {"name": "Select .."}
                 }
@@ -1267,13 +1262,13 @@ function addContextMenuSelection(sel) {
                         "name": "Send selection to...",
                         "items": Object.assign({},
                                 generateLayersNamesMenu(
-                                    data,
-                                    function (destination) {
-                                        sendSelectionToLayer(destination);
-                                    },layer
-                                ),
-                                newLayerItem(function(){
-                                    var destination = prompt("Enter the name of the layer:","");
+                                        data,
+                                        function (destination) {
+                                            sendSelectionToLayer(destination);
+                                        }, layer
+                                        ),
+                                newLayerItem(function () {
+                                    var destination = prompt("Enter the name of the layer:", "");
                                     addNewLayer(destination);
                                     sortLayers(el);
                                     sendSelectionToLayer(destination);
@@ -1285,23 +1280,23 @@ function addContextMenuSelection(sel) {
     });
 }
 
-function newLayerItem(callback){
+function newLayerItem(callback) {
     return {"send":
-            {
-                "name": "New Layer...",
-                "callback": callback           
-            }
-        };
+                {
+                    "name": "New Layer...",
+                    "callback": callback
+                }
+    };
 }
 
-function sendSelectionToLayer(destination){
-    for (var i =0; i<SELECTION.length; i++){
+function sendSelectionToLayer(destination) {
+    for (var i = 0; i < SELECTION.length; i++) {
         let object = SELECTION[i];
         let svg_destination = getSvgId(destination);
         SVG.get(svg_destination).put(object.remove());
         SVG.get(svg_destination).put(object.nodeData.label.remove());
-            // this need revision, as the highlight might exist already, so it only has to change of color and be animated
-        if (object.highlight){
+        // this need revision, as the highlight might exist already, so it only has to change of color and be animated
+        if (object.highlight) {
             object.highlight.remove();
             object.highlight = null;
         }
@@ -1309,75 +1304,75 @@ function sendSelectionToLayer(destination){
     }
 }
 
-function getNodesNames(nodes){
+function getNodesNames(nodes) {
     var names = [];
-    for (var nodeIndex in nodes){
+    for (var nodeIndex in nodes) {
         names.push(nodes[nodeIndex].node.id.split("-")[1]);
     }
     return names;
 }
 
-function sendEdgesToLayer(source,nodesNames,edges,destination){
+function sendEdgesToLayer(source, nodesNames, edges, destination) {
     var layerName = destination.split("-")[1];
 //    console.log("neighbour");
-    for (var index in edges){
+    for (var index in edges) {
 //        console.log(edges[index]);
 //        console.log(edges[index].node.id);
 //        console.log(edges[index].node.id.split("#")[1]);
 //        console.log();
-        if (nodesNames.includes(edges[index].node.id.replace(source.node.id,""))){
-            
-            SVG.get(edges[index].node.id).attr({"stroke":LAYERS[layerName].color});
+        if (nodesNames.includes(edges[index].node.id.replace(source.node.id, ""))) {
+
+            SVG.get(edges[index].node.id).attr({"stroke": LAYERS[layerName].color});
             SVG.get(destination).put(SVG.get(edges[index].node.id).remove()).back();
             console.log("Included");
         }
     }
 }
 
-function includeSelection(layerName){
+function includeSelection(layerName) {
 //    console.log(getActiveLayer());
     selectionMode(false);
-    
+
 
     var dataKeys = [];
     var names = getNodesNames(SELECTION);
-    
-    $("#container-item-"+layerName).addClass('item-animated');
 
-    
+    $("#container-item-" + layerName).addClass('item-animated');
+
+
 //    $("#container-item-"+layerName).animate({height: '+=10px',width: '+=10px'});
 //    $("#container-item-"+layerName).animate({height: '-=10px',width: '-=10px'});
     //Todo has to be changed!
     var nodes = SVG.select('g.node').members;
-    
+
 //    console.log(nodes);
-    
-    for (var i =0; i<nodes.length; i++){
+
+    for (var i = 0; i < nodes.length; i++) {
         let object = nodes[i];
 //        console.log(SELECTION.includes(nodes[i]));
-        if (SELECTION.includes(nodes[i])){
+        if (SELECTION.includes(nodes[i])) {
             let svgDestination = getSvgId(layerName);
             object = SVG.get(svgDestination).put(object.remove());
-    //            getElementFromGroup(object,'circle').highlight = null;
-            var circle = getElementFromGroup(object,'circle');
-            
+            //            getElementFromGroup(object,'circle').highlight = null;
+            var circle = getElementFromGroup(object, 'circle');
+
             dataKeys = Object.keys(circle.nodeData.authorInfo);
             //removing the keys I do not want
-            dataKeys = arrayRemove(dataKeys,'id');
-            dataKeys = arrayRemove(dataKeys,'group');
-            dataKeys = arrayRemove(dataKeys,'name');
-            dataKeys = arrayRemove(dataKeys,'number of papers')
+            dataKeys = arrayRemove(dataKeys, 'id');
+            dataKeys = arrayRemove(dataKeys, 'group');
+            dataKeys = arrayRemove(dataKeys, 'name');
+            dataKeys = arrayRemove(dataKeys, 'number of papers')
             console.log(dataKeys);
             LAYERS[layerName].attributes = dataKeys;
 //            addAttributesAsTools(dataKeys);
             circle.fill(LAYERS[layerName].color);
-            sendEdgesToLayer(circle,names,circle.nodeData.inEdges,svgDestination);
+            sendEdgesToLayer(circle, names, circle.nodeData.inEdges, svgDestination);
 //            isNeighbour(circle,names,circle.nodeData.outEdges);
 
 
-            getElementFromGroup(object,'path').remove();
+            getElementFromGroup(object, 'path').remove();
 
-            getElementFromGroup(object,'path').attr({fill:LAYERS[layerName].color,"stroke-fill":LAYERS[layerName].color});
+            getElementFromGroup(object, 'path').attr({fill: LAYERS[layerName].color, "stroke-fill": LAYERS[layerName].color});
 
             createHighlight(object);
         }
@@ -1391,14 +1386,14 @@ function includeSelection(layerName){
     selectionFlag = false;
 }
 
-function generateLayersNamesMenu(list, callback,layerName) {
+function generateLayersNamesMenu(list, callback, layerName) {
     var items = {};
     var count = list.length;
     for (var i = 0; i < count; i++) {
         var text = list[i];
 //        console.log("Comparing...");
 //        console.log(text,layerName);
-        if (text !== layerName){
+        if (text !== layerName) {
             var item = {};
             item["name"] = "Layer " + text;
             item["callback"] = callback;
@@ -1422,11 +1417,11 @@ function sendElementToLayer(selector, destination) {
     SVG.get(svg_destination).put(object.nodeData.label.remove());
 
     // this need revision, as the highlight might exist already, so it only has to change of color and be animated
-    if (object.highlight){
+    if (object.highlight) {
         object.highlight.remove();
         object.highlight = null;
     }
-    
+
 }
 
 function sendAdjacentsToLayer(selector, destination) {
@@ -1587,12 +1582,12 @@ function forceLayout(g) {
 //    };
 
     setTimeout(
-            function(){
+            function () {
                 console.log("STOP");
                 renderer.stop();
                 document.getElementById("loading").style.display = "none";
-                scaleLayout(g,pxs,pys);
-            },500);
+                scaleLayout(g, pxs, pys);
+            }, 500);
 
     pxs = {};
     pys = {};
@@ -1672,18 +1667,18 @@ function main() {
                     var nodeGraphics = currentBody.svg;
                     if (nodeGraphics) {
 
-                    if(nodeGraphics.type!=='rect'){
+                        if (nodeGraphics.type !== 'rect') {
 //                     console.log(currentBody.svg);
 
-                        let newX = currentBody.position.x;
-                        let newY = currentBody.position.y;
+                            let newX = currentBody.position.x;
+                            let newY = currentBody.position.y;
 //                        nodeGraphics.cx(newX-nodeGraphics.initX);
 //                        nodeGraphics.cy(newY-nodeGraphics.initY);
 //                        nodeGraphics.center(,newY-nodeGraphics.initY);
 
-                        nodeGraphics.dmove(newX-nodeGraphics.initX,newY-nodeGraphics.initY);
-                        nodeGraphics.initX = nodeGraphics.cx()-nodeGraphics.childDX;
-                          nodeGraphics.initY = nodeGraphics.cy()-nodeGraphics.childDY;
+                            nodeGraphics.dmove(newX - nodeGraphics.initX, newY - nodeGraphics.initY);
+                            nodeGraphics.initX = nodeGraphics.cx() - nodeGraphics.childDX;
+                            nodeGraphics.initY = nodeGraphics.cy() - nodeGraphics.childDY;
 //                        console.log(newX-nodeGraphics.initX,newY-nodeGraphics.initY);
 //                        console.log(LAYERS[layer].layer.circle(5).center(newX-nodeGraphics.initX,newY-nodeGraphics.initY));;
 
@@ -1693,9 +1688,9 @@ function main() {
 ////                            LAYERS[layer].layer.circle(5).center(nodeGraphics.cx(),nodeGraphics.cy());
 //
 //                        }                        
-                        updateEdgesEnds(getElementFromGroup(nodeGraphics,'circle'),nodeGraphics.cx()-nodeGraphics.childDX,nodeGraphics.cy()- nodeGraphics.childDY);
+                            updateEdgesEnds(getElementFromGroup(nodeGraphics, 'circle'), nodeGraphics.cx() - nodeGraphics.childDX, nodeGraphics.cy() - nodeGraphics.childDY);
 
-                        
+
 //                        nodeGraphics.cx(newX)
 //                        nodeGraphics.cy(newY);
 
@@ -1705,8 +1700,8 @@ function main() {
 //                        console.log(nodeGraphics.cy());add
 //                        console.log(nodeGraphics.parent().cx());
 //                        console.log(nodeGraphics.parent().cy());
-                        
-                        
+
+
 //                        console.log(nodeGraphics.parent());
 //                        nodeGraphics.parent().center(newX,newY);
 //                        console.log()
@@ -1714,21 +1709,23 @@ function main() {
 //                        updateEdgesEnds(getElementFromGroup(nodeGraphics,'circle'));
 //                        updateHighlights(nodeGraphics.parent());
 
-                    }}
-                }            
+                        }
+                    }
+                }
             }
         }
-        
+
         window.requestAnimationFrame(render);
-    };
-    
+    }
+    ;
+
     render();
-    
-        
+
+
     var tools = document.getElementsByClassName("tool");
-    for (var i =0; i<tools.length; i++){
-        var type  = $(tools[i]).attr("id");
-        addToolEvents(tools[i],type);
+    for (var i = 0; i < tools.length; i++) {
+        var type = $(tools[i]).attr("id");
+        addToolEvents(tools[i], type);
     }
 
     loadGraph(datafile, "authors2016", false).then(function () {
@@ -1740,7 +1737,7 @@ function main() {
 //
 //    //        activateLayer("1");
 //        });
-        
+
 //        addGraphAsLayer(GRAPHS["authors2016"], "3");
 
         activateLayer("1");
@@ -1765,15 +1762,15 @@ function main() {
 //            addToolEvents(tools[i]);
 //        }
     });
-    
+
 }
 
 main();
 
-$(function() {
-	$(this).bind("contextmenu", function(e) {
-		e.preventDefault();
-	});
+$(function () {
+    $(this).bind("contextmenu", function (e) {
+        e.preventDefault();
+    });
 });
 
 
@@ -1864,14 +1861,14 @@ function createHighlight(object, animate, hideAfter, color) {
     let drawer = LAYERS[layerName].layer;
     var waitingTime = 0;
     color = color || LAYERS[layerName].color;
-    
-    if (object.type === 'g'){
-        
-        
-        
+
+    if (object.type === 'g') {
+
+
+
         if (!object.node.id.includes("path")) {
-            let firstChild = getElementFromGroup(object,'circle');
-                        
+            let firstChild = getElementFromGroup(object, 'circle');
+
 //                        console.log(object.id.includes("path"));
 
             let cx = firstChild.cx();
@@ -1879,7 +1876,7 @@ function createHighlight(object, animate, hideAfter, color) {
             let r = firstChild.attr('r') + firstChild.attr('stroke-width') / 2 + 2;
 
             highlight = drawer.path()
-                    .M({x: cx - r , y: cy})
+                    .M({x: cx - r, y: cy})
                     .a(r, r, 0, 1, 0, {x: r * 2, y: 0})
                     .a(r, r, 0, 1, 0, {x: -r * 2, y: 0})
                     .attr({
@@ -1888,16 +1885,16 @@ function createHighlight(object, animate, hideAfter, color) {
                         'stroke-width': 2,
                         'pointer-events': 'none'
                     });
-                
+
 //                console.log(highlight);
 
-    //                console.log("highlight.cx(): " + highlight.cx(100));
-    //                console.log("highlight.cy(): " + highlight.cy(100));
-        firstChild.highlight = highlight;
+            //                console.log("highlight.cx(): " + highlight.cx(100));
+            //                console.log("highlight.cy(): " + highlight.cy(100));
+            firstChild.highlight = highlight;
 
 
-        } else{
-            let firstChild = getElementFromGroup(object,'path');
+        } else {
+            let firstChild = getElementFromGroup(object, 'path');
 
             let coords1 = firstChild.getSegment(0).coords;
             let coords2 = firstChild.getSegment(1).coords;
@@ -1912,7 +1909,7 @@ function createHighlight(object, animate, hideAfter, color) {
                         'pointer-events': 'none'
                     });
 
-            highlight.back();        
+            highlight.back();
             firstChild.highlight = highlight;
 
         }
@@ -1938,118 +1935,118 @@ function createHighlight(object, animate, hideAfter, color) {
             highlight.animate().attr({opacity: 0});
         }, waitingTime);
     }
-    
-        highlight.hide();
+
+    highlight.hide();
 
 
 }
 
 
-function addAttributesAsTools(attributesSet){
-    for (var index in attributesSet){
+function addAttributesAsTools(attributesSet) {
+    for (var index in attributesSet) {
         let attribute = attributesSet[index];
         var bar = document.getElementById('set-tools');
         var attrTool = document.getElementById('tool-element').content.cloneNode(true);
 //        var last  = ;
 //        console.log(last);
         $(attrTool.querySelector("button")).html(attribute);
-        $(attrTool.querySelector("button")).attr("id",attribute);
+        $(attrTool.querySelector("button")).attr("id", attribute);
 
         $("#search-bar-container").before(attrTool);
-        
-        $("#"+attribute).on('pointerdown',function(node){
-            
-            var original = $("#"+attribute);    //             addAttractorsToWorld(100,attribute);
+
+        $("#" + attribute).on('pointerdown', function (node) {
+
+            var original = $("#" + attribute);    //             addAttractorsToWorld(100,attribute);
 
             var orientations = document.getElementById('direction-element').content.cloneNode(true);
 
-            $(orientations.querySelector("span")).attr("id",attribute+"-title");
+            $(orientations.querySelector("span")).attr("id", attribute + "-title");
 
-            $(orientations.querySelector("span")).text(toFirstCapital(attribute)+": orientation");
+            $(orientations.querySelector("span")).text(toFirstCapital(attribute) + ": orientation");
 
-            $(orientations.querySelector("button[id^='go-back']")).on('pointerdown',function(){
+            $(orientations.querySelector("button[id^='go-back']")).on('pointerdown', function () {
                 console.log("Sending...");
 //                console.log($("#go-back").parent().parent().replaceWith(previous));
                 $("#go-back").parent().parent().empty().append(original);
             });
 
-            $(orientations.querySelector("button[id^='up']")).on('pointerdown',function(){
-                sortByAttribute(10,attribute,'up');
+            $(orientations.querySelector("button[id^='up']")).on('pointerdown', function () {
+                sortByAttribute(10, attribute, 'up');
 
             });
 
-            $(orientations.querySelector("button[id^='down']")).on('pointerdown',function(){
-                sortByAttribute(10,attribute,'down');
+            $(orientations.querySelector("button[id^='down']")).on('pointerdown', function () {
+                sortByAttribute(10, attribute, 'down');
             });
 
-            $(orientations.querySelector("button[id^='left']")).on('pointerdown',function(){
-                sortByAttribute(10,attribute,'left');
+            $(orientations.querySelector("button[id^='left']")).on('pointerdown', function () {
+                sortByAttribute(10, attribute, 'left');
             });
 
-            $(orientations.querySelector("button[id^='right']")).on('pointerdown',function(){
-                sortByAttribute(10,attribute,'right');
+            $(orientations.querySelector("button[id^='right']")).on('pointerdown', function () {
+                sortByAttribute(10, attribute, 'right');
             });
 
 
-                    //.attr("id",attribute+"-"+);
+            //.attr("id",attribute+"-"+);
             this.replaceWith(orientations);
 
         });
-         
+
 
 //        console.log(attrTool);   
     }
 }
 
 
-function getAxisBasisSpace(axisX){
+function getAxisBasisSpace(axisX) {
     var size = 50;
     var spaceBtwnAttractors = 10;
-    if (axisX){
-        return generalWidth*0.01 + spaceBtwnAttractors +size;
-    }else {
-        return generalHeight*0.01 + spaceBtwnAttractors + size;
+    if (axisX) {
+        return generalWidth * 0.01 + spaceBtwnAttractors + size;
+    } else {
+        return generalHeight * 0.01 + spaceBtwnAttractors + size;
     }
 }
 
-function calculateAttractorSizeNdStartingPoints(ammount,distance,axisLength,startingAxisPoint){
+function calculateAttractorSizeNdStartingPoints(ammount, distance, axisLength, startingAxisPoint) {
     // set taking into account radius of the nodes
-    
+
     var startingPoints = [];
-    
-    var sizeAttractor = (axisLength - (ammount+1)*distance) / ammount;
-    
+
+    var sizeAttractor = (axisLength - (ammount + 1) * distance) / ammount;
+
     // TODO : Change taking into account the length of the text
-    
-    for (var i = 0; i < ammount; i++){
-        if (i===0){
+
+    for (var i = 0; i < ammount; i++) {
+        if (i === 0) {
             startingAxisPoint += distance;
-        }else{
-            startingAxisPoint += sizeAttractor +distance;
+        } else {
+            startingAxisPoint += sizeAttractor + distance;
         }
         startingPoints.push(startingAxisPoint);
     }
 
-    return [sizeAttractor,startingPoints];
+    return [sizeAttractor, startingPoints];
 }
 //
-function getAttrDict(elements,textSet){
+function getAttrDict(elements, textSet) {
     var uniqueAttrValues = {};
-    for (var index in textSet){
+    for (var index in textSet) {
         var text = textSet[index];
         uniqueAttrValues[text] = {};
 
-        for (var elIndex in elements){
-            var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
-            if (Object.keys(data).includes(text)){
-                
-                if (Object.keys(uniqueAttrValues[text]).includes(data[text])){
+        for (var elIndex in elements) {
+            var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
+            if (Object.keys(data).includes(text)) {
+
+                if (Object.keys(uniqueAttrValues[text]).includes(data[text])) {
                     console.log(uniqueAttrValues[text][data[text]]);
                     uniqueAttrValues[text][data[text]].push(elements[elIndex]);
 //                    uniqueAttrValues[text.toString()].push("prueba");
 
-                }else{
-                    uniqueAttrValues[text][data[text]] = [elements[elIndex]];  
+                } else {
+                    uniqueAttrValues[text][data[text]] = [elements[elIndex]];
 //                    uniqueAttrValues[text][data[text]] = [elements[elIndex]];  
 
                 }
@@ -2059,157 +2056,158 @@ function getAttrDict(elements,textSet){
     return uniqueAttrValues;
 }
 
-function addAttractorsToWorld(distance,chosen){
+function addAttractorsToWorld(distance, chosen) {
     var textSet = getActiveLayer().attributes;
-    
+
     var Bodies = Matter.Bodies;
     var World = Matter.World;
     var Composite = Matter.Composite;
-    
+
     var world = getPhysicsEngine(getActiveLayerName()).world;
 
     var elements = getActiveLayer().layer.select('g.node').members;
-    
-    var uniqueAttrValues = getAttrDict(elements,textSet);
+
+    var uniqueAttrValues = getAttrDict(elements, textSet);
 
     var attractees = uniqueAttrValues[chosen];
 
 //    console.log(attractees);
 
-    var positionData = calculateAttractorSizeNdStartingPoints(Object.keys(attractees).length,distance,generalWidth,0);
+    var positionData = calculateAttractorSizeNdStartingPoints(Object.keys(attractees).length, distance, generalWidth, 0);
     var width = positionData[0];
     var positions = positionData[1];
 //    var width = 130;
     console.log(width);
     console.log(positions);
     var height = 50;
-    var y = generalHeight/1.1-height +distLabelGroup/2;
+    var y = generalHeight / 1.1 - height + distLabelGroup / 2;
 
-    
+
 //    console.log(Object.keys(attractees));
-    for (var attractIndex in Object.keys(attractees)){
+    for (var attractIndex in Object.keys(attractees)) {
         console.log(positions[attractIndex]);
-        var attractorGraphics = getActiveLayer().layer.rect(width,height).move(positions[attractIndex],y).fill(getActiveLayer().color);
+        var attractorGraphics = getActiveLayer().layer.rect(width, height).move(positions[attractIndex], y).fill(getActiveLayer().color);
 
-            add_attractor_to_world(world, attractorGraphics);
+        add_attractor_to_world(world, attractorGraphics);
 
         //    addElementsToWorld(world,'1');
 
-            var attractor = attractorGraphics.matter;
-            var aff = Object.keys(attractees)[attractIndex];
+        var attractor = attractorGraphics.matter;
+        var aff = Object.keys(attractees)[attractIndex];
 
-            var label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex]+width/2,y+height/2-5, 'authors2016', aff).attr({fill:"white"});
+        var label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex] + width / 2, y + height / 2 - 5, 'authors2016', aff).attr({fill: "white"});
 //            label.center(x+width/2,y+height/2);
-            
-            for (var elIndex in elements){
-                var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
 
-            
-                var body = elements[elIndex].matter;
+        for (var elIndex in elements) {
+            var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
 
-                if (Object.keys(data).includes(chosen)){
+
+            var body = elements[elIndex].matter;
+
+            if (Object.keys(data).includes(chosen)) {
 //                    console.log(aff);
 //                    console.logdata[chosen]);
 //                    console.log(data[chosen].toString()===aff);
-                    if (data[chosen].toString()=== aff){
+                if (data[chosen].toString() === aff) {
                     //add attractee
                     //        console.log(attractee);
-                        if (!body) {
-                            add_element_to_world(world, elements[elIndex]);
-                            body = elements[elIndex].matter;
-                        } else {
-                            // IMPORTANT: we need to do this to update objects that are attracted to more than one attractor
-                            Matter.Composite.remove(world, body);
-                            World.add(world, body);
-                        }
-
-                        if (!body.attractedTo) {
-                            body.attractedTo = new Array();
-                        }
-                        body.attractedTo.push(attractor);
+                    if (!body) {
+                        add_element_to_world(world, elements[elIndex]);
+                        body = elements[elIndex].matter;
+                    } else {
+                        // IMPORTANT: we need to do this to update objects that are attracted to more than one attractor
+                        Matter.Composite.remove(world, body);
+                        World.add(world, body);
                     }
+
+                    if (!body.attractedTo) {
+                        body.attractedTo = new Array();
+                    }
+                    body.attractedTo.push(attractor);
                 }
             }
-            
+        }
+
 //              = x + 50 + distance;
-        
+
     }
 
 }
 
-function calculatePositionsByOrientation(ammount,distance,width,height,orientation){
+function calculatePositionsByOrientation(ammount, distance, width, height, orientation) {
     var axisX = null;
     var zeroPoint = null;
     var positionData = null;
-    
-    if (orientation === 'down'){
-        positionData = calculateAttractorSizeNdStartingPoints(ammount,distance,width-getAxisBasisSpace(true),getAxisBasisSpace(true));
-        axisX = true;
-        zeroPoint = height*0.95;
 
-    }else if(orientation ==='left'){
-        positionData = calculateAttractorSizeNdStartingPoints(ammount,distance,height,0);
-        axisX = false;
-        zeroPoint = height*0.01;
-    }else if (orientation === 'right'){
-       positionData = calculateAttractorSizeNdStartingPoints(ammount,distance,height,0);
-        axisX = false;
-        zeroPoint = width*0.95;
-
-    }else if (orientation ==='up'){
-        positionData = calculateAttractorSizeNdStartingPoints(ammount,distance,width-getAxisBasisSpace(true),getAxisBasisSpace(true));
+    if (orientation === 'down') {
+        positionData = calculateAttractorSizeNdStartingPoints(ammount, distance, width - getAxisBasisSpace(true), getAxisBasisSpace(true));
         axisX = true;
-        zeroPoint = height*0.01;
+        zeroPoint = height * 0.95;
+
+    } else if (orientation === 'left') {
+        positionData = calculateAttractorSizeNdStartingPoints(ammount, distance, height, 0);
+        axisX = false;
+        zeroPoint = height * 0.01;
+    } else if (orientation === 'right') {
+        positionData = calculateAttractorSizeNdStartingPoints(ammount, distance, height, 0);
+        axisX = false;
+        zeroPoint = width * 0.95;
+
+    } else if (orientation === 'up') {
+        positionData = calculateAttractorSizeNdStartingPoints(ammount, distance, width - getAxisBasisSpace(true), getAxisBasisSpace(true));
+        axisX = true;
+        zeroPoint = height * 0.01;
     }
-    console.log(axisX,zeroPoint,positionData);
-    return [axisX,zeroPoint,positionData];
+    console.log(axisX, zeroPoint, positionData);
+    return [axisX, zeroPoint, positionData];
 }
 
-function sortByAttribute(distance,chosen,orientation){
+function sortByAttribute(distance, chosen, orientation) {
     var textSet = getActiveLayer().attributes;
     var elements = getActiveLayer().layer.select('g.node').members;
-    var uniqueAttrValues = getAttrDict(elements,textSet);
+    var uniqueAttrValues = getAttrDict(elements, textSet);
     var attractees = uniqueAttrValues[chosen];
-    var positionData = calculatePositionsByOrientation(Object.keys(attractees).length,distance,generalWidth,generalHeight,orientation);
-    
+    var positionData = calculatePositionsByOrientation(Object.keys(attractees).length, distance, generalWidth, generalHeight, orientation);
+
     var width = positionData[2][0];
     var height = 50;
     var positions = positionData[2][1];
     var fixedAxis = positionData[1];
     var axisX = positionData[0];
-                        
-    for (var attractIndex in Object.keys(attractees)){
+
+    for (var attractIndex in Object.keys(attractees)) {
         var aff = Object.keys(attractees)[attractIndex];
         var attractorGraphics = null;
         var label = null;
-        if (axisX && !getActiveLayer().axis.x){;
-            attractorGraphics = getActiveLayer().layer.rect(width,height).move(positions[attractIndex],fixedAxis).fill(getActiveLayer().color).attr({"class":"attractor"});
-            label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex]+width/2,fixedAxis+height/2-5, 'authors2016', aff).attr({fill:"white"});
-            for (var elIndex in elements){
-                var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
+        if (axisX && !getActiveLayer().axis.x) {
+            ;
+            attractorGraphics = getActiveLayer().layer.rect(width, height).move(positions[attractIndex], fixedAxis).fill(getActiveLayer().color).attr({"class": "attractor"});
+            label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex] + width / 2, fixedAxis + height / 2 - 5, 'authors2016', aff).attr({fill: "white"});
+            for (var elIndex in elements) {
+                var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
                 let element = elements[elIndex];
-                if (Object.keys(data).includes(chosen)){
-                    if (data[chosen].toString()=== aff){
-                    //add attractee
-                        let pointX = getRectMiddle(attractorGraphics)[0]-element.cx();
-                        elements[elIndex].animate(500).dx(pointX).during(function(){
-                            updateEdgesEnds(getElementFromGroup(element,'circle'),element.cx()-element.childDX,element.cy()-element.childDY);
+                if (Object.keys(data).includes(chosen)) {
+                    if (data[chosen].toString() === aff) {
+                        //add attractee
+                        let pointX = getRectMiddle(attractorGraphics)[0] - element.cx();
+                        elements[elIndex].animate(500).dx(pointX).during(function () {
+                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
                         });
                     }
                 }
-            } 
-        }else if (!axisX && !getActiveLayer().axis.y){
-            attractorGraphics = getActiveLayer().layer.rect(height,width).move(fixedAxis,positions[attractIndex]).fill(getActiveLayer().color);
-            label = drawLabel(getActiveLayer().layer, aff, fixedAxis+height/2-5,positions[attractIndex]+width/2, 'authors2016', aff).attr({fill:"white"}).transform({ rotation: 270 });
-            for (var elIndex in elements){
-                var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
+            }
+        } else if (!axisX && !getActiveLayer().axis.y) {
+            attractorGraphics = getActiveLayer().layer.rect(height, width).move(fixedAxis, positions[attractIndex]).fill(getActiveLayer().color);
+            label = drawLabel(getActiveLayer().layer, aff, fixedAxis + height / 2 - 5, positions[attractIndex] + width / 2, 'authors2016', aff).attr({fill: "white"}).transform({rotation: 270});
+            for (var elIndex in elements) {
+                var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
                 let element = elements[elIndex];
-                if (Object.keys(data).includes(chosen)){
-                    if (data[chosen].toString()=== aff){
-                    //add attractee
-                        let pointY = getRectMiddle(attractorGraphics)[1]-element.cy();
-                        elements[elIndex].animate(500).dy(pointY).during(function(){
-                            updateEdgesEnds(getElementFromGroup(element,'circle'),element.cx()-element.childDX,element.cy()-element.childDY);
+                if (Object.keys(data).includes(chosen)) {
+                    if (data[chosen].toString() === aff) {
+                        //add attractee
+                        let pointY = getRectMiddle(attractorGraphics)[1] - element.cy();
+                        elements[elIndex].animate(500).dy(pointY).during(function () {
+                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
                         });
                     }
                 }
@@ -2218,14 +2216,14 @@ function sortByAttribute(distance,chosen,orientation){
         }
 
     }
-    
-    if (axisX){
-        getActiveLayer().axis.x =true;
-    }else{
+
+    if (axisX) {
+        getActiveLayer().axis.x = true;
+    } else {
         getActiveLayer().axis.y = true;
     }
 }
 
-function verifyNodesHit(){
-    
+function verifyNodesHit() {
+
 }
