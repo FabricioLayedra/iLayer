@@ -10,64 +10,74 @@ function getRandomBetween(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-function format_id(string){
-    return string.replace(/\./g,' ').split(" ").join('');
+function format_id(string) {
+    return string.replace(/\./g, ' ').split(" ").join('');
 }
 
 function random_id() {
-  // Math.random should be unique because of its seeding algorithm.
-  // Convert it to base 36 (numbers + letters), and grab the first 9 characters
-  // after the decimal.
-  return Math.random().toString(36).substr(2, 5);
-};
+    // Math.random should be unique because of its seeding algorithm.
+    // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+    // after the decimal.
+    return Math.random().toString(36).substr(2, 5);
+}
+;
 
 function arrayRemove(arr, value) {
-   return arr.filter(function(ele){
-       return ele !== value;
-   });
+    return arr.filter(function (ele) {
+        return ele !== value;
+    });
 }
 
-function scaleValue(oldmax,oldmin,newmax,newmin,oldvalue){
-    var OldRange = (oldmax - oldmin); 
-    var NewRange = (newmax - newmin); 
+function scaleValue(oldmax, oldmin, newmax, newmin, oldvalue) {
+    var OldRange = (oldmax - oldmin);
+    var NewRange = (newmax - newmin);
     return (((oldvalue - oldmin) * NewRange) / OldRange) + newmin;
 }
 
-function valuesDict(dictionary){
-    return Object.keys(dictionary).map(function(key){
+function valuesDict(dictionary) {
+    return Object.keys(dictionary).map(function (key) {
         return dictionary[key];
     });
 }
 
-function getMaxArray(array){
+function getMaxArray(array) {
     return Math.max(...array);
 }
 
-function getMinArray(array){
+function getMinArray(array) {
     return Math.min(...array);
 }
 
-function getElementFromGroup(group,type){
-    
-    try{
+function getElementFromGroup(group, type) {
+
+    try {
         var children = group.children();
-        
-        for (var i = 0; i < children.length; i++){
-            if (children[i].type === type){
+
+        for (var i = 0; i < children.length; i++) {
+            if (children[i].type === type) {
                 return children[i];
             }
         }
         return null;
-    }catch(err){
+    } catch (err) {
         return null;
     }
 }
 
-function getRectMiddle(rect){
-    return [rect.x()+rect.width()/2,rect.y()+rect.height()/2];
+function getRectMiddle(rect) {
+    return [rect.x() + rect.width() / 2, rect.y() + rect.height() / 2];
 }
 
-function toFirstCapital(string) 
+function toFirstCapital(string)
 {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function blink(object) {
+    let duration = 100;
+    let scale = 1.4;
+    object.animate(duration).scale(scale, scale);
+    setTimeout(function () {
+        object.animate(duration).scale(1, 1);
+    }, duration);
 }

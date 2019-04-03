@@ -5,42 +5,42 @@
  */
 
 function beginSliding(e) {
-  this.node.allowed = true;
-  this.node.dx = event.pageX-this.cx();
-  this.node.dy = event.pageY-this.cy();
+    this.node.allowed = true;
+    this.node.dx = event.pageX - this.cx();
+    this.node.dy = event.pageY - this.cy();
 
-  this.node.setPointerCapture(e.pointerId);
+    this.node.setPointerCapture(e.pointerId);
 }
 
 function stopSliding(e) {
-  this.node.allowed = null;
+    this.node.allowed = null;
 //  console.log(this.cx(),this.cy());
 //  window.draw.circle(5).center(this.cx()-this.node.childDX,this.cy()-this.node.childDY);
-  this.node.releasePointerCapture(e.pointerId);
+    this.node.releasePointerCapture(e.pointerId);
 }
 
-function slide(event) {  
-    if (this.node.allowed){
-        let x = event.pageX-this.cx()-this.node.dx;
-        let y = event.pageY-this.cy()-this.node.dy;
-        this.dmove(x,y);
-        updateEdgesEnds(getElementFromGroup(this,'circle'),this.cx()-this.childDX,this.cy()-this.childDY);
-        this.node.initX = this.cx()-this.childDX;
-        this.node.initY = this.cy()-this.childDY;
+function slide(event) {
+    if (this.node.allowed) {
+        let x = event.pageX - this.cx() - this.node.dx;
+        let y = event.pageY - this.cy() - this.node.dy;
+        this.dmove(x, y);
+        updateEdgesEnds(getElementFromGroup(this, 'circle'), this.cx() - this.childDX, this.cy() - this.childDY);
+        this.node.initX = this.cx() - this.childDX;
+        this.node.initY = this.cy() - this.childDY;
     }
 }
 
-function highlight(event,node,show){
+function highlight(event, node, show) {
     event.preventDefault();
-    var child = getElementFromGroup(node,'circle');
-    if (show){
+    var child = getElementFromGroup(node, 'circle');
+    if (show) {
         showHighlight(child);
-    }else{
+    } else {
         hideHighlight(child);
-    }   
+    }
 }
 
-function showHighlight(child){
+function showHighlight(child) {
     child.highlight.show();
 
     child.nodeData.inEdges.forEach(function (inEdge) {
@@ -52,7 +52,7 @@ function showHighlight(child){
     });
 }
 
-function hideHighlight(child){
+function hideHighlight(child) {
     child.highlight.hide();
 
     child.nodeData.inEdges.forEach(function (inEdge) {
@@ -64,18 +64,22 @@ function hideHighlight(child){
     });
 }
 
-function addTouchEvents(nodeParent){
-    nodeParent.on('pointerdown',function(e){highlight(e,nodeParent,true)});    
-    nodeParent.on('pointerdown',beginSliding);
-    nodeParent.on('pointermove',slide);
-    nodeParent.on('pointerup',stopSliding);
-    nodeParent.on('pointerup',function(e){highlight(e,nodeParent,false)});
+function addTouchEvents(nodeParent) {
+    nodeParent.on('pointerdown', function (e) {
+        highlight(e, nodeParent, true)
+    });
+    nodeParent.on('pointerdown', beginSliding);
+    nodeParent.on('pointermove', slide);
+    nodeParent.on('pointerup', stopSliding);
+    nodeParent.on('pointerup', function (e) {
+        highlight(e, nodeParent, false)
+    });
 //    nodeParent.on('pointerenter',function(){console.log("Data enter")});
 //    nodeParent.on('pointerleave',function(){console.log("Data leave")});
 
 }
 
-function removeTouchEvents(nodeParent){
+function removeTouchEvents(nodeParent) {
 //      var layerName = nodeParent.parent().node.id.split("layer-")[1];
 //    nodeParent.off('pointerdown');    
     nodeParent.off('pointerdown');
@@ -117,16 +121,16 @@ function addLayerEvents(layer, drawer) {
         verifier.y = startingPoint.y;
         verifier.width = 1;
         verifier.height = 1;
-        let elements = layer.getIntersectionList(verifier,null);
-        for (var i =0; i <elements.length; i++){
-            if (elements[i].tagName  === "circle" || $(elements[i]).attr("tool")){
-                touchCanvas = false ;
+        let elements = layer.getIntersectionList(verifier, null);
+        for (var i = 0; i < elements.length; i++) {
+            if (elements[i].tagName === "circle" || $(elements[i]).attr("tool")) {
+                touchCanvas = false;
                 break;
             }
         }
-        
-        
-        if (touchCanvas){
+
+
+        if (touchCanvas) {
             line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y)
                     .stroke({color: '#f06', width: 1, linecap: 'round'})
                     .attr({'stroke-dasharray': [8, 3], stroke: 'red'});
@@ -149,7 +153,7 @@ function addLayerEvents(layer, drawer) {
          segment.coords[0] = currentPoint.x;
          segment.coords[1] = currentPoint.y;
          line.replaceSegment(1, segment);*/
-        if (touchCanvas){
+        if (touchCanvas) {
             line.attr("x2", currentPoint.x);
             line.attr("y2", currentPoint.y);
             line.stroke({color: '#f06000', width: 1, linecap: 'round'});
@@ -158,20 +162,20 @@ function addLayerEvents(layer, drawer) {
             rect.y = Math.min(startingPoint.y, currentPoint.y);
             rect.width = Math.abs(currentPoint.x - startingPoint.x);
             rect.height = Math.abs(currentPoint.y - startingPoint.y);
-    //        drawer.rect(rect.width,rect.height).move(rect.x,rect.y);
+            //        drawer.rect(rect.width,rect.height).move(rect.x,rect.y);
             let list = layer.getIntersectionList(rect, null);
-    //        console.log(layer);
-    //        console.log(list);
+            //        console.log(layer);
+            //        console.log(list);
 
             list.forEach(function (element) {
                 let edge = SVG.get(element.id);
-    //            console.log(edge);
+                //            console.log(edge);
                 if (edge.type === "path") {
-    //                console.log(edge);
-    //                console.log(line);
+                    //                console.log(edge);
+                    //                console.log(line);
                     intersection = line.intersectsPath(edge);
                     if (intersection.length) {
-    //                    console.log("intersections:");
+                        //                    console.log("intersections:");
                         segment2 = edge.getSegment(1);
                         segment2.coords[0] = currentPoint.x;
                         segment2.coords[1] = currentPoint.y;
@@ -179,14 +183,14 @@ function addLayerEvents(layer, drawer) {
                         edge.highlight.replaceSegment(1, segment2);
                         edge.highlight.show();
                     }
-                }else if(edge.type === "circle"){
+                } else if (edge.type === "circle") {
                     console.log(edge);
-                    let direction = line.attr("x2")-line.attr("x1");
-                    if (direction > 0){
+                    let direction = line.attr("x2") - line.attr("x1");
+                    if (direction > 0) {
                         console.log(direction);
-                        
+
                         console.log("GOING DOWN");
-                    }else if (direction <0){
+                    } else if (direction < 0) {
                         console.log(direction);
                         console.log("GOING UP");
                     }
@@ -196,23 +200,23 @@ function addLayerEvents(layer, drawer) {
     });
 
     mc.on("panend", function (ev) {
-        if (touchCanvas){
-            
-            
-            
+        if (touchCanvas) {
+
+
+
 //            let list = layer.getIntersectionList(rect, null);
 //        console.log(layer);
 //        console.log(list);
 // this needs to be upgraded too something more efficient.            
             SVG.select('g').members.forEach(
-                function(n){
-                    let children = n.node.children;
-                    for (var k =0; k<children.length; k++){
-                        let element = SVG.get(children[k].id);
-                        if (element.highlight){
-                            element.highlight.hide();
+                    function (n) {
+                        let children = n.node.children;
+                        for (var k = 0; k < children.length; k++) {
+                            let element = SVG.get(children[k].id);
+                            if (element.highlight) {
+                                element.highlight.hide();
+                            }
                         }
-                    }
 //                    children.forEach(function(n){
 //                        if (n.highlight){
 //                            n.highlight.hide();
@@ -226,7 +230,7 @@ function addLayerEvents(layer, drawer) {
 //                                }
 //                            }
 //                                    )
-                }
+                    }
             );
 
 //        list.forEach(function (element) {
@@ -242,158 +246,209 @@ function addLayerEvents(layer, drawer) {
 //                }
 //            }
 //        });
-        line.remove();
-    }else{
-        touchCanvas = true;
-    }
+            line.remove();
+        } else {
+            touchCanvas = true;
+        }
     });
 
 
 
 }
 
-function nodeInSelection(nodeParent){
-    for (var i = 0; i<SELECTION.length; i++){
-        if(SELECTION[i]===nodeParent){
+function nodeInSelection(nodeParent) {
+    for (var i = 0; i < SELECTION.length; i++) {
+        if (SELECTION[i] === nodeParent) {
             return true;
         }
     }
     return false;
 }
 
-function addNodeToSelection(group){
-    if (!nodeInSelection(group)){
-        var circle = getElementFromGroup(group,'circle');
+function addNodeToSelection(group) {
+    if (!nodeInSelection(group)) {
+        var circle = getElementFromGroup(group, 'circle');
         hideHighlight(circle);
-        circle.animate(100).attr({"r":circle.attr("r")+10});
-        circle.animate(100).attr({"r":circle.attr("r")});
+        circle.animate(100).attr({"r": circle.attr("r") + 10});
+        circle.animate(100).attr({"r": circle.attr("r")});
 //        console.log(circle);
 //        console.log(getActiveLayer());
 //        console.log(getActiveLayer().layer);
-        var halo = drawHaloInCircle(getActiveLayer().layer,circle,5,getActiveLayer().color);
+        var halo = drawHaloInCircle(getActiveLayer().layer, circle, 5, getActiveLayer().color);
 //        console.log(halo);
         console.log(group.add(halo));
         group.add(halo);
-        console.log(group);;
+        console.log(group);
+        ;
         halo.back();
         SELECTION.push(group);
-    }else{
-        getElementFromGroup(group,'path').remove();
-        SELECTION = arrayRemove(SELECTION,group);
+    } else {
+        getElementFromGroup(group, 'path').remove();
+        SELECTION = arrayRemove(SELECTION, group);
     }
 }
 
-function selectionMode(mode){
-    if (mode){        
+function selectionMode(mode) {
+    if (mode) {
         var groups = getActiveLayer().layer.select('g.node').members;
-        for (var index in groups){
+        for (var index in groups) {
             let group = groups[index];
 //            console.log(group);
             removeTouchEvents(group);
-            group.on('pointerdown',function(){
+            group.on('pointerdown', function () {
 //                console.log(group.node.id);
                 console.log(group);
                 addNodeToSelection(group);
             });
-        }  
+        }
         selectionFlag = mode;
-    }else{
+    } else {
         var groups = getActiveLayer().layer.select('g.node').members;
-        for (var index in groups){
-            let group = groups[index];   
+        for (var index in groups) {
+            let group = groups[index];
             group.off('pointerdown');
         }
         selectionFlag = mode;
     }
 }
 
-function addSelectionEvents(nodeParent){
+function addSelectionEvents(nodeParent) {
     var mc = new Hammer(nodeParent.node);
 
     nodeParent.node.hammer = mc;
-    
-    mc.get('press').set({time:300});
-    
-    mc.on('press',function(event){
+
+    mc.get('press').set({time: 300});
+
+    mc.on('press', function (event) {
         selectionMode(true);
     });
-    
-    mc.on('pressup',function(event){
+
+    mc.on('pressup', function (event) {
         addNodeToSelection(nodeParent);
 
     });
 }
-function addPressEvents(mc,toolGraphics,drawer,type,child) {
-    if (type==='gravity'){
+function addPressEvents(mc, toolGraphics, drawer, type, child) {
+    if (type === 'gravity') {
         console.log(type);
         mc.get('press').set({time: 300});
-        mc.on('press', function(event) {
+
+        mc.on('press', function (event) {
+            
             event.preventDefault();
             $(event.target).attr('oncontextmenu', 'return false');
             mc.off('panmove');
+            
+            
 
             let line = null;
             let startingPoint = null;
             let currentPoint = null;
+            let deltaX;
+            let deltaY;
+            let x2;
+            let y2;
+            let magnitude;
+            let triangle;
+            let color = '#f06';
+            let theGroup = toolGraphics.parent();
+            let angle;
+            let center;
+            
+            blink(theGroup);
 
             mc.on("panstart", function (ev) {
-                startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+
+                center = toolGraphics.rbox().addOffset();
+                startingPoint = {x: center.cx - $("#accordionSidebar").width(), y: center.cy - 65};
+
                 line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y)
-                        .stroke({color: '#f06', width: 1, linecap: 'round'})
-                        .attr({'stroke-dasharray': [8, 3], stroke: 'red'});
+                        .attr({
+                            stroke: color,
+                            fill: color,
+                            color: color,
+                            'stroke-width': 1,
+                            'stroke-linecap': 'round'
+                        });
+
+                triangle = drawer.polygon('3,0 -10,-6 -10,6');
+                triangle.fill(color).move(startingPoint.x, startingPoint.y);
             });
 
             mc.on("panmove", function (ev) {
                 currentPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
                 line.attr("x2", currentPoint.x);
                 line.attr("y2", currentPoint.y);
-                line.stroke({color: '#f06000', width: 1, linecap: 'round'});
-                //CHANGE GRAVITY HERE
-                var x = line.attr("x2")-line.attr("x1");
-                var y = line.attr("y2")-line.attr("y1");
-                var x2 = Math.pow(Math.abs(x),2);
-                var y2 = Math.pow(Math.abs(y),2);
-                var magnitude = Math.sqrt(x2+y2);
-    //            console.log(x/magnitude,y/magnitude,magnitude);
-                addGravity(activatePhysics(getActiveLayer().layer.node.id),x/magnitude,y/magnitude,magnitude);
+
+                deltaX = line.attr("x2") - line.attr("x1");
+                deltaY = line.attr("y2") - line.attr("y1");
+                magnitude = Math.sqrt(Math.pow(Math.abs(deltaX), 2) + Math.pow(Math.abs(deltaY), 2));
+
+                // changing the width of the line to suggest the strength of the gravity we will add
+                line.attr({'stroke-width': 40 * (magnitude / 1000)});
+
+                angle = (Math.atan(deltaY / deltaX) * 180) / Math.PI;
+                if (line.attr("x1") > line.attr("x2")) {
+                    angle -= 180;
+                }
+
+                triangle.attr('transform', null);
+                triangle.center(currentPoint.x, currentPoint.y);
+                triangle.rotate(angle);
+                let scale = 14 * (magnitude / 1000);
+                triangle.scale(scale, scale);
 
             });
 
             mc.on("panend", function (ev) {
-                line.remove();
+
+                let matrix = new SVG.Matrix(theGroup);
+                let inverse = matrix.inverse();
+                theGroup.add(line);
+                theGroup.add(triangle);
+                line.transform(inverse);
+
+                triangle.transform(inverse);
+
+                triangle.rotate(angle);
+                let scale = 14 * (magnitude / 1000);
+                triangle.scale(scale, scale);
+
+                addGravity(activatePhysics(getActiveLayer().layer.node.id), deltaX / magnitude, deltaY / magnitude, magnitude);
+
                 mc.off('panstart');
                 mc.off('panmove');
                 mc.off('panend');
-                addDragEvents(mc,toolGraphics.parent(),toolGraphics);
+                addDragEvents(mc, toolGraphics.parent(), toolGraphics);
 
             });
         });
-        mc.on('pressup',function(event) {
+        mc.on('pressup', function (event) {
             mc.off('panstart');
             mc.off('panmove');
             mc.off('panend');
-
-            addDragEvents(mc,toolGraphics.parent(),toolGraphics);
+            addDragEvents(mc, toolGraphics.parent(), toolGraphics);
         });
-    }else if(type==='bending'){
+        
+    } else if (type === 'bending') {
 //        console.log();
-        addLayerEvents(getActiveLayer().layer.node,getActiveLayer().layer);
+        addLayerEvents(getActiveLayer().layer.node, getActiveLayer().layer);
     }
 }
 
-function moveElements(event, nodeGraphics,child){
+function moveElements(event, nodeGraphics, child) {
     let currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
-    var x = currentPoint.x-$("#accordionSidebar").width();
-    var y = currentPoint.y-70;
+    var x = currentPoint.x - $("#accordionSidebar").width();
+    var y = currentPoint.y - 70;
     console.log("Previous");
-    console.log(x,y);
+    console.log(x, y);
 
-    var x = currentPoint.x-$("#accordionSidebar").width() - child.previousX;
-    var y = currentPoint.y-70 - child.previousY;
-    nodeGraphics.dmove(x,y);
+    var x = currentPoint.x - $("#accordionSidebar").width() - child.previousX;
+    var y = currentPoint.y - 70 - child.previousY;
+    nodeGraphics.dmove(x, y);
     child.previousX = nodeGraphics.cx();
     child.previousY = nodeGraphics.cy();
-    
+
 //    
 //    
 //    let currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
@@ -401,34 +456,34 @@ function moveElements(event, nodeGraphics,child){
 //    nodeGraphics.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
 }
 
-function addDragEvents(hammer,ghostFather,ghost){
+function addDragEvents(hammer, ghostFather, ghost) {
 
     // let the pan gesture support all directions.
     // this will block the vertical scrolling on a touch-device while on the element
     hammer.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
-    
-    
 
-        let startingPoint = null;
 
-        let testCircle = null;
 
-        hammer.on("panstart", function (ev) {
+    let startingPoint = null;
 
-            startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-            var initX = startingPoint.x-$("#accordionSidebar").width();
-            var initY = startingPoint.y-70;
-            console.log("INIT POS");
-            console.log(initX,initY);
-            ghost.previousX = initX;
-            ghost.previousY = initY;
-            
-            $(ghost).css("zIndex","-1000000");
+    let testCircle = null;
 
-        });
+    hammer.on("panstart", function (ev) {
+
+        startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+        var initX = startingPoint.x - $("#accordionSidebar").width();
+        var initY = startingPoint.y - 70;
+        console.log("INIT POS");
+        console.log(initX, initY);
+        ghost.previousX = initX;
+        ghost.previousY = initY;
+
+        $(ghost).css("zIndex", "-1000000");
+
+    });
 
     hammer.on("panmove", function (ev) {
-        moveElements(ev,ghostFather,ghost);
+        moveElements(ev, ghostFather, ghost);
     });
 
 //    mc.on("panend", function (ev) {
@@ -439,13 +494,13 @@ function addDragEvents(hammer,ghostFather,ghost){
 ////        console.log(activeLayer);
 //    });
 }
-function getActiveLayer(){
+function getActiveLayer() {
     return activeLayer;
 }
 
-function addToolEvents(tool,type) {
+function addToolEvents(tool, type) {
 //    console.log($(tool).prop('disabled'));
-    if (!$(tool).prop('disabled')){
+    if (!$(tool).prop('disabled')) {
         let mc = new Hammer(tool);
 
         // let the pan gesture support all directions.
@@ -454,7 +509,7 @@ function addToolEvents(tool,type) {
 
         let startingPoint = null;
         let currentPoint = null;
-        let path= null;
+        let path = null;
         let ghost = null;
         let ghostFather = null;
 
@@ -465,65 +520,65 @@ function addToolEvents(tool,type) {
 
             startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
 //tool.getBoundingClientRect().x;
-            var initX = startingPoint.x-$("#accordionSidebar").width();
-            var initY = startingPoint.y-70;
+            var initX = startingPoint.x - $("#accordionSidebar").width();
+            var initY = startingPoint.y - 70;
             console.log("INIT POS");
-            console.log(initX,initY);
-    //        console.log(startingPoint);
-            path = $($(tool).children()[0]).children()[0].getAttribute("d"); 
+            console.log(initX, initY);
+            //        console.log(startingPoint);
+            path = $($(tool).children()[0]).children()[0].getAttribute("d");
             ghostFather = getActiveLayer().layer.group();
-            
 
-            
-            
-            ghost = getActiveLayer().layer.path(path).move(initX,initY).attr({"tool":true,fill:getActiveLayer().color});
-    //        ghost.draggable();
-            var relationAspect = ghost.width()/ghost.height();
+
+
+
+            ghost = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
+            //        ghost.draggable();
+            var relationAspect = ghost.width() / ghost.height();
             ghost.height(50);
-            ghost.width(50*relationAspect);
-            
+            ghost.width(50 * relationAspect);
+
             ghostFather.add(ghost);
             ghostFather.add(getActiveLayer().layer
-                .text(type)
-                .center(ghost.cx(),ghost.cy()+ghost.height()*0.6)
-                );
-        
-            console.log(ghost.cx(),ghost.cy());
-            
+                    .text(type)
+                    .center(ghost.cx(), ghost.cy() + ghost.height() * 0.6)
+                    );
+
+            console.log(ghost.cx(), ghost.cy());
+
             ghost.previousX = initX;
             ghost.previousY = initY;
-            
+
 //            testCircle = getActiveLayer().layer.circle(5).center(ghost.previousX,ghost.previousY);
 
             //set the distance between the group and the tool
-            ghostFather.childDX = ghostFather.cx()-getElementFromGroup(ghostFather,'path').cx();
-            ghostFather.childDY = ghostFather.cy()-getElementFromGroup(ghostFather,'path').cy();
+            ghostFather.childDX = ghostFather.cx() - getElementFromGroup(ghostFather, 'path').cx();
+            ghostFather.childDY = ghostFather.cy() - getElementFromGroup(ghostFather, 'path').cy();
 
 
         });
 
         mc.on("panmove", function (event) {
             currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
-            var x = currentPoint.x-$("#accordionSidebar").width();
-            var y = currentPoint.y-70;
+            var x = currentPoint.x - $("#accordionSidebar").width();
+            var y = currentPoint.y - 70;
             console.log("Previous");
-            console.log(x,y);
+            console.log(x, y);
 
-            var x = currentPoint.x-$("#accordionSidebar").width() - ghost.previousX;
-            var y = currentPoint.y-70 - ghost.previousY;
-            ghostFather.dmove(x,y);
+            var x = currentPoint.x - $("#accordionSidebar").width() - ghost.previousX;
+            var y = currentPoint.y - 70 - ghost.previousY;
+            ghostFather.dmove(x, y);
             ghost.previousX = ghostFather.cx();
             ghost.previousY = ghostFather.cy();
         });
 
         mc.on("panend", function (ev) {
             ghost.front();
-    //        ghost.draggable();
+            //        ghost.draggable();
             let mc = new Hammer(ghost.node);
 
-            addDragEvents(mc,ghostFather,ghost);
-            addPressEvents(mc,ghost,getActiveLayer().layer,type);
-    //        console.log(activeLayer);
+            addDragEvents(mc, ghostFather, ghost);
+            addPressEvents(mc, ghost, getActiveLayer().layer, type);
+            //        console.log(activeLayer);
         });
     }
 
