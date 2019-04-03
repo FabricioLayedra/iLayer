@@ -27,6 +27,12 @@ function slide(event) {
         updateEdgesEnds(getElementFromGroup(this,'circle'),this.cx()-this.childDX,this.cy()-this.childDY);
         this.node.initX = this.cx()-this.childDX;
         this.node.initY = this.cy()-this.childDY;
+        if (this.matter){
+            this.matter.position.x = this.node.initX;
+            this.matter.position.y = this.node.initY; 
+//              Matter.Body.setPosition(this.matter,(this.node.initX,this.node.initY));
+
+        }
     }
 }
 
@@ -394,6 +400,14 @@ function moveElements(event, nodeGraphics,child){
     child.previousX = nodeGraphics.cx();
     child.previousY = nodeGraphics.cy();
     
+    if (nodeGraphics.matter){
+//        nodeGraphics.matter.isStatic = f
+        nodeGraphics.matter.position.x = child.previousX;
+        nodeGraphics.matter.position.y = child.previousY;
+        Matter.Body.setStatic(nodeGraphics.matter,true);
+//        nodeGraphics.matter.isStatic = true;
+    }
+    
 //    
 //    
 //    let currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
@@ -423,7 +437,7 @@ function addDragEvents(hammer,ghostFather,ghost){
             ghost.previousX = initX;
             ghost.previousY = initY;
             
-            $(ghost).css("zIndex","-1000000");
+//            $(ghost).css("zIndex","-1000000");
 
         });
 
