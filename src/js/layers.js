@@ -2,6 +2,7 @@
 /*--------------------------------CONSTANTS-------------------------------------*/
 var count = 0;
 
+var  nodeRadius = 40;
 var distLabelGroup = 0;
 
 var selectionFlag = false;
