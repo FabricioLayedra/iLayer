@@ -27,6 +27,7 @@ function slide(event) {
         updateEdgesEnds(getElementFromGroup(this,'circle'),this.cx()-this.childDX,this.cy()-this.childDY);
         this.node.initX = this.cx()-this.childDX;
         this.node.initY = this.cy()-this.childDY;
+        
         if (this.matter){
             this.matter.position.x = this.node.initX;
             this.matter.position.y = this.node.initY; 
@@ -532,7 +533,8 @@ function addDragEvents(hammer, ghostFather, ghost) {
         ghost.previousX = initX;
         ghost.previousY = initY;
 
-        $(ghost).css("zIndex", "-1000000");
+        ghost.disToCenterX = ghostFather.cx();
+        ghost.disToCenterY = ghostFather.cy();
 
     });
 
