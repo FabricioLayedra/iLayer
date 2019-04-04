@@ -3,18 +3,18 @@
 }
 /* Standard syntax */
 @keyframes addition {
-  
-  50%  {width:initial+10px; background-color: blue;}
+
+    50%  {width:initial+10px; background-color: blue;}
 }
 
 .item-animated{
-  animation-name: addition;
-  animation-duration: 1s;
+    animation-name: addition;
+    animation-duration: 1s;
 }
 
 .col-divider{
-border-left:1px solid black;
-height:70px
+    border-left:1px solid #999;
+    height:70px
 }
 
 .bg-sidebar{
@@ -71,58 +71,68 @@ input{
     vertical-align: middle;
 }
 
-line {
+/*line {
   stroke: #999;
   stroke-opacity: 0.6;
-}
+}*/
 
 .fa-arrow-down {
     color: #999999;
 }
 
 .square-color {
-  height: 0.25rem;
-  width: 0.25rem;
-  background-color: #555;
+    height: 0.25rem;
+    width: 0.25rem;
+    background-color: #555;
 }
 
 .space2x {
-	margin: 10px 0px 10px 10px !important;
-	
+    margin: 10px 0px 10px 10px !important;
+
 }
 .left2border {
-	margin: 10px !important;
-	
+    margin: 10px !important;
+
 }
 
 .border-1w {
-	border-left-width: 0.5rem!important;
-	border-left-color: #00ffff !important;
+    border-left-width: 0.5rem!important;
+    border-left-color: #00ffff !important;
 }
 
 .border-2w {
-	border-left-width: 0.5rem!important;
-	border-left-color: #a00f00 !important;
+    border-left-width: 0.5rem!important;
+    border-left-color: #a00f00 !important;
 }
 
 .border-n {
-	border-left-style: solid;
-	border-left-width: 0.5rem  !important;
+    border-left-style: solid;
+    border-left-width: 0.5rem  !important;
 }
 
 .node circle{
-  /*pointer-events: all;*/
-  stroke: none;
-  stroke-width: 40px;
-  cursor: pointer;
+    /*pointer-events: all;*/
+    stroke: none;
+    stroke-width: 40px;
+    cursor: pointer;
 }
 text {
-  font-family: sans-serif;
-  font-size: 10px;
+    font-family: sans-serif;
+    font-size: 10px;
 }
 
 
 .to-right {
-	margin-left:auto; margin-right:0;
+    margin-left:auto; margin-right:0;
 }
 
+
+.tool {
+    background-color: #fff;
+}
+
+.layer {
+    color: #000;
+    font-family: sans-serif;
+    font-size: 22px;
+}
