@@ -2,7 +2,7 @@
 /*--------------------------------CONSTANTS-------------------------------------*/
 var count = 0;
 
-var  nodeRadius = 40;
+var nodeRadius = 40;
 var distLabelGroup = 0;
 
 var selectionFlag = false;
@@ -88,7 +88,18 @@ function createLayer(layerName, color) {
         var id = layerName;
     }
     changeLayerNames(layer, id);
+
+    addDroppingZones(layerName);
+
     return layer;
+}
+
+function addDroppingZones(layerName) {
+    var layer = LAYERS[layerName];
+    var drawer = layer.layer;
+    var layerHeight = drawer.height();
+    layer.bottom = drawer.rect("100%", 70).move(0, layerHeight - 70).attr({stroke: layer.color, 'stroke-width': 3, fill: 'none', opacity: 0});
+    layer.left = drawer.rect(70, "100%").move(0, 0).attr({stroke: layer.color, 'stroke-width': 3, fill: 'none', opacity: 0});
 }
 
 function createSVG(container, layerName, width, height, color) {
@@ -105,7 +116,7 @@ function changeLayerNames(item, id) {
     $(item.querySelector("div[id^='color']")).attr("id", "color-" + id);
     $(item.querySelector("div[id^='container-item']")).attr("id", "container-item-" + id);
     $(item.querySelector("input[id^='item']")).attr("id", "item-" + id);
-    $(item.querySelector("input[id^='item']")).attr("value", "Layer " + id);    
+    $(item.querySelector("input[id^='item']")).attr("value", "Layer " + id);
     $(item.querySelector("button[id^='visibility']")).attr("id", "visibility-" + id);
     $(item.querySelector("button[id^='delete']")).attr("id", "delete-" + id);
 //    $(item.querySelector('div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("id", "color-" + id);
@@ -189,7 +200,7 @@ function activateLayer(layerName) {
         }
 //        $("#set-canvases").prepend($("#layer-" + layer).detach());
     }
-    
+
     $(active).css("background-color", lightenDarkenColor(LAYERS[layerName]["color"], 20));
 }
 
@@ -197,7 +208,6 @@ function showHideLayer(layerName) {
     var layer = "#layer-" + layerName;
 
     console.log($(layer).css('display') === 'block');
-
 
     if ($(layer).css("display") === 'none') {
         $(layer).css("display", "block");
@@ -252,36 +262,36 @@ function addMissingElementsToWorld(world, layer) {
     for (var i = 0; i < elements.length; i++) {
         var group = elements[i];
 
-            if (actualWorldElements.includes(group.matter)) {
-                console.log("YA INGRESADO")
-            } else {
-                let circle = getElementFromGroup(group,"circle");
-                if (circle) {
-                var x = group.cx()-group.childDX;
-    //            console.log(circle.cx());
-    //            console.log(group.cx()-group.childDX);
+        if (actualWorldElements.includes(group.matter)) {
+            console.log("YA INGRESADO")
+        } else {
+            let circle = getElementFromGroup(group, "circle");
+            if (circle) {
+                var x = group.cx() - group.childDX;
+                //            console.log(circle.cx());
+                //            console.log(group.cx()-group.childDX);
 
-                var y = group.cy()-group.childDY;
-    //            console.log(circle.cy());
-    //            console.log(group.cy()-group.childDY)
-    //            LAYERS[layer].layer.circle(5).center(x,y).attr({fill:"red",opacity:0.25});
+                var y = group.cy() - group.childDY;
+                //            console.log(circle.cy());
+                //            console.log(group.cy()-group.childDY)
+                //            LAYERS[layer].layer.circle(5).center(x,y).attr({fill:"red",opacity:0.25});
 
                 var radius = circle.attr("r");
-    //            var deltaX = group.cx()-circle.cx();
-    //            var deltaY = group.cy()-circle.cy();
+                //            var deltaX = group.cx()-circle.cx();
+                //            var deltaY = group.cy()-circle.cy();
 
                 var matterObject = Bodies.circle(x, y, radius);
 
                 //nodeData.matter = matterObject;
                 matterObject.svg = group;
                 group.matter = matterObject;
-    //            console.log(group.x());
+                //            console.log(group.x());
                 group.initX = x;
                 group.initY = y;
 
                 World.add(world, matterObject);
-            }else if (group.type === 'rect'){
-                add_element_to_world(world,group);
+            } else if (group.type === 'rect') {
+                add_element_to_world(world, group);
             }
         }
     }
@@ -411,12 +421,12 @@ function createPhysicsWorld(layer_name, boundaries) {
 //   var dimensions = [1200,800];
 //   var tickerLength = 300;
 //    
-    var roof = Bodies.rectangle(generalWidth/2,-(strongness/2)+5, generalWidth,strongness, {isStatic: true});
-    var leftWall = Bodies.rectangle(-(strongness/2)+10,0+generalHeight/2,  strongness, generalHeight, {isStatic: true});
-    var rightWall = Bodies.rectangle(0+generalWidth+strongness/2-20, 0+generalHeight/2, strongness, generalHeight, {isStatic: true});
+    var roof = Bodies.rectangle(generalWidth / 2, -(strongness / 2) + 5, generalWidth, strongness, {isStatic: true});
+    var leftWall = Bodies.rectangle(-(strongness / 2) + 10, 0 + generalHeight / 2, strongness, generalHeight, {isStatic: true});
+    var rightWall = Bodies.rectangle(0 + generalWidth + strongness / 2 - 20, 0 + generalHeight / 2, strongness, generalHeight, {isStatic: true});
 //    console.log(generalWidth);
-    
-    var ground = Bodies.rectangle(0+generalWidth/2,generalHeight+100-distLabelGroup/2,generalWidth,200, {isStatic: true});
+
+    var ground = Bodies.rectangle(0 + generalWidth / 2, generalHeight + 100 - distLabelGroup / 2, generalWidth, 200, {isStatic: true});
 //    console.log(ground);
 
 //
@@ -519,7 +529,7 @@ function add_element_to_world(world, element) {
         var x = circle.cx();
         var y = circle.cy();
         var radius = circle.attr("r");
-        
+
 //        console.log("Parameters child");
 //        console.log(x,y,radius);
 
@@ -539,23 +549,23 @@ function add_element_to_world(world, element) {
         var y = element.attr('y');
         var width = element.width();
         var height = element.height();
-        
+
         let valueX = 0;
-        let valueY = 0; 
-        
-        if (width>height){
-            valueX = x+width/2;
-            valueY = y; 
-        }else if(height>width){
-            valueX = x+width/2;
-            valueY = y+height/2;
+        let valueY = 0;
+
+        if (width > height) {
+            valueX = x + width / 2;
+            valueY = y;
+        } else if (height > width) {
+            valueX = x + width / 2;
+            valueY = y + height / 2;
         }
 //        console.log("************VALUES**********");
 //       
 //        console.log(width,height);
 //        console.log(x,y);
 //        console.log(valueX,valueY);
-        var matterObject = Bodies.rectangle(valueX,valueY,width,height, {isStatic: true
+        var matterObject = Bodies.rectangle(valueX, valueY, width, height, {isStatic: true
         });
         matterObject.density = 1;
 //      
@@ -609,23 +619,23 @@ function add_attractor_to_world(world, element) {
         var y = element.attr('y');
         var width = element.width();
         var height = element.height();
-        
+
 //        let valueX = 0;
 //        let valueY = 0; 
-        
-        if (width>height){
-            valueX = x+width/2;
-            valueY = y; 
-        }else if(height>width){
-            valueX = x+width/2;
-            valueY = y+height/2;
+
+        if (width > height) {
+            valueX = x + width / 2;
+            valueY = y;
+        } else if (height > width) {
+            valueX = x + width / 2;
+            valueY = y + height / 2;
         }
 //        console.log("************VALUES**********");
 //       
 //        console.log(width,height);
 //        console.log(x,y);
 //        console.log(valueX,valueY);
-        var matterObject = Bodies.rectangle(valueX,valueY,width,height, {isStatic: true,
+        var matterObject = Bodies.rectangle(valueX, valueY, width, height, {isStatic: true,
 
             plugin: {
                 attractors: [
@@ -643,7 +653,7 @@ function add_attractor_to_world(world, element) {
                 ]
             }
         });
-      
+
 //      
         matterObject.svg = element;
         element.matter = matterObject;
@@ -780,7 +790,7 @@ function drawGraph(layer_name, g) {
 //        }
 
         var radius = nodeRadius;
-        
+
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
         var y = getRandomBetween(30, 600);
         var x = getRandomBetween(30, 1200);
@@ -1795,6 +1805,11 @@ function main() {
         addToolEvents(tools[i], type);
     }
 
+
+
+
+
+
     loadGraph(datafile, "authors2016", false).then(function () {
         addGraphAsLayer(GRAPHS["authors2016"], "1");
 //        loadGraph(datafile2, "authors2015", false).then(function () {
@@ -1808,7 +1823,7 @@ function main() {
 //        addGraphAsLayer(GRAPHS["authors2016"], "3");
 
         activateLayer("1");
-        
+
 
 //        addAttractorsToWorld(['affiliation','citations'],100,'affiliation')
     });
@@ -2010,69 +2025,140 @@ function createHighlight(object, animate, hideAfter, color) {
 
 }
 
+function addAttributesDraggingEvents(element, attributeName) {
+
+    let mc = new Hammer(element);
+    mc.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
+    let group = null;
+    let rect = null;
+    let label = null;
+    let startingPoint = null;
+    let currentPoint = null;
+    let theDistance = null;
+    let theDroppingZone = null;
+    let activeLayer = null;
+
+
+    mc.on("panstart", function (ev) {
+
+        let drawer = getActiveLayer().layer;
+        startingPoint = {x: ev.srcEvent.pageX - $("#accordionSidebar").width(), y: ev.srcEvent.pageY - 70};
+
+        rect = drawer.rect($(element).width() * 1.5, $(element).height() * 1.5).attr({
+            fill: '#d8d9df',
+            rx: 5,
+            ry: 5,
+            stroke: "#858796",
+        }).center(startingPoint.x, startingPoint.y);
+
+        label = drawer.text(attributeName).attr({
+            fill: 'black',
+            "text-anchor": "middle",
+            "alignment-baseline": "hanging",
+            "dominant-baseline": "middle",
+            "font-size": "18px"
+        }).move(startingPoint.x, startingPoint.y - 10);
+
+        group = drawer.group();
+        group.add(rect);
+        group.add(label);
+
+    });
+
+    mc.on("panmove", function (ev) {
+        currentPoint = {x: ev.srcEvent.pageX - $("#accordionSidebar").width(), y: ev.srcEvent.pageY - 70};
+        group.move(currentPoint.x - startingPoint.x, currentPoint.y - startingPoint.y);
+
+        activeLayer = getActiveLayer();
+        var threshold = 300;
+        var distanceToLeft = currentPoint.x - (activeLayer.left.x() + activeLayer.left.width());
+        var distanceToBottom = activeLayer.bottom.y() - currentPoint.y;
+
+        activeLayer.bottom.attr({opacity: 0});
+        activeLayer.left.attr({opacity: 0});
+
+        if (distanceToLeft < distanceToBottom) {
+            theDistance = distanceToLeft;
+            theDroppingZone = activeLayer.left;
+        } else {
+            theDistance = distanceToBottom;
+            theDroppingZone = activeLayer.bottom;
+        }
+
+        if (theDistance < threshold) {
+            theDroppingZone.attr({opacity: 1 - (theDistance / threshold)});
+        } else {
+            theDroppingZone.attr({opacity: 0});
+            theDroppingZone = null;
+        }
+    });
+
+    mc.on("panend", function (ev) {                
+        
+        blink(group);
+        setTimeout(function () {
+
+            if (theDroppingZone && theDistance < 0) {
+
+//                group.animate(250).move(0, 100);
+//                group.move(100, 100);
+                
+//                rect.animate().move("0", "-40");
+//                label.animate().move("0", "-35");
+
+                
+                
+                console.log(currentPoint.y - startingPoint.y);
+                
+                console.log("theDroppingZone.cy()");
+                console.log(theDroppingZone.cy());
+                
+                var newX = -startingPoint.x + rect.width()/2 + 20;
+                var newY = theDroppingZone.cy() + rect.height()/2 - startingPoint.y - 17;
+                
+                
+                console.log("startingPoint.y: " + startingPoint.y);
+                
+                console.log("newY: " + newY);
+                
+
+                group.animate(250).move(newX, newY);
+
+                
+
+            } else {
+                removeWithAnimation(group);
+                activeLayer.bottom.animate(250).attr({opacity: 0});
+                activeLayer.left.animate(250).attr({opacity: 0});
+            }
+
+        }, 300);
+
+
+
+    });
+
+}
+
 
 function addAttributesAsTools(attributesSet) {
+
     for (var index in attributesSet) {
         let attribute = attributesSet[index];
         var bar = document.getElementById('set-tools');
         var attrTool = document.getElementById('tool-element').content.cloneNode(true);
-//        var last  = ;
-//        console.log(last);
+
         $(attrTool.querySelector("button")).html(attribute);
         $(attrTool.querySelector("button")).attr("id", attribute);
+        $(attrTool.querySelector("button")).addClass("attributeTool");
 
         $("#search-bar-container").before(attrTool);
-        
-        $("#"+attribute).on('pointerdown',function(node){
-            
-            var original = $("#"+attribute);    //   
-            //          addAttractorsToWorld(100,attribute);
-            
-            sortByAttribute(10,attribute,'down');
-//            sortByAttributeWalls(10,attribute,'down');
 
-//            setWalls(10,attribute,'down');
+        addAttributesDraggingEvents($("#" + attribute)[0], attribute);
 
-
-//
-//            var orientations = document.getElementById('direction-element').content.cloneNode(true);
-//
-//            $(orientations.querySelector("span")).attr("id",attribute+"-title");
-//
-//            $(orientations.querySelector("span")).text(toFirstCapital(attribute)+": orientation");
-//
-//            $(orientations.querySelector("button[id^='go-back']")).on('pointerdown',function(){
-//                console.log("Sending...");
-////                console.log($("#go-back").parent().parent().replaceWith(previous));
-//                $("#go-back").parent().parent().empty().append(original);
-//            });
-//
-//            $(orientations.querySelector("button[id^='up']")).on('pointerdown',function(){
-//                sortByAttribute(10,attribute,'up');
-//
-//            });
-//
-//            $(orientations.querySelector("button[id^='down']")).on('pointerdown',function(){
-//                sortByAttribute(10,attribute,'down');
-//            });
-//
-//            $(orientations.querySelector("button[id^='left']")).on('pointerdown',function(){
-//                sortByAttribute(10,attribute,'left');
-//            });
-//
-//            $(orientations.querySelector("button[id^='right']")).on('pointerdown',function(){
-//                sortByAttribute(10,attribute,'right');
-            });
-
-
-                    //.attr("id",attribute+"-"+);
-//            this.replaceWith(orientations);
-
-        };
-         
-
-//        console.log(attrTool);   
     }
+
+}
 
 
 
@@ -2113,11 +2199,11 @@ function getAttrDict(elements, textSet) {
         var text = textSet[index];
         uniqueAttrValues[text] = {};
 
-        for (var elIndex in elements){
-            var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
-            if (Object.keys(data).includes(text)){
-                
-                if (Object.keys(uniqueAttrValues[text]).includes(data[text])){
+        for (var elIndex in elements) {
+            var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
+            if (Object.keys(data).includes(text)) {
+
+                if (Object.keys(uniqueAttrValues[text]).includes(data[text])) {
 //                    console.log(uniqueAttrValues[text][data[text]]);
 
                     uniqueAttrValues[text][data[text]].push(elements[elIndex]);
@@ -2240,75 +2326,76 @@ function calculatePositionsByOrientation(ammount, distance, width, height, orien
     return [axisX, zeroPoint, positionData];
 }
 
-function sortByAttributeWalls(distance,chosen,orientation){
-    
-    
-    
-    
-    
-    
-    
-    
-    
+function sortByAttributeWalls(distance, chosen, orientation) {
+
+
+
+
+
+
+
+
+
     var textSet = getActiveLayer().attributes;
     var elements = getActiveLayer().layer.select('g.node').members;
-    
+
     var Bodies = Matter.Bodies;
     var World = Matter.World;
     var Composite = Matter.Composite;
-    
+
     var world = getPhysicsEngine(getActiveLayerName()).world;
-    
-    
-    
-    
-    
-    
-    
-    
-    var uniqueAttrValues = getAttrDict(elements,textSet);
+
+
+
+
+
+
+
+
+    var uniqueAttrValues = getAttrDict(elements, textSet);
     var attractees = uniqueAttrValues[chosen];
-    var positionData = calculatePositionsByOrientation(Object.keys(attractees).length,distance,generalWidth,generalHeight,orientation);
-    
+    var positionData = calculatePositionsByOrientation(Object.keys(attractees).length, distance, generalWidth, generalHeight, orientation);
+
     var width = positionData[2][0];
     var height = 50;
     var positions = positionData[2][1];
     var fixedAxis = positionData[1];
     var axisX = positionData[0];
-                        
-    for (var attractIndex in Object.keys(attractees)){
+
+    for (var attractIndex in Object.keys(attractees)) {
         var aff = Object.keys(attractees)[attractIndex];
         var attractorGraphics = null;
         var label = null;
-        if (axisX && !getActiveLayer().axis.x){;
-            
-            attractorGraphics = getActiveLayer().layer.rect(width,height).move(positions[attractIndex],fixedAxis).fill(getActiveLayer().color).attr({"class":"attractor"});
+        if (axisX && !getActiveLayer().axis.x) {
+            ;
 
-            label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex]+width/2,fixedAxis+height/2-5, 'authors2016', aff).attr({fill:"white"});
-            
+            attractorGraphics = getActiveLayer().layer.rect(width, height).move(positions[attractIndex], fixedAxis).fill(getActiveLayer().color).attr({"class": "attractor"});
+
+            label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex] + width / 2, fixedAxis + height / 2 - 5, 'authors2016', aff).attr({fill: "white"});
+
             add_attractor_to_world(world, attractorGraphics);
 
 
-        //    addElementsToWorld(world,'1');
+            //    addElementsToWorld(world,'1');
 
             var attractor = attractorGraphics.matter;
             var aff = Object.keys(attractees)[attractIndex];
 
 //            var label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex]+width/2,y+height/2-5, 'authors2016', aff).attr({fill:"white"});
 //            label.center(x+width/2,y+height/2);
-            
-            for (var elIndex in elements){
-                var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
+
+            for (var elIndex in elements) {
+                var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
 
                 var body = elements[elIndex].matter;
 
-                if (Object.keys(data).includes(chosen)){
+                if (Object.keys(data).includes(chosen)) {
 //                    console.log(aff);
 //                    console.logdata[chosen]);
 //                    console.log(data[chosen].toString()===aff);
-                    if (data[chosen].toString()=== aff){
-                    //add attractee
-                    //        console.log(attractee);
+                    if (data[chosen].toString() === aff) {
+                        //add attractee
+                        //        console.log(attractee);
                         if (!body) {
                             add_element_to_world(world, elements[elIndex]);
                             body = elements[elIndex].matter;
@@ -2327,19 +2414,19 @@ function sortByAttributeWalls(distance,chosen,orientation){
             }
 
 
-                                    
 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
+
+
+
+
+
 //            for (var elIndex in elements){
 //                var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
 //                let element = elements[elIndex];
@@ -2353,18 +2440,18 @@ function sortByAttributeWalls(distance,chosen,orientation){
 //                    }
 //                }
 //            } 
-        }else if (!axisX && !getActiveLayer().axis.y){
-            attractorGraphics = getActiveLayer().layer.rect(height,width).move(fixedAxis,positions[attractIndex]).fill(getActiveLayer().color);
-            label = drawLabel(getActiveLayer().layer, aff, fixedAxis+height/2-5,positions[attractIndex]+width/2, 'authors2016', aff).attr({fill:"white"}).transform({ rotation: 270 });
-            for (var elIndex in elements){
-                var data = getElementFromGroup(elements[elIndex],'circle').nodeData.authorInfo;
+        } else if (!axisX && !getActiveLayer().axis.y) {
+            attractorGraphics = getActiveLayer().layer.rect(height, width).move(fixedAxis, positions[attractIndex]).fill(getActiveLayer().color);
+            label = drawLabel(getActiveLayer().layer, aff, fixedAxis + height / 2 - 5, positions[attractIndex] + width / 2, 'authors2016', aff).attr({fill: "white"}).transform({rotation: 270});
+            for (var elIndex in elements) {
+                var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
                 let element = elements[elIndex];
-                if (Object.keys(data).includes(chosen)){
-                    if (data[chosen].toString()=== aff){
-                    //add attractee
-                        let pointY = getRectMiddle(attractorGraphics)[1]-element.cy();
-                        elements[elIndex].animate(500).dy(pointY).during(function(){
-                            updateEdgesEnds(getElementFromGroup(element,'circle'),element.cx()-element.childDX,element.cy()-element.childDY);
+                if (Object.keys(data).includes(chosen)) {
+                    if (data[chosen].toString() === aff) {
+                        //add attractee
+                        let pointY = getRectMiddle(attractorGraphics)[1] - element.cy();
+                        elements[elIndex].animate(500).dy(pointY).during(function () {
+                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
                         });
                     }
                 }
@@ -2374,57 +2461,57 @@ function sortByAttributeWalls(distance,chosen,orientation){
 
     }
 
-    if (axisX){
-        getActiveLayer().axis.x =true;
-        }else{
+    if (axisX) {
+        getActiveLayer().axis.x = true;
+    } else {
         getActiveLayer().axis.y = true;
     }
 }
 
-function setWalls(distance,chosen,orientation){
-        
+function setWalls(distance, chosen, orientation) {
+
     var textSet = getActiveLayer().attributes;
     var elements = getActiveLayer().layer.select('g.node').members;
-    
+
     var Bodies = Matter.Bodies;
     var World = Matter.World;
     var Composite = Matter.Composite;
-    
+
     var world = getPhysicsEngine(getActiveLayerName()).world;
-    
-    
-    var uniqueAttrValues = getAttrDict(elements,textSet);
+
+
+    var uniqueAttrValues = getAttrDict(elements, textSet);
     var attractees = uniqueAttrValues[chosen];
-    var positionData = calculatePositionsByOrientation(Object.keys(attractees).length,distance,generalWidth,generalHeight,orientation);
-    
+    var positionData = calculatePositionsByOrientation(Object.keys(attractees).length, distance, generalWidth, generalHeight, orientation);
+
     var width = positionData[2][0];
     var height = 50;
     var positions = positionData[2][1];
     var fixedAxis = positionData[1];
     var axisX = positionData[0];
-        for (var attractIndex in Object.keys(attractees)){
-            var position = positions[attractIndex];
-            var aff = Object.keys(attractees)[attractIndex];
-            let wall1 = getActiveLayer().layer.rect(5,0).move(position+width/2- nodeRadius/2-5,fixedAxis-generalHeight).fill(getActiveLayer().color).back();
+    for (var attractIndex in Object.keys(attractees)) {
+        var position = positions[attractIndex];
+        var aff = Object.keys(attractees)[attractIndex];
+        let wall1 = getActiveLayer().layer.rect(5, 0).move(position + width / 2 - nodeRadius / 2 - 5, fixedAxis - generalHeight).fill(getActiveLayer().color).back();
 //            let wall2 = getActiveLayer().layer.rect(5,generalHeight).move(position+width- nodeRadius*2+5,fixedAxis-generalHeight).fill(getActiveLayer().color).attr({"class":"wall"}).back();
 //            let wall1 = getActiveLayer().layer.rect(5,0).move(position,fixedAxis-generalHeight).fill(getActiveLayer().color).attr({"class":"attractor"}).back();
 //          let wall1 = getActiveLayer().layer.rect(5,0).move(position,fixedAxis-generalHeight).fill(getActiveLayer().color).attr({"class":"attractor"}).back();
 //          wall1.transform({scaleY:-1});
-            var time = 500;
-            wall1.animate(time).height(generalHeight).after(function(){
-                addDragEvents(new Hammer(wall1.node),wall1,wall1);
-                add_attractor_to_world(world, wall1);
-            });
+        var time = 500;
+        wall1.animate(time).height(generalHeight).after(function () {
+            addDragEvents(new Hammer(wall1.node), wall1, wall1);
+            add_attractor_to_world(world, wall1);
+        });
 //            
-            let wall2 = getActiveLayer().layer.rect(5,0).move(position+width/2+nodeRadius/2+5,fixedAxis-generalHeight).fill(getActiveLayer().color).back();
-            wall2.animate(time).height(generalHeight).after(function(){
-                addDragEvents(new Hammer(wall2.node),wall2,wall2);
-                add_attractor_to_world(world, wall2);
-            });
-        }
+        let wall2 = getActiveLayer().layer.rect(5, 0).move(position + width / 2 + nodeRadius / 2 + 5, fixedAxis - generalHeight).fill(getActiveLayer().color).back();
+        wall2.animate(time).height(generalHeight).after(function () {
+            addDragEvents(new Hammer(wall2.node), wall2, wall2);
+            add_attractor_to_world(world, wall2);
+        });
+    }
 }
-        
-function sortByAttribute(distance,chosen,orientation){
+
+function sortByAttribute(distance, chosen, orientation) {
 
     var textSet = getActiveLayer().attributes;
     var elements = getActiveLayer().layer.select('g.node').members;
@@ -2479,12 +2566,12 @@ function sortByAttribute(distance,chosen,orientation){
         }
 
     }
-    
-    setWalls(10,'affiliation','down');
-    
-    if (axisX){
-        getActiveLayer().axis.x =true;
-    }else{
+
+    setWalls(10, 'affiliation', 'down');
+
+    if (axisX) {
+        getActiveLayer().axis.x = true;
+    } else {
 
         getActiveLayer().axis.y = true;
     }

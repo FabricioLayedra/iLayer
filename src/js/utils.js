@@ -101,3 +101,11 @@ function hidePanel(id) {
         easing: easing
     });
 }
+
+function removeWithAnimation(object) {
+    let duration = 300;
+    object.animate(duration, '<>').scale(0, 0);
+    setTimeout(function () {
+        object.remove();
+    }, duration);
+}

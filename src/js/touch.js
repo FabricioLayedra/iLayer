@@ -19,18 +19,18 @@ function stopSliding(e) {
     this.node.releasePointerCapture(e.pointerId);
 }
 
-function slide(event) {  
-    if (this.node.allowed){
-        let x = event.pageX-this.cx()-this.node.dx;
-        let y = event.pageY-this.cy()-this.node.dy;
-        this.dmove(x,y);
-        updateEdgesEnds(getElementFromGroup(this,'circle'),this.cx()-this.childDX,this.cy()-this.childDY);
-        this.node.initX = this.cx()-this.childDX;
-        this.node.initY = this.cy()-this.childDY;
-        
-        if (this.matter){
+function slide(event) {
+    if (this.node.allowed) {
+        let x = event.pageX - this.cx() - this.node.dx;
+        let y = event.pageY - this.cy() - this.node.dy;
+        this.dmove(x, y);
+        updateEdgesEnds(getElementFromGroup(this, 'circle'), this.cx() - this.childDX, this.cy() - this.childDY);
+        this.node.initX = this.cx() - this.childDX;
+        this.node.initY = this.cy() - this.childDY;
+
+        if (this.matter) {
             this.matter.position.x = this.node.initX;
-            this.matter.position.y = this.node.initY; 
+            this.matter.position.y = this.node.initY;
 //              Matter.Body.setPosition(this.matter,(this.node.initX,this.node.initY));
 //            this.matter.position.x +=5;
 //            console.log(this.matter.position.x);
@@ -334,7 +334,6 @@ function addSelectionEvents(nodeParent) {
 
     mc.on('pressup', function (event) {
         addNodeToSelection(nodeParent);
-
     });
 }
 function addPressEvents(mc, toolGraphics, drawer, type, child) {
@@ -343,12 +342,12 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
         mc.get('press').set({time: 300});
 
         mc.on('press', function (event) {
-            
+
             event.preventDefault();
             $(event.target).attr('oncontextmenu', 'return false');
             mc.off('panmove');
-            
-            
+
+
 
             let line = null;
             let startingPoint = null;
@@ -363,7 +362,7 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
             let theGroup = toolGraphics.parent();
             let angle;
             let center;
-            
+
             blink(theGroup);
 
             mc.on("panstart", function (ev) {
@@ -438,7 +437,7 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
             mc.off('panend');
             addDragEvents(mc, toolGraphics.parent(), toolGraphics);
         });
-        
+
     } else if (type === 'bending') {
 //        console.log();
         addLayerEvents(getActiveLayer().layer.node, getActiveLayer().layer);
@@ -451,9 +450,9 @@ function moveElements(event, nodeGraphics, child) {
 //    console.log("Previous");
 //    console.log(x,y);
 
-    var x = currentPoint.x-$("#accordionSidebar").width() - child.previousX;
-    var y = currentPoint.y-70 - child.previousY;
-    
+    var x = currentPoint.x - $("#accordionSidebar").width() - child.previousX;
+    var y = currentPoint.y - 70 - child.previousY;
+
 
 //    console.log(child.disToCenterX+x,child.disToCenterY+y);
 //    getActiveLayer().layer.circle(5).center(x,y).fill("red");
@@ -461,10 +460,10 @@ function moveElements(event, nodeGraphics, child) {
 //    console.log(x,y);
 
 /// THE IF IS NOT THE BEST THING TO DO BUT WE NEED TO KEEP GOING. 
-    if(nodeGraphics === child){
-        nodeGraphics.center(child.disToCenterX+x,child.disToCenterY+y);
-    }else{
-        nodeGraphics.dmove(x,y);
+    if (nodeGraphics === child) {
+        nodeGraphics.center(child.disToCenterX + x, child.disToCenterY + y);
+    } else {
+        nodeGraphics.dmove(x, y);
         child.previousX = nodeGraphics.cx();
         child.previousY = nodeGraphics.cy();
     }
@@ -484,8 +483,8 @@ function moveElements(event, nodeGraphics, child) {
 //    child.previousX += 5;
 //    child.previousY += 5;   
 //    console.log(nodeGraphics.cx());
-    
-    if (nodeGraphics.matter){
+
+    if (nodeGraphics.matter) {
 ////        nodeGraphics.matter.isStatic = f
 //        nodeGraphics.matter.position.x = child.previousX;
 //        nodeGraphics.matter.position.y = child.previousY;
@@ -495,16 +494,16 @@ function moveElements(event, nodeGraphics, child) {
 //        console.log("Changing the position...");
 //        nodeGraphics.matter.position.x =  nodeGraphics.matter.position.x +5;
 //        nodeGraphics.matter.position.y = nodeGraphics.matter.position.y + 5;
-        
-        Matter.Body.setPosition(nodeGraphics.matter,{x:child.cx(),y:child.cy()});
+
+        Matter.Body.setPosition(nodeGraphics.matter, {x: child.cx(), y: child.cy()});
 
 //        console.log(nodeGraphics.matter.position.x);
 //        console.log(nodeGraphics.matter.position.y);
-        
+
 //        Matter.Body.setStatic(nodeGraphics.matter,true);
 //        nodeGraphics.matter.isStatic = true;
     }
-    
+
 
 //    
 //    
@@ -522,7 +521,7 @@ function addDragEvents(hammer, ghostFather, ghost) {
 
 
     let startingPoint = null;
-    
+
     hammer.on("panstart", function (ev) {
 
         startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
@@ -555,7 +554,7 @@ function getActiveLayer() {
 }
 
 function addToolEvents(tool, type) {
-//    console.log($(tool).prop('disabled'));
+
     if (!$(tool).prop('disabled')) {
         let mc = new Hammer(tool);
 
@@ -569,58 +568,32 @@ function addToolEvents(tool, type) {
         let ghost = null;
         let ghostFather = null;
 
-
-        let testCircle = null;
-
         mc.on("panstart", function (ev) {
-
             startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-//tool.getBoundingClientRect().x;
             var initX = startingPoint.x - $("#accordionSidebar").width();
             var initY = startingPoint.y - 70;
-            console.log("INIT POS");
-            console.log(initX, initY);
-            //        console.log(startingPoint);
             path = $($(tool).children()[0]).children()[0].getAttribute("d");
             ghostFather = getActiveLayer().layer.group();
-
-
-
-
             ghost = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
-            //        ghost.draggable();
             var relationAspect = ghost.width() / ghost.height();
             ghost.height(50);
             ghost.width(50 * relationAspect);
-
             ghostFather.add(ghost);
             ghostFather.add(getActiveLayer().layer
                     .text(type)
                     .center(ghost.cx(), ghost.cy() + ghost.height() * 0.6)
                     );
-
-            console.log(ghost.cx(), ghost.cy());
-
             ghost.previousX = initX;
             ghost.previousY = initY;
-
-//            testCircle = getActiveLayer().layer.circle(5).center(ghost.previousX,ghost.previousY);
-
             //set the distance between the group and the tool
             ghostFather.childDX = ghostFather.cx() - getElementFromGroup(ghostFather, 'path').cx();
             ghostFather.childDY = ghostFather.cy() - getElementFromGroup(ghostFather, 'path').cy();
-
-
         });
 
         mc.on("panmove", function (event) {
             currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
-
-            var x = currentPoint.x-$("#accordionSidebar").width();
-            var y = currentPoint.y-70;
-//            console.log("Previous");
-//            console.log(x,y);
-
+            var x = currentPoint.x - $("#accordionSidebar").width();
+            var y = currentPoint.y - 70;
             var x = currentPoint.x - $("#accordionSidebar").width() - ghost.previousX;
             var y = currentPoint.y - 70 - ghost.previousY;
             ghostFather.dmove(x, y);
@@ -630,12 +603,9 @@ function addToolEvents(tool, type) {
 
         mc.on("panend", function (ev) {
             ghost.front();
-            //        ghost.draggable();
             let mc = new Hammer(ghost.node);
-
             addDragEvents(mc, ghostFather, ghost);
             addPressEvents(mc, ghost, getActiveLayer().layer, type);
-            //        console.log(activeLayer);
         });
     }
 
