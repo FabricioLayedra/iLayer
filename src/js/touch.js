@@ -31,7 +31,9 @@ function slide(event) {
             this.matter.position.x = this.node.initX;
             this.matter.position.y = this.node.initY; 
 //              Matter.Body.setPosition(this.matter,(this.node.initX,this.node.initY));
-
+//            this.matter.position.x +=5;
+//            console.log(this.matter.position.x);
+//            this.matter.position.y += 5;
         }
     }
 }
@@ -389,22 +391,60 @@ function addPressEvents(mc,toolGraphics,drawer,type,child) {
 
 function moveElements(event, nodeGraphics,child){
     let currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
-    var x = currentPoint.x-$("#accordionSidebar").width();
-    var y = currentPoint.y-70;
-    console.log("Previous");
-    console.log(x,y);
+//    console.log("Previous");
+//    console.log(x,y);
 
     var x = currentPoint.x-$("#accordionSidebar").width() - child.previousX;
     var y = currentPoint.y-70 - child.previousY;
-    nodeGraphics.dmove(x,y);
-    child.previousX = nodeGraphics.cx();
-    child.previousY = nodeGraphics.cy();
+    
+
+//    console.log(child.disToCenterX+x,child.disToCenterY+y);
+//    getActiveLayer().layer.circle(5).center(x,y).fill("red");
+//    console.log("*******************");
+//    console.log(x,y);
+
+/// THE IF IS NOT THE BEST THING TO DO BUT WE NEED TO KEEP GOING. 
+    if(nodeGraphics === child){
+        nodeGraphics.center(child.disToCenterX+x,child.disToCenterY+y);
+    }else{
+        nodeGraphics.dmove(x,y);
+        child.previousX = nodeGraphics.cx();
+        child.previousY = nodeGraphics.cy();
+    }
+
+
+//    console.log("DISTANCE");
+//    console.log(child.disToCenterX,child.disToCenterY);
+//    console.log(child.previousX,child.previousY);
+//
+//            getActiveLayer().layer.circle(5).center(child.disToCenterX+x,child.disToCenterY+y).fill("BLUE");
+//    child.disToCenterX = child.disToCenterX;
+//    child.disToCenterY = child.disToCenterY+y;
+
+//    console.log("DIST");
+//    console.log(child.disToCenterX,child.disToCenterY);
+//    console.log(child.previousX+child.disToCenterX,child.previousY+child.disToCenterY);
+//    child.previousX += 5;
+//    child.previousY += 5;   
+//    console.log(nodeGraphics.cx());
     
     if (nodeGraphics.matter){
-//        nodeGraphics.matter.isStatic = f
-        nodeGraphics.matter.position.x = child.previousX;
-        nodeGraphics.matter.position.y = child.previousY;
-        Matter.Body.setStatic(nodeGraphics.matter,true);
+////        nodeGraphics.matter.isStatic = f
+//        nodeGraphics.matter.position.x = child.previousX;
+//        nodeGraphics.matter.position.y = child.previousY;
+//        console.log(nodeGraphics.matter.position.x);
+//        console.log(nodeGraphics.matter.position.y);
+
+//        console.log("Changing the position...");
+//        nodeGraphics.matter.position.x =  nodeGraphics.matter.position.x +5;
+//        nodeGraphics.matter.position.y = nodeGraphics.matter.position.y + 5;
+        
+        Matter.Body.setPosition(nodeGraphics.matter,{x:child.cx(),y:child.cy()});
+
+//        console.log(nodeGraphics.matter.position.x);
+//        console.log(nodeGraphics.matter.position.y);
+        
+//        Matter.Body.setStatic(nodeGraphics.matter,true);
 //        nodeGraphics.matter.isStatic = true;
     }
     
@@ -432,10 +472,16 @@ function addDragEvents(hammer,ghostFather,ghost){
             startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
             var initX = startingPoint.x-$("#accordionSidebar").width();
             var initY = startingPoint.y-70;
-            console.log("INIT POS");
-            console.log(initX,initY);
+//            console.log("INIT POS");
+//            console.log(initX,initY);
             ghost.previousX = initX;
             ghost.previousY = initY;
+            
+            ghost.disToCenterX = ghostFather.cx();
+            ghost.disToCenterY = ghostFather.cy();
+            
+//            getActiveLayer().layer.circle(5).cen,ter(ghostFather.cx(),ghostFather.cy()).fill("red").front();
+
             
 //            $(ghost).css("zIndex","-1000000");
 
@@ -520,8 +566,8 @@ function addToolEvents(tool,type) {
             currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
             var x = currentPoint.x-$("#accordionSidebar").width();
             var y = currentPoint.y-70;
-            console.log("Previous");
-            console.log(x,y);
+//            console.log("Previous");
+//            console.log(x,y);
 
             var x = currentPoint.x-$("#accordionSidebar").width() - ghost.previousX;
             var y = currentPoint.y-70 - ghost.previousY;

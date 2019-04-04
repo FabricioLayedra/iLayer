@@ -529,6 +529,8 @@ function add_element_to_world(world, element) {
 
         var matterObject = Bodies.circle(x, y, radius);
         matterObject.frictionAir = 0.025;
+        matterObject.restitution = 0.025;
+        matterObject.restitution = 10000;
 
         //nodeData.matter = matterObject;
         matterObject.svg = element;
@@ -643,7 +645,7 @@ function add_attractor_to_world(world, element) {
                 ]
             }
         });
-        matterObject.density = 1;
+      
 //      
         matterObject.svg = element;
         element.matter = matterObject;
@@ -1776,8 +1778,8 @@ function main() {
 //                        updateHighlights(nodeGraphics.parent());
 
                     }
-                }
-                }            
+                    }
+                }           
             }
         }
         
@@ -1806,6 +1808,8 @@ function main() {
 //        addGraphAsLayer(GRAPHS["authors2016"], "3");
 
         activateLayer("1");
+        
+
 //        addAttractorsToWorld(['affiliation','citations'],100,'affiliation')
     });
 
@@ -2400,23 +2404,22 @@ function setWalls(distance,chosen,orientation){
         for (var attractIndex in Object.keys(attractees)){
             var position = positions[attractIndex];
             var aff = Object.keys(attractees)[attractIndex];
-            var wall1 = getActiveLayer().layer.rect(5,generalHeight).move(position+width/2- nodeRadius/2-5,fixedAxis-generalHeight).fill(getActiveLayer().color).attr({"class":"attractor"}).back();
-            var wall2 = getActiveLayer().layer.rect(5,generalHeight).move(position+width- nodeRadius*2+5,fixedAxis-generalHeight).fill(getActiveLayer().color).attr({"class":"attractor"}).back();
-//            var group = getActiveLayer().layer.group();
-//            var wall1 = getActiveLayer().layer.rect(5,0).move(position,fixedAxis-generalHeight).fill(getActiveLayer().color).attr({"class":"attractor"}).back();
-//            console.log(position);
-//            var wall2 = getActiveLayer().layer.rect(5,generalHeight).move(position+width-5,fixedAxis-generalHeight).fill(getActiveLayer().color).attr({"class":"attractor"}).back();
-//            group.add(wall1);
-//            group.transform({scaleX:1,scaleY:-1});
-//            group.translate(0,fixedAxis)
-//                                wall1.animate(750).height(generalHeight);
-
-            
-            addDragEvents(new Hammer(wall1.node),wall1,wall1);
-            addDragEvents(new Hammer(wall2.node),wall2,wall2);
-    //        wall2.draggable();
-            add_attractor_to_world(world, wall1);
-            add_attractor_to_world(world, wall2);
+            let wall1 = getActiveLayer().layer.rect(5,0).move(position+width/2- nodeRadius/2-5,fixedAxis-generalHeight).fill(getActiveLayer().color).back();
+//            let wall2 = getActiveLayer().layer.rect(5,generalHeight).move(position+width- nodeRadius*2+5,fixedAxis-generalHeight).fill(getActiveLayer().color).attr({"class":"wall"}).back();
+//            let wall1 = getActiveLayer().layer.rect(5,0).move(position,fixedAxis-generalHeight).fill(getActiveLayer().color).attr({"class":"attractor"}).back();
+//          let wall1 = getActiveLayer().layer.rect(5,0).move(position,fixedAxis-generalHeight).fill(getActiveLayer().color).attr({"class":"attractor"}).back();
+//          wall1.transform({scaleY:-1});
+            var time = 500;
+            wall1.animate(time).height(generalHeight).after(function(){
+                addDragEvents(new Hammer(wall1.node),wall1,wall1);
+                add_attractor_to_world(world, wall1);
+            });
+//            
+            let wall2 = getActiveLayer().layer.rect(5,0).move(position+width/2+nodeRadius/2+5,fixedAxis-generalHeight).fill(getActiveLayer().color).back();
+            wall2.animate(time).height(generalHeight).after(function(){
+                addDragEvents(new Hammer(wall2.node),wall2,wall2);
+                add_attractor_to_world(world, wall2);
+            });
         }
 }
         
@@ -2474,6 +2477,8 @@ function sortByAttribute(distance,chosen,orientation){
 
     }
     
+    setWalls(10,'affiliation','down');
+    
     if (axisX){
         getActiveLayer().axis.x =true;
     }else{
@@ -2484,3 +2489,4 @@ function sortByAttribute(distance,chosen,orientation){
 function verifyNodesHit(){
     
 }
+
