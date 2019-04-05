@@ -614,7 +614,7 @@ function addToolEvents(tool, type) {
             ghost.previousX = ghostFather.cx();
             ghost.previousY = ghostFather.cy();
             
-            if (type === 'wall'){
+            if (type === 'wall' || type === 'position'){
                 attributeLand = isClassedGraphics(getActiveLayer().layer.node,x,y,'toolable');
             }
             
@@ -632,15 +632,41 @@ function addToolEvents(tool, type) {
             //        ghost.draggable();
             let mc = new Hammer(ghost.node);
             
-            if (type==='wall'){
-                if (attributeLand){
-                    var attributeGraphics = getCrossedClassedGraphicObject(getActiveLayer().layer.node,x,y,'toolable');
+            
+            if (attributeLand){
+                var attributeGraphics = getCrossedClassedGraphicObject(getActiveLayer().layer.node,x,y,'toolable');
+                
+                if (type==='wall'){
+                    
                     attributeGraphics.attr({"stroke-dasharray":4,stroke:'red','stroke-width':3});
                     addBuilderWallsEvents(attributeGraphics);
-                    blink(attributeGraphics);
+                    
+                }
+                
+                else if(type ==='position'){
+                    
+                    console.log("Positioning elements");
+                    var attributeValue = attributeGraphics.labelGraphics.node.id.split("-")[1];
+                    
+                    var attributeTypeName = attributeGraphics.attr("attribute-type");
+
+                    console.log(attributeValue);
+                    console.log(attributeTypeName);
+
+                    positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName);
+                    
                 }
                 ghostFather.remove();
+                
+                blink(attributeGraphics);
+
+            }else{
+                if (type === 'wall' || type === 'position'){
+                    ghostFather.remove();
+                }
             }
+            
+            
 
             addDragEvents(mc, ghostFather, ghost);
             addPressEvents(mc, ghost, getActiveLayer().layer, type);
