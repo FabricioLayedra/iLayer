@@ -700,42 +700,6 @@ function loadGraph(filename, key, directed) {
 
 }
 
-function lightenDarkenColor(col, amt) {
-
-    var usePound = false;
-
-    if (col[0] == "#") {
-        col = col.slice(1);
-        usePound = true;
-    }
-
-    var num = parseInt(col, 16);
-
-    var r = (num >> 16) + amt;
-
-    if (r > 255)
-        r = 255;
-    else if (r < 0)
-        r = 0;
-
-    var b = ((num >> 8) & 0x00FF) + amt;
-
-    if (b > 255)
-        b = 255;
-    else if (b < 0)
-        b = 0;
-
-    var g = (num & 0x0000FF) + amt;
-
-    if (g > 255)
-        g = 255;
-    else if (g < 0)
-        g = 0;
-
-    return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
-
-}
-
 // Adds a graph as a layer in the tool
 function addGraphAsLayer(g, layerName) {
 
@@ -2010,7 +1974,6 @@ function createHighlight(object, animate, hideAfter, color) {
 
 }
 
-
 function addAttributesAsTools(attributesSet) {
     for (var index in attributesSet) {
         let attribute = attributesSet[index];
@@ -2423,7 +2386,73 @@ function setWalls(distance,chosen,orientation){
             });
         }
 }
-        
+
+function buildWall(graphicObject,width,height,mode){
+    var world = getPhysicsEngine(getActiveLayerName()).world;
+
+    if (mode==='both'){
+        if (!graphicObject.walls){
+//            let wall2 = getActiveLayer().layer.rect(5,generalHeight).move(position+width- nodeRadius*2+5,fixedAxis-generalHeight).fill(getActiveLayer().color).attr({"class":"wall"}).back();
+//            let wall1 = getActiveLayer().layer.rect(5,0).move(position,fixedAxis-generalHeight).fill(getActiveLayer().color).attr({"class":"attractor"}).back();
+//          let wall1 = getActiveLayer().layer.rect(5,0).move(position,fixedAxis-generalHeight).fill(getActiveLayer().color).attr({"class":"attractor"}).back();
+//          wall1.transform({scaleY:-1});
+            var time = 500;
+            var positions = getRectMiddle(graphicObject)
+
+            let wall1 = getActiveLayer().layer.rect(width,height).move(positions[0]-graphicObject.width()/2,positions[1]).fill(getActiveLayer().color).back();
+            
+            var step = height - wall1.height();
+            console.log(step);
+            
+            wall1.height(height);
+            
+//            wall1.cx(wall1.cx());
+            wall1.y(wall1.y()-step);
+            
+            let wall2 = getActiveLayer().layer.rect(width,height).move(positions[0]+graphicObject.width()/2-width,positions[1]).fill(getActiveLayer().color).back();
+            wall2.height(height);
+            
+            add_attractor_to_world(world, wall1);
+            add_attractor_to_world(world, wall2);
+            addDragEvents(new Hammer(wall1.node),wall1,wall1);
+            addDragEvents(new Hammer(wall2.node),wall2,wall2);
+
+            
+
+
+            graphicObject.walls = [wall1,wall2];
+            
+//                        let wall2 = getActiveLayer().layer.rect(5,0).move(position+width/2+nodeRadius/2+5,fixedAxis-generalHeight).fill(getActiveLayer().color).back();
+//            wall2.animate(time).height(generalHeight).after(function(){
+//                addDragEvents(new Hammer(wall2.node),wall2,wall2);
+//                add_attractor_to_world(world, wall2);
+//            });
+        }else{
+            var step = height - graphicObject.walls[0].height();
+            console.log(step);
+            var scale =  height / graphicObject.walls[0].height()
+            var wall1 = graphicObject.walls[0];
+            
+            var wall2 = graphicObject.walls[1];
+
+            wall1.y(wall1.y()-step);
+            wall1.height(height);
+            
+            Matter.Body.scale(wall1.matter,1,scale);
+            Matter.Body.setPosition(wall1.matter,{x:wall1.cx(),y:wall1.cy()});
+            
+            wall2.y(wall2.y()-step);
+            wall2.height(height);
+            
+            Matter.Body.scale(wall2.matter,1,scale);
+            Matter.Body.setPosition(wall2.matter,{x:wall2.cx(),y:wall2.cy()});
+            
+//            graphicOject.walls[1].height(height);
+//            console.log("Building...");
+        }
+    }
+}
+
 function sortByAttribute(distance,chosen,orientation){
 
     var textSet = getActiveLayer().attributes;
@@ -2443,22 +2472,21 @@ function sortByAttribute(distance,chosen,orientation){
         var attractorGraphics = null;
         var label = null;
         if (axisX && !getActiveLayer().axis.x) {
-            ;
-            attractorGraphics = getActiveLayer().layer.rect(width, height).move(positions[attractIndex], fixedAxis).fill(getActiveLayer().color).attr({"class": "attractor"});
+            attractorGraphics = getActiveLayer().layer.rect(width, height).move(positions[attractIndex], fixedAxis).fill(getActiveLayer().color).attr({"class": "toolable"});
             label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex] + width / 2, fixedAxis + height / 2 - 5, 'authors2016', aff).attr({fill: "white"});
-            for (var elIndex in elements) {
-                var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
-                let element = elements[elIndex];
-                if (Object.keys(data).includes(chosen)) {
-                    if (data[chosen].toString() === aff) {
-                        //add attractee
-                        let pointX = getRectMiddle(attractorGraphics)[0] - element.cx();
-                        elements[elIndex].animate(500).dx(pointX).during(function () {
-                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                        });
-                    }
-                }
-            }
+//            for (var elIndex in elements) {
+//                var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
+//                let element = elements[elIndex];
+//                if (Object.keys(data).includes(chosen)) {
+//                    if (data[chosen].toString() === aff) {
+//                        //add attractee
+//                        let pointX = getRectMiddle(attractorGraphics)[0] - element.cx();
+//                        elements[elIndex].animate(500).dx(pointX).during(function () {
+//                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+//                        });
+//                    }
+//                }
+//            }
         } else if (!axisX && !getActiveLayer().axis.y) {
             attractorGraphics = getActiveLayer().layer.rect(height, width).move(fixedAxis, positions[attractIndex]).fill(getActiveLayer().color);
             label = drawLabel(getActiveLayer().layer, aff, fixedAxis + height / 2 - 5, positions[attractIndex] + width / 2, 'authors2016', aff).attr({fill: "white"}).transform({rotation: 270});
@@ -2480,7 +2508,7 @@ function sortByAttribute(distance,chosen,orientation){
 
     }
     
-    setWalls(10,'affiliation','down');
+//    setWalls(10,'affiliation','down');
     
     if (axisX){
         getActiveLayer().axis.x =true;
