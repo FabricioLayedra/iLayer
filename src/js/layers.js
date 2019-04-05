@@ -100,7 +100,7 @@ function addDroppingZones(layerName) {
     var layerHeight = drawer.height();
 
 
-    let rectAttributes = {stroke: 'none', fill: '#eee', opacity: 0};
+    let rectAttributes = {stroke: 'none', fill: '#ddd', opacity: 0};
     let lineAttributes = {stroke: layer.color, 'stroke-width': 3, fill: '#efefef', opacity: 0};
     let d = 55;
 
@@ -2130,7 +2130,7 @@ function addAttributesDraggingEvents(element, attributeName) {
 
 
                 } else {
-                    setVisibilityOfAttributeValues(theDroppingZone, 0.4);
+                    setVisibilityOfAttributeValues(theDroppingZone, 0.5);
                 }
             } else {
                 setVisibilityOfAttributeValues(theDroppingZone, 0);
@@ -2227,8 +2227,7 @@ function addAttributeValues(droppingZone, x, y, width, drawer, direction) {
             "text-anchor": "middle",
             "alignment-baseline": "hanging",
             "dominant-baseline": "middle",
-            "font-size": "16px",
-            opacity: 0.25
+            "font-size": "16px"
         });
 
         if (direction === "horizontal") {
