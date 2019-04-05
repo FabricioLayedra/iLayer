@@ -98,10 +98,8 @@ function addDroppingZones(layerName) {
     var layer = LAYERS[layerName];
     var drawer = layer.layer;
     var layerHeight = drawer.height();
-
-
     let rectAttributes = {stroke: 'none', fill: '#ddd', opacity: 0};
-    let lineAttributes = {stroke: layer.color, 'stroke-width': 3, fill: '#efefef', opacity: 0};
+    let lineAttributes = {stroke: 'black', 'stroke-width': 2, fill: '#efefef', opacity: 0, linecap: 'round'};
     let d = 55;
 
     layer.bottom = {
@@ -109,6 +107,7 @@ function addDroppingZones(layerName) {
         rect: drawer.rect("100%", d).move(0, layerHeight - d).attr(rectAttributes)
     };
 
+    d = 109;
     layer.left = {
         line: drawer.line(0, 0, 0, drawer.height() + 4).move(d, 0).attr(lineAttributes),
         rect: drawer.rect(d, "100%").move(0, 0).attr(rectAttributes)
@@ -2082,6 +2081,7 @@ function addAttributesDraggingEvents(element, attributeName) {
     });
 
     mc.on("panmove", function (ev) {
+
         currentPoint = {x: ev.srcEvent.pageX - $("#accordionSidebar").width(), y: ev.srcEvent.pageY - 70};
         group.move(currentPoint.x - startingPoint.x, currentPoint.y - startingPoint.y);
 
@@ -2092,9 +2092,6 @@ function addAttributesDraggingEvents(element, attributeName) {
 
         activeLayer.bottom.rect.attr({opacity: 0});
         activeLayer.left.rect.attr({opacity: 0});
-
-
-
 
         if (distanceToLeft < distanceToBottom) {
             theDistance = distanceToLeft;
@@ -2117,17 +2114,16 @@ function addAttributesDraggingEvents(element, attributeName) {
                     let padding = 10;
 
                     if (direction === "horizontal") {
-                        x = rect.rbox().w + 10 + spaceBefore + padding;
-                        y = theDroppingZone.rect.cy() - 8;
-                        space = theDroppingZone.rect.rbox().w - rect.width() - 60 - spaceBefore - padding;
+                        x = rect.rbox().w + padding + 50;
+                        y = theDroppingZone.rect.cy() - 25;
+                        space = theDroppingZone.rect.rbox().w - rect.width() / 2 - spaceBefore;
                     } else {
                         x = theDroppingZone.rect.cx();
-                        y = theDroppingZone.rect.y() + theDroppingZone.rect.bbox().h - spaceBefore - rect.height() - padding - 80;
-                        space = theDroppingZone.rect.bbox().h - spaceBefore - rect.height() - spaceBefore - padding;
+                        y = theDroppingZone.rect.y() + theDroppingZone.rect.bbox().h - rect.height() - padding - 70;
+                        space = theDroppingZone.rect.bbox().h - rect.height() - 70;
                     }
 
                     addAttributeValues(theDroppingZone, x, y, space, drawer, direction);
-
 
                 } else {
                     setVisibilityOfAttributeValues(theDroppingZone, 0.5);
@@ -2154,32 +2150,37 @@ function addAttributesDraggingEvents(element, attributeName) {
                 let x = null;
                 let y = null;
 
-                console.log(currentPoint.y - startingPoint.y);
-                console.log("theDroppingZone.cy()");
-                console.log(theDroppingZone.rect.cy());
-                console.log("startingPoint.y: " + startingPoint.y);
-                console.log("newY: " + y);
+                /*console.log(currentPoint.y - startingPoint.y);
+                 console.log("theDroppingZone.cy()");
+                 console.log(theDroppingZone.rect.cy());
+                 console.log("startingPoint.y: " + startingPoint.y);
+                 console.log("newY: " + y);*/
 
                 if (direction === "horizontal") {
-                    x = -startingPoint.x + rect.width() / 2 + spaceBefore - 7;
-                    y = theDroppingZone.rect.cy() + rect.height() / 2 - startingPoint.y - 18;
+                    x = -startingPoint.x + rect.width() / 2 + 5;
+                    y = theDroppingZone.line.cy() - startingPoint.y;
                 } else {
-                    x = -startingPoint.x + theDroppingZone.rect.width() / 2 - 1;
-                    y = theDroppingZone.rect.x() + theDroppingZone.rect.bbox().h - spaceBefore - startingPoint.y - rect.height() - 5;
+                    x = -startingPoint.x + theDroppingZone.rect.width();
+                    y = -startingPoint.y + rect.height() / 2 + 5;
                 }
 
                 if (direction === "horizontal") {
+
                     group.animate(250).move(x, y);
+                    theDroppingZone.line.animate(250).attr({x1: rect.bbox().w + 10});
+
+                    // changing the appearance of the left dropping zone in response to the new axis created in the bottom
+                    activeLayer.left.rect.attr({width: rect.bbox().w + 10});
+                    activeLayer.left.line.cx(rect.bbox().w + 10);
+                    activeLayer.left.line.animate(250).attr({y1: rect.bbox().h + 10, y2: theDroppingZone.rect.y() + 1});
+
                 } else {
-                    group.animate(250).move(x, y).rotate(-90);
+                    group.animate(250).move(x, y);
                 }
 
                 theDroppingZone.rect.animate(250).attr({opacity: 0});
 
                 setTimeout(function () {
-
-
-
 
                     theDroppingZone.line.animate(250).attr({opacity: 1});
                     setVisibilityOfAttributeValues(theDroppingZone, 1, true);
@@ -2206,6 +2207,7 @@ function setVisibilityOfAttributeValues(droppingZone, opacity, progressive) {
         droppingZone.valueLabels.forEach(function (label, index) {
             if (progressive) {
                 setTimeout(function () {
+//                    blink(label);
                     label.attr({opacity: opacity});
                 }, 25 * index);
             } else {
@@ -2217,31 +2219,55 @@ function setVisibilityOfAttributeValues(droppingZone, opacity, progressive) {
 
 function addAttributeValues(droppingZone, x, y, width, drawer, direction) {
 
-    var values = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
+    var values = ["University of Calgary", "University of Toronto", "University of British Columbia", "University of St Andrews", "five", "six", "seven", "eight", "nine", "UCL", "Simon Fraser University", "Ofxord University"];
     var space = width / values.length;
     droppingZone.valueLabels = new Array();
-
+    
     values.forEach(function (value, index) {
-        let label = drawer.text(value).attr({
-            fill: getActiveLayer().color,
-            "text-anchor": "middle",
-            "alignment-baseline": "hanging",
-            "dominant-baseline": "middle",
-            "font-size": "16px"
-        });
+
+        let parts = direction === "horizontal" ? value.match(/.{1,11}/g) : value.match(/.{1,13}/g);
+        let finalX = null;
+        let finalY = null;
 
         if (direction === "horizontal") {
-            label.move(x + (space * index), y);
+            finalX = x + (space * index);
+            finalY = y;
         } else {
-            label.move(x, y - (space * index));
-            label.rotate(-90);
+            finalX = x;
+            finalY = y - (space * index);
         }
+
+        let label = drawer.text(function (add) {
+            parts.forEach(function (part) {
+                if (direction === "vertical") {
+                    add.tspan(part.trim()).dy(15).attr('x', finalX + 47);
+                } else {
+                    add.tspan(part.trim()).dy(15).attr('x', finalX);
+                }
+
+            });
+        });
+
+        label.attr({
+            fill: getActiveLayer().color,
+            "text-anchor": direction === "horizontal" ? "middle" : "end",
+            "alignment-baseline": "hanging",
+            "dominant-baseline": "middle",
+            "font-size": "14px"
+        });
+
+
+
+//        if (direction === "vertical") {
+//            label.move(finalX + 100, finalY);
+//        } else {
+//            
+//        }
+
+        label.move(finalX, finalY);
 
         droppingZone.valueLabels.push(label);
     });
-
-
-
 }
 
 function addAttributesAsTools(attributesSet) {
