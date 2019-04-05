@@ -2472,8 +2472,9 @@ function sortByAttribute(distance,chosen,orientation){
         var attractorGraphics = null;
         var label = null;
         if (axisX && !getActiveLayer().axis.x) {
-            attractorGraphics = getActiveLayer().layer.rect(width, height).move(positions[attractIndex], fixedAxis).fill(getActiveLayer().color).attr({"class": "toolable"});
+            attractorGraphics = getActiveLayer().layer.rect(width, height).move(positions[attractIndex], fixedAxis).fill(getActiveLayer().color).attr({"class": "toolable","attribute-type":chosen});
             label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex] + width / 2, fixedAxis + height / 2 - 5, 'authors2016', aff).attr({fill: "white"});
+            attractorGraphics.labelGraphics = label;
 //            for (var elIndex in elements) {
 //                var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
 //                let element = elements[elIndex];
@@ -2518,3 +2519,22 @@ function sortByAttribute(distance,chosen,orientation){
     }
 }
 
+function positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName){
+    var elements = getActiveLayer().layer.select('g.node').members;
+        console.log("Position element");
+    console.log(elements);
+    for (var elIndex in elements) {
+        console.log("position "+ elements[elIndex]);
+        var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
+        console.log(data);
+        let element = elements[elIndex];
+        if (Object.keys(data).includes(attributeTypeName)) {
+            if (data[attributeTypeName].toString() === attributeValue) {
+                let pointX = getRectMiddle(attributeGraphics)[0] - element.cx();
+                elements[elIndex].animate(500).dx(pointX).during(function () {
+                    updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+                });
+            }
+        }
+    }
+}
