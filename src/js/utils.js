@@ -126,8 +126,8 @@ function isClassedGraphics(layerNode,x,y,className){
     verifier.y = y;
     verifier.width = 1;
     verifier.height = 1;
-    console.log("position searched");
-    console.log(x,y);
+//    console.log("position searched");
+//    console.log(x,y);
     let elements = layerNode.getIntersectionList(verifier, null);
     for (var i = 0; i < elements.length; i++) {
 //        console.log(elements[i]);
