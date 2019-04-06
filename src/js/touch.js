@@ -101,7 +101,6 @@ function removeTouchEvents(nodeParent) {
 // modes are often set by the user or even the layer itself
 
 function addLayerEvents(layer, drawer) {
-    console.log(drawer);
     let mc = new Hammer(layer);
 
     // let the pan gesture support all directions.
@@ -115,7 +114,6 @@ function addLayerEvents(layer, drawer) {
     let line = null;
     let rect = null;
     let intersection = null;
-    let verifier = null;
     let touchCanvas = true;
 
     mc.on("panstart", function (ev) {
@@ -124,19 +122,8 @@ function addLayerEvents(layer, drawer) {
         rect = layer.createSVGRect();
         rect.x = startingPoint.x;
         rect.y = startingPoint.y;
-//        console.log("hits an element?")
-        verifier = layer.createSVGRect();
-        verifier.x = startingPoint.x;
-        verifier.y = startingPoint.y;
-        verifier.width = 1;
-        verifier.height = 1;
-        let elements = layer.getIntersectionList(verifier, null);
-        for (var i = 0; i < elements.length; i++) {
-            if (elements[i].tagName === "circle" || $(elements[i]).attr("tool")) {
-                touchCanvas = false;
-                break;
-            }
-        }
+        touchCanvas = isFreePoint(layer,startingPoint.x,startingPoint.y);
+
 
 
         if (touchCanvas) {
@@ -437,14 +424,23 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
             mc.off('panend');
             addDragEvents(mc, toolGraphics.parent(), toolGraphics);
         });
+        
+    } 
+    else if (type === 'bending') {
 
-    } else if (type === 'bending') {
 //        console.log();
         addLayerEvents(getActiveLayer().layer.node, getActiveLayer().layer);
+    }
+    else if (type === 'wall'){
+        
+    }
+    else if (type === 'position'){
+        
     }
 }
 
 function moveElements(event, nodeGraphics, child) {
+    console.log("moving");
     let currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
 
 //    console.log("Previous");
@@ -527,8 +523,6 @@ function addDragEvents(hammer, ghostFather, ghost) {
         startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
         var initX = startingPoint.x - $("#accordionSidebar").width();
         var initY = startingPoint.y - 70;
-        console.log("INIT POS");
-        console.log(initX, initY);
         ghost.previousX = initX;
         ghost.previousY = initY;
 
@@ -567,24 +561,35 @@ function addToolEvents(tool, type) {
         let path = null;
         let ghost = null;
         let ghostFather = null;
+        
+        let attributeLand = null;
 
         mc.on("panstart", function (ev) {
+        
             startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+
             var initX = startingPoint.x - $("#accordionSidebar").width();
             var initY = startingPoint.y - 70;
+
             path = $($(tool).children()[0]).children()[0].getAttribute("d");
             ghostFather = getActiveLayer().layer.group();
+
+            console.log(initX,initY);
+
             ghost = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
             var relationAspect = ghost.width() / ghost.height();
             ghost.height(50);
             ghost.width(50 * relationAspect);
+
             ghostFather.add(ghost);
             ghostFather.add(getActiveLayer().layer
                     .text(type)
                     .center(ghost.cx(), ghost.cy() + ghost.height() * 0.6)
                     );
+            
             ghost.previousX = initX;
             ghost.previousY = initY;
+            
             //set the distance between the group and the tool
             ghostFather.childDX = ghostFather.cx() - getElementFromGroup(ghostFather, 'path').cx();
             ghostFather.childDY = ghostFather.cy() - getElementFromGroup(ghostFather, 'path').cy();
@@ -592,21 +597,171 @@ function addToolEvents(tool, type) {
 
         mc.on("panmove", function (event) {
             currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
-            var x = currentPoint.x - $("#accordionSidebar").width();
-            var y = currentPoint.y - 70;
-            var x = currentPoint.x - $("#accordionSidebar").width() - ghost.previousX;
-            var y = currentPoint.y - 70 - ghost.previousY;
-            ghostFather.dmove(x, y);
+
+            var x = currentPoint.x - $("#accordionSidebar").width() ;
+            var y = currentPoint.y - 70 ;
+            ghostFather.dmove(x- ghost.previousX, y- ghost.previousY);
             ghost.previousX = ghostFather.cx();
             ghost.previousY = ghostFather.cy();
+            
+            if (type === 'wall' || type === 'position'){
+                attributeLand = isClassedGraphics(getActiveLayer().layer.node,x,y,'toolable');
+            }
+            
         });
 
         mc.on("panend", function (ev) {
+            currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+
+//            console.log("Previous");
+//            console.log(x,y);
+
+            var x = currentPoint.x - $("#accordionSidebar").width() ;
+            var y = currentPoint.y - 70 ;
             ghost.front();
             let mc = new Hammer(ghost.node);
+            
+            
+            if (attributeLand){
+                var attributeGraphics = getCrossedClassedGraphicObject(getActiveLayer().layer.node,x,y,'toolable');
+                
+                if (type==='wall'){
+                    
+                    attributeGraphics.attr({"stroke-dasharray":4,stroke:'red','stroke-width':3});
+                    addBuilderWallsEvents(attributeGraphics,attributeGraphics.parent());
+                    
+                }
+                
+                else if(type ==='position'){
+                    
+                    console.log("Positioning elements");
+                    var attributeValue = attributeGraphics.labelGraphics.node.id.split("-")[1];
+                    
+                    var attributeTypeName = attributeGraphics.attr("attribute-type");
+
+                    console.log(attributeValue);
+                    console.log(attributeTypeName);
+
+                    positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName);
+                    
+                }
+                ghostFather.remove();
+                
+                blink(attributeGraphics);
+
+            }else{
+                if (type === 'wall' || type === 'position'){
+                    ghostFather.remove();
+                }
+            }
+            
+            
+
             addDragEvents(mc, ghostFather, ghost);
             addPressEvents(mc, ghost, getActiveLayer().layer, type);
+            //        console.log(activeLayer);
+            
+            
         });
     }
 
+}
+
+function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
+    if (!attributeGraphicsParent.hammer){
+        attributeGraphicsParent.hammer = new Hammer (attributeGraphicsParent.node);
+    }
+        
+    var hammer = attributeGraphicsParent.hammer;
+
+    
+    hammer.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
+    
+//    hammer.on("panstart", function (event) {
+//        console.log("Wall to the top");
+//        var point = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
+////tool.getBoundingClientRect().x;
+//        var initX = point.x - $("#accordionSidebar").width();
+//        var initY = point.y - 70;
+//    });
+    
+    
+    let startingPoint = null;
+    let currentPoint = null;
+    let height = null;
+    let direction = null;
+    var x  = null;
+//    var
+    let intersection = null;
+    let touchCanvas = true;
+
+    hammer.on("panstart", function (ev) {
+        startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+        console.log("Initialize wall...");
+    });
+
+    hammer.on("panmove", function (ev) {
+        console.log("Building wall...");
+
+        currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+        height =  Math.abs(currentPoint.y - startingPoint.y);
+        
+//        var y = getActiveLayer().bottom.line.y()-getActiveLayer().bottom.line.attr("stroke-width");
+                let y = getActiveLayer().bottom.line.cy();
+
+        //the proxy thing
+        for (var index in getActiveLayer().bottom.valueLabels){
+            //    insideSpace = 30;
+            var x = getActiveLayer().bottom.valueLabels[index].cx();
+//            console.log("Y value");
+//            console.log(y);
+            buildWall(getActiveLayer().bottom.valueLabels[index],7,height,[x,y],'both',29);
+        }
+        
+    });
+    
+    
+    hammer.on("panend", function (ev) {
+        console.log(attributeGraphics);
+    });
+    
+    hammer.on('panleft',function(event){
+        direction = 'left';
+        
+        console.log("Wall to the left");
+
+    });
+    
+    hammer.on("panright", function (event) {
+        direction = 'right';
+        console.log("Wall to the right");
+    });
+    
+    hammer.on("pantop", function (event) {
+        direction = 'top'
+        console.log("Wall to the top");
+
+    });
+    
+    hammer.on("pandown", function (event) {
+        direction = 'down'
+        console.log("Wall to the down");
+    });
+    
+    hammer.on('panend',function(event){
+        console.log("Wall built!");
+    });
+    
+//    hammer.on("swiperight", function (event) {
+//        console.log("Wall to the right");
+//    });
+//    
+//    hammer.on("swipeleft", function (event) {
+//        console.log("Wall to the left");
+//    });
+//    
+//    hammer.on("swipedown", function (event) {
+//        console.log("Wall to the down");
+//    });
+    
 }
