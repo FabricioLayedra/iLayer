@@ -645,16 +645,36 @@ function addToolEvents(tool, type) {
                 }
                 
                 else if(type ==='position'){
-                    
                     console.log("Positioning elements");
-                    var attributeValue = attributeGraphics.labelGraphics.node.id.split("-")[1];
+                    var direction = attributeGraphics.direction;
+
+                    if ($(attributeGraphics.node).hasClass('proxy')){
+
+                        console.log("proxy");
+                        var labelsGraphics = attributeGraphics.values;
+                        var attributeTypeName = attributeGraphics.attr("value");
+                        
+//                        console.log(attributeGraphics.attr("isDiscrete"));
+                        for (var index in labelsGraphics){
+//                            console.log(attributeGraphics.values[index]);
+                            var labelGraphic = labelsGraphics[index];
+                            var attributeValue = labelGraphic.node.textContent;
+                            console.log(labelGraphic,attributeValue,attributeTypeName);
+                            positionElementsByAttribute(labelGraphic,attributeValue,attributeTypeName,direction);
+
+                        }
+//                        addBuilderWallsEvents(attributeGraphics,attributeGraphics.parent());
+                    }else{
+                        
+                        var attributeTypeName = attributeGraphics.attr("attrType");
+                        positionElementsByAttribute(attributeGraphics,attributeGraphics.node.textContent,attributeTypeName,direction);
+
+                    }
                     
-                    var attributeTypeName = attributeGraphics.attr("attribute-type");
 
-                    console.log(attributeValue);
-                    console.log(attributeTypeName);
 
-                    positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName);
+
+//                    positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName);
                     
                 }
                 ghostFather.remove();
