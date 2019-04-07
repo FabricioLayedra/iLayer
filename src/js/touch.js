@@ -628,7 +628,12 @@ function addToolEvents(tool, type) {
                 if (type==='wall'){
                     
                     attributeGraphics.attr({"stroke-dasharray":4,stroke:'red','stroke-width':3});
-                    addBuilderWallsEvents(attributeGraphics,attributeGraphics.parent());
+                    if ($(attributeGraphics.node).hasClass('proxy')){
+                        console.log("proxy");
+                        addBuilderWallsEvents(attributeGraphics,attributeGraphics.parent());
+                    }else{
+                        addBuilderWallsEvents(attributeGraphics,attributeGraphics);
+                    }
                     
                 }
                 
@@ -668,6 +673,8 @@ function addToolEvents(tool, type) {
 }
 
 function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
+    
+    
     if (!attributeGraphicsParent.hammer){
         attributeGraphicsParent.hammer = new Hammer (attributeGraphicsParent.node);
     }
@@ -706,16 +713,42 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
         currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
         height =  Math.abs(currentPoint.y - startingPoint.y);
         
-//        var y = getActiveLayer().bottom.line.y()-getActiveLayer().bottom.line.attr("stroke-width");
-                let y = getActiveLayer().bottom.line.cy();
+        if (direction==='up'){
+        
+    //        var y = getActiveLayer().bottom.line.y()-getActiveLayer().bottom.line.attr("stroke-width");
+            let y = getActiveLayer().bottom.line.cy();
 
-        //the proxy thing
-        for (var index in getActiveLayer().bottom.valueLabels){
-            //    insideSpace = 30;
-            var x = getActiveLayer().bottom.valueLabels[index].cx();
-//            console.log("Y value");
-//            console.log(y);
-            buildWall(getActiveLayer().bottom.valueLabels[index],7,height,[x,y],'both',29);
+            if ($(attributeGraphics.node).hasClass('proxy')){
+                //the proxy thing
+                for (var index in getActiveLayer().bottom.valueLabels){
+                    //    insideSpace = 30;
+                    var x = getActiveLayer().bottom.valueLabels[index].cx();
+        //            console.log("Y value");
+        //            console.log(y);
+    //                getActiveLayer().layer.circle(1).center(x,getActiveLayer().bottom.valueLabels[index].cy()).fill("red").front();
+                    buildWall(getActiveLayer().bottom.valueLabels[index],7,height,[x,y],'both',29,direction
+                            );
+                }
+            }else{
+                buildWall(attributeGraphics,7,height,[attributeGraphics.cx(),y],'both',29,direction);
+            }
+        
+        }else if(direction ==='down'){
+            let y = getActiveLayer().bottom.line.cy();
+
+            if ($(attributeGraphics.node).hasClass('proxy')){
+                //the proxy thing
+                for (var index in getActiveLayer().bottom.valueLabels){
+                    //    insideSpace = 30;
+                    var x = getActiveLayer().bottom.valueLabels[index].cx();
+        //            console.log("Y value");
+        //            console.log(y);
+    //                getActiveLayer().layer.circle(1).center(x,getActiveLayer().bottom.valueLabels[index].cy()).fill("red").front();
+                    buildWall(getActiveLayer().bottom.valueLabels[index],7,height,[x,y],'both',29,direction);
+                }
+            }else{
+                buildWall(attributeGraphics,7,height,[attributeGraphics.cx(),y],'both',29,direction);
+            }
         }
         
     });
@@ -737,8 +770,8 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
         console.log("Wall to the right");
     });
     
-    hammer.on("pantop", function (event) {
-        direction = 'top'
+    hammer.on("panup", function (event) {
+        direction = 'up'
         console.log("Wall to the top");
 
     });
@@ -763,5 +796,16 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
 //    hammer.on("swipedown", function (event) {
 //        console.log("Wall to the down");
 //    });
+    
+}
+
+function addAttributeValuesEvents(nodeGraphics,attributeName){
+    nodeGraphics.on('pointerdown',function(){
+        highlightNodesByAttributeValue(nodeGraphics.node.textContent,attributeName,true);   
+    });
+    
+    nodeGraphics.on('pointerup',function(){
+        highlightNodesByAttributeValue(nodeGraphics.node.textContent,attributeName,false);   
+    });
     
 }
