@@ -627,7 +627,14 @@ function addToolEvents(tool, type) {
                 
                 if (type==='wall'){
                     
-                    attributeGraphics.attr({"stroke-dasharray":4,stroke:'red','stroke-width':3});
+                    if (attributeGraphics.type==='text'){
+                        // TODO change this 
+                        attributeGraphics.attr({"stroke-dasharray":4,stroke:'red','stroke-width':3});
+
+                    }else if (attributeGraphics.type === 'rect'){
+                        attributeGraphics.attr({"stroke-dasharray":4,stroke:'red','stroke-width':3});
+
+                    }
                     if ($(attributeGraphics.node).hasClass('proxy')){
                         console.log("proxy");
                         addBuilderWallsEvents(attributeGraphics,attributeGraphics.parent());
@@ -708,7 +715,7 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
     });
 
     hammer.on("panmove", function (ev) {
-        console.log("Building wall...");
+//        console.log("Building wall...");
 
         currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
         height =  Math.abs(currentPoint.y - startingPoint.y);
@@ -726,6 +733,8 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
         //            console.log("Y value");
         //            console.log(y);
     //                getActiveLayer().layer.circle(1).center(x,getActiveLayer().bottom.valueLabels[index].cy()).fill("red").front();
+                    //BOLD THE TEXT
+                    getActiveLayer().bottom.valueLabels[index].attr({'font-weight':'bold'});
                     buildWall(getActiveLayer().bottom.valueLabels[index],7,height,[x,y],'both',29,direction
                             );
                 }
@@ -744,6 +753,8 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
         //            console.log("Y value");
         //            console.log(y);
     //                getActiveLayer().layer.circle(1).center(x,getActiveLayer().bottom.valueLabels[index].cy()).fill("red").front();
+                        getActiveLayer().bottom.valueLabels[index].attr({'font-weight':'bold'});
+
                     buildWall(getActiveLayer().bottom.valueLabels[index],7,height,[x,y],'both',29,direction);
                 }
             }else{
@@ -755,7 +766,22 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
     
     
     hammer.on("panend", function (ev) {
-        console.log(attributeGraphics);
+        if ($(attributeGraphics.node).hasClass('proxy')){
+                //the proxy thing
+            for (var index in getActiveLayer().bottom.valueLabels){
+//              getActiveLayer().bottom.valueLabels[index].animate(300).attr({'font-weight':'normal'});
+                getActiveLayer().bottom.valueLabels[index].attr({'font-weight':'normal'});
+            }
+        }else{
+            let attributeName = attributeGraphics.attr("attrType");
+            let attributeValue = attributeGraphics.node.textContent;
+            highlightNodesByAttributeValue(attributeValue,attributeName,false);  
+
+        }
+//        if(attributeGraphics.){
+
+//        }
+                    
     });
     
     hammer.on('panleft',function(event){
@@ -772,7 +798,7 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
     
     hammer.on("panup", function (event) {
         direction = 'up'
-        console.log("Wall to the top");
+//        console.log("Wall to the top");
 
     });
     
