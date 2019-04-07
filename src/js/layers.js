@@ -2048,7 +2048,7 @@ function createHighlight(object, animate, hideAfter, color) {
 
 }
 
-function addAttributesDraggingEvents(element, attributeName) {
+function addAttributesDraggingEvents(element, attributeName,isDiscrete) {
 
     let mc = new Hammer(element);
     mc.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
@@ -2075,8 +2075,11 @@ function addAttributesDraggingEvents(element, attributeName) {
             ry: 5,
             stroke: "#858796",
             class: 'toolable proxy',
-            value: attributeName
+            value: attributeName,
+            isDiscrete: isDiscrete
         }).center(startingPoint.x, startingPoint.y);
+        
+        rect.values = [];
 
         label = drawer.text(attributeName).attr({
             fill: 'black',
@@ -2126,16 +2129,18 @@ function addAttributesDraggingEvents(element, attributeName) {
                     let padding = 10;
 
                     if (direction === "horizontal") {
+                        rect.direction = "horizontal";
                         x = rect.rbox().w + padding + 50;
                         y = theDroppingZone.rect.cy() - 25;
                         space = theDroppingZone.rect.rbox().w - rect.width() / 2 - spaceBefore;
                     } else {
+                        rect.direction = "vertical";
                         x = theDroppingZone.rect.cx();
                         y = theDroppingZone.rect.y() + theDroppingZone.rect.bbox().h - rect.height() - padding - 70;
                         space = theDroppingZone.rect.bbox().h - rect.height() - 70;
                     }
 
-                    addAttributeValues(attributeName,theDroppingZone, x, y, space, drawer, direction);
+                    addAttributeValues(attributeName,theDroppingZone, x, y, space, drawer, direction,rect);
 
                 } else {
                     setVisibilityOfAttributeValues(theDroppingZone, 0.5);
@@ -2229,7 +2234,7 @@ function setVisibilityOfAttributeValues(droppingZone, opacity, progressive) {
     }
 }
 
-function addAttributeValues(attributeName,droppingZone, x, y, width, drawer, direction,isDiscrete) {
+function addAttributeValues(attributeName,droppingZone, x, y, width, drawer, direction,proxy) {
 
     var values = getAttributeValues(attributeName);
 
@@ -2269,8 +2274,10 @@ function addAttributeValues(attributeName,droppingZone, x, y, width, drawer, dir
             "alignment-baseline": "hanging",
             "dominant-baseline": "middle",
             "font-size": "14px",
-            class: 'toolable'
+            class: 'toolable',
         });
+        
+        label.direction = direction;
         
         addAttributeValuesEvents(label,attributeName);
 
@@ -2283,6 +2290,8 @@ function addAttributeValues(attributeName,droppingZone, x, y, width, drawer, dir
 //        }
 
         label.move(finalX, finalY);
+        
+        proxy.values.push(label);
 
         droppingZone.valueLabels.push(label);
     });
@@ -2300,8 +2309,8 @@ function addAttributesAsTools(attributesSet) {
         $(attrTool.querySelector("button")).addClass("attributeTool");
 
         $("#search-bar-container").before(attrTool);
-
-        addAttributesDraggingEvents($("#" + attribute)[0], attribute);
+        // true because everything is discrete now
+        addAttributesDraggingEvents($("#" + attribute)[0], attribute,true);
 
     }
 
@@ -2795,23 +2804,58 @@ function sortByAttribute(distance,chosen,orientation){
     }
 }
 
-function positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName){
+function positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName,orientation){
     var elements = getActiveLayer().layer.select('g.node').members;
 //        console.log("Position element");
 //    console.log(elements);
     for (var elIndex in elements) {
-        console.log("position "+ elements[elIndex]);
+//        console.log("position "+ elements[elIndex]);
         var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
-        console.log(data);
+//        console.log(data);
         let element = elements[elIndex];
-        if (Object.keys(data).includes(attributeTypeName)) {
-            if (data[attributeTypeName].toString() === attributeValue) {
-                let pointX = getRectMiddle(attributeGraphics)[0] - element.cx();
-                elements[elIndex].animate(500).dx(pointX).during(function () {
-                    updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                });
+        
+        if (data[attributeTypeName].toString() === attributeValue) {
+            let pointX = null;
+            let pointY = null;
+            if(attributeGraphics.type === 'rect'){
+                if (orientation === "horizontal"){
+                    pointX = getRectMiddle(attributeGraphics)[0] - element.cx();
+                    console.log(" For "+ attributeValue);
+                    console.log(pointX);
+                    elements[elIndex].animate(500).dx(pointX).during(function () {
+                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+                        });
+
+                }else{
+                    pointY = getRectMiddle(attributeGraphics)[1] - element.cy();
+                    console.log(" For "+ attributeValue);
+                    console.log(pointY);
+                    elements[elIndex].animate(500).dy(pointY).during(function () {
+                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+                        });
+                }
+            }else if (attributeGraphics.type === 'text'){
+                if (orientation === "horizontal"){
+                    pointX = attributeGraphics.node.getBBox().x + (attributeGraphics.node.getBBox().width/2)-element.cx();
+
+                    console.log(" For "+ attributeValue);
+                    console.log(pointX);
+                    elements[elIndex].animate(500).dx(pointX).during(function () {
+                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+                        });
+
+                }else{
+                    pointY = attributeGraphics.node.getBBox().y + (attributeGraphics.node.getBBox().height/2)-element.cy();
+                    console.log(" For "+ attributeValue);
+                    console.log(pointY);
+                    elements[elIndex].animate(500).dy(pointY).during(function () {
+                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+                        });
+                }
             }
+
         }
+        
     }
 }
 
