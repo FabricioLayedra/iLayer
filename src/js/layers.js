@@ -98,10 +98,8 @@ function addDroppingZones(layerName) {
     var layer = LAYERS[layerName];
     var drawer = layer.layer;
     var layerHeight = drawer.height();
-
-
     let rectAttributes = {stroke: 'none', fill: '#ddd', opacity: 0};
-    let lineAttributes = {stroke: layer.color, 'stroke-width': 3, fill: '#efefef', opacity: 0};
+    let lineAttributes = {stroke: 'black', 'stroke-width': 2, fill: '#efefef', opacity: 0, linecap: 'round'};
     let d = 55;
 
     layer.bottom = {
@@ -109,6 +107,7 @@ function addDroppingZones(layerName) {
         rect: drawer.rect("100%", d).move(0, layerHeight - d).attr(rectAttributes)
     };
 
+    d = 109;
     layer.left = {
         line: drawer.line(0, 0, 0, drawer.height() + 4).move(d, 0).attr(lineAttributes),
         rect: drawer.rect(d, "100%").move(0, 0).attr(rectAttributes)
@@ -822,6 +821,9 @@ function drawGraph(layer_name, g) {
     });
 
     LAYERS[layer_name].attributes = dataKeys;
+//    console.log("DICTIONARY");
+    LAYERS[layer_name].data = getValuesByAttributeDict(SVG.select('g.node').members,dataKeys);
+    
     addAttributesAsTools(dataKeys);
 
 
@@ -2029,7 +2031,7 @@ function addAttributesDraggingEvents(element, attributeName) {
             rx: 5,
             ry: 5,
             stroke: "#858796",
-            class: 'toolable'
+            class: 'toolable proxy'
         }).center(startingPoint.x, startingPoint.y);
 
         label = drawer.text(attributeName).attr({
@@ -2047,6 +2049,7 @@ function addAttributesDraggingEvents(element, attributeName) {
     });
 
     mc.on("panmove", function (ev) {
+
         currentPoint = {x: ev.srcEvent.pageX - $("#accordionSidebar").width(), y: ev.srcEvent.pageY - 70};
         group.move(currentPoint.x - startingPoint.x, currentPoint.y - startingPoint.y);
 
@@ -2057,9 +2060,6 @@ function addAttributesDraggingEvents(element, attributeName) {
 
         activeLayer.bottom.rect.attr({opacity: 0});
         activeLayer.left.rect.attr({opacity: 0});
-
-
-
 
         if (distanceToLeft < distanceToBottom) {
             theDistance = distanceToLeft;
@@ -2082,17 +2082,16 @@ function addAttributesDraggingEvents(element, attributeName) {
                     let padding = 10;
 
                     if (direction === "horizontal") {
-                        x = rect.rbox().w + 10 + spaceBefore + padding;
-                        y = theDroppingZone.rect.cy() - 8;
-                        space = theDroppingZone.rect.rbox().w - rect.width() - 60 - spaceBefore - padding;
+                        x = rect.rbox().w + padding + 50;
+                        y = theDroppingZone.rect.cy() - 25;
+                        space = theDroppingZone.rect.rbox().w - rect.width() / 2 - spaceBefore;
                     } else {
                         x = theDroppingZone.rect.cx();
-                        y = theDroppingZone.rect.y() + theDroppingZone.rect.bbox().h - spaceBefore - rect.height() - padding - 80;
-                        space = theDroppingZone.rect.bbox().h - spaceBefore - rect.height() - spaceBefore - padding;
+                        y = theDroppingZone.rect.y() + theDroppingZone.rect.bbox().h - rect.height() - padding - 70;
+                        space = theDroppingZone.rect.bbox().h - rect.height() - 70;
                     }
 
                     addAttributeValues(attributeName,theDroppingZone, x, y, space, drawer, direction);
-
 
                 } else {
                     setVisibilityOfAttributeValues(theDroppingZone, 0.5);
@@ -2119,32 +2118,37 @@ function addAttributesDraggingEvents(element, attributeName) {
                 let x = null;
                 let y = null;
 
-                console.log(currentPoint.y - startingPoint.y);
-                console.log("theDroppingZone.cy()");
-                console.log(theDroppingZone.rect.cy());
-                console.log("startingPoint.y: " + startingPoint.y);
-                console.log("newY: " + y);
+                /*console.log(currentPoint.y - startingPoint.y);
+                 console.log("theDroppingZone.cy()");
+                 console.log(theDroppingZone.rect.cy());
+                 console.log("startingPoint.y: " + startingPoint.y);
+                 console.log("newY: " + y);*/
 
                 if (direction === "horizontal") {
-                    x = -startingPoint.x + rect.width() / 2 + spaceBefore - 7;
-                    y = theDroppingZone.rect.cy() + rect.height() / 2 - startingPoint.y - 18;
+                    x = -startingPoint.x + rect.width() / 2 + 5;
+                    y = theDroppingZone.line.cy() - startingPoint.y;
                 } else {
-                    x = -startingPoint.x + theDroppingZone.rect.width() / 2 - 1;
-                    y = theDroppingZone.rect.x() + theDroppingZone.rect.bbox().h - spaceBefore - startingPoint.y - rect.height() - 5;
+                    x = -startingPoint.x + theDroppingZone.rect.width();
+                    y = -startingPoint.y + rect.height() / 2 + 5;
                 }
 
                 if (direction === "horizontal") {
+
                     group.animate(250).move(x, y);
+                    theDroppingZone.line.animate(250).attr({x1: rect.bbox().w + 10});
+
+                    // changing the appearance of the left dropping zone in response to the new axis created in the bottom
+                    activeLayer.left.rect.attr({width: rect.bbox().w + 10});
+                    activeLayer.left.line.cx(rect.bbox().w + 10);
+                    activeLayer.left.line.animate(250).attr({y1: rect.bbox().h + 10, y2: theDroppingZone.rect.y() + 1});
+
                 } else {
-                    group.animate(250).move(x, y).rotate(-90);
+                    group.animate(250).move(x, y);
                 }
 
                 theDroppingZone.rect.animate(250).attr({opacity: 0});
 
                 setTimeout(function () {
-
-
-
 
                     theDroppingZone.line.animate(250).attr({opacity: 1});
                     setVisibilityOfAttributeValues(theDroppingZone, 1, true);
@@ -2171,6 +2175,7 @@ function setVisibilityOfAttributeValues(droppingZone, opacity, progressive) {
         droppingZone.valueLabels.forEach(function (label, index) {
             if (progressive) {
                 setTimeout(function () {
+//                    blink(label);
                     label.attr({opacity: opacity});
                 }, 25 * index);
             } else {
@@ -2183,30 +2188,58 @@ function setVisibilityOfAttributeValues(droppingZone, opacity, progressive) {
 function addAttributeValues(attributeName,droppingZone, x, y, width, drawer, direction,isDiscrete) {
 
     var values = getAttributeValues(attributeName);
+
     var space = width / values.length;
     droppingZone.valueLabels = new Array();
-
+    
     values.forEach(function (value, index) {
-        let label = drawer.text(value).attr({
-            fill: getActiveLayer().color,
-            "text-anchor": "middle",
-            "alignment-baseline": "hanging",
-            "dominant-baseline": "middle",
-            "font-size": "16px"
-        });
+
+        let parts = direction === "horizontal" ? value.match(/.{1,11}/g) : value.match(/.{1,13}/g);
+        let finalX = null;
+        let finalY = null;
 
         if (direction === "horizontal") {
-            label.move(x + (space * index), y);
+            finalX = x + (space * index);
+            finalY = y;
         } else {
-            label.move(x, y - (space * index));
-            label.rotate(-90);
+            finalX = x;
+            finalY = y - (space * index);
         }
+
+        let label = drawer.text(function (add) {
+            parts.forEach(function (part) {
+                if (direction === "vertical") {
+                    add.tspan(part.trim()).dy(15).attr('x', finalX + 47);
+                } else {
+                    add.tspan(part.trim()).dy(15).attr('x', finalX);
+                }
+
+            });
+        });
+
+        label.attr({
+            fill: getActiveLayer().color,
+            "text-anchor": direction === "horizontal" ? "middle" : "end",
+            "alignment-baseline": "hanging",
+            "dominant-baseline": "middle",
+            "font-size": "14px",
+            class: 'toolable'
+        });
+        
+        addAttributeValuesEvents(label,attributeName);
+
+
+
+//        if (direction === "vertical") {
+//            label.move(finalX + 100, finalY);
+//        } else {
+//            
+//        }
+
+        label.move(finalX, finalY);
 
         droppingZone.valueLabels.push(label);
     });
-
-
-
 }
 
 function addAttributesAsTools(attributesSet) {
@@ -2295,7 +2328,7 @@ function getAttributeValues(attributeName){
     
     console.log(attributeName);
     console.log(getValuesByAttributeDict(nodes, activeLayerAtributesLabels)[attributeName]);
-    return Object.keys(getValuesByAttributeDict(nodes, activeLayerAtributesLabels)[attributeName]);
+    return Object.keys(getActiveLayer().data[attributeName]);
     
 }
 
@@ -2576,61 +2609,77 @@ function setWalls(distance, chosen, orientation) {
     }
 }
 
-function buildWall(graphicObject,width,height,originPosition,mode,insideSpace){
+var crossedPoint = false;
+
+function buildWall(graphicObject,width,height,originPosition,mode,insideSpace,orientation){
     var world = getPhysicsEngine(getActiveLayerName()).world;
 
     if (mode==='both'){
         if (!graphicObject.walls){
             var wallWidth = width;
             var wallHeight = height;
-            var originX = originPosition[0]-insideSpace;
+            var originXleft = originPosition[0]-insideSpace;
+                        
+            var originXright = originPosition[0]+insideSpace-width;
+
             var originY = originPosition[1];
-            var staticAxis = 'x';
-
-            
-
-            let wall1 = getActiveLayer().layer.rect(width,height).move(originX,originY).fill(getActiveLayer().color).back();
+            var staticAxis = 'x'; 
+//            getActiveLayer().layer.circle(3).center(originXleft,originY).fill('green').front();
+            let wall1 = getActiveLayer().layer.rect(wallWidth,0).move(originXleft,originY).fill(getActiveLayer().color).back();
             
             add_attractor_to_world(world, wall1);
             addDragEvents(new Hammer(wall1.node),wall1,wall1);
             
-//            
-//            let wall2 = getActiveLayer().layer.rect(width,height).move(originPosition[0]+insideSpace-width,originPosition[1]).fill(getActiveLayer().color).back();
-//            wall2.height(height);
-//            
-//
-//
-//            add_attractor_to_world(world, wall2);
-//            addDragEvents(new Hammer(wall2.node),wall2,wall2);
+            
+            let wall2 = getActiveLayer().layer.rect(width,0).move(originXright,originY).fill(getActiveLayer().color).back();
+            
+
+
+            add_attractor_to_world(world, wall2);
+            addDragEvents(new Hammer(wall2.node),wall2,wall2);
 
             
 
 
-            graphicObject.walls = [wall1];
+            graphicObject.walls = [wall1,wall2];
             
         }else{
+            var currentHeight = null;
+            if(graphicObject.walls[0].height()===0){
+                currentHeight = 1;
+            }else{
+                currentHeight = graphicObject.walls[0].height();
+            }
+           
             var step = height - graphicObject.walls[0].height();
-            console.log(step);
-            var scale =  height / graphicObject.walls[0].height()
             var wall1 = graphicObject.walls[0];
-            
+            var wall2 = graphicObject.walls[1];
 
-            wall1.y(wall1.y()-step);
+
             wall1.height(height);
-            
-            Matter.Body.scale(wall1.matter,1,scale);
-            Matter.Body.setPosition(wall1.matter,{x:wall1.cx(),y:wall1.cy()});
-            
-//            var wall2 = graphicObject.walls[1];
-//
-//            wall2.y(wall2.y()-step);
-//            wall2.height(height);
+            console.log("height: "+height);
+            console.log("step: "+step);
+//            if(step<0&&height===0){
+//                graphicObject.crossedPoint = !graphicObject.crossedPoint ;
+//            }
 //            
-//            Matter.Body.scale(wall2.matter,1,scale);
+//            if (!graphicObject.crossedPoint){
+                wall1.y(wall1.y()-step);
+                wall2.y(wall2.y()-step);
+//            }
+
+            wall2.height(height);
+//            if (orientation==="up"){
+//                console.log("orientation");
+//                var scale =  height / currentHeight;
+//                Matter.Body.scale(wall1.matter,1,scale);
+//                Matter.Body.scale(wall2.matter,1,scale);
+//            }
+//            
+//            Matter.Body.setPosition(wall1.matter,{x:wall1.cx(),y:wall1.cy()});
+//
 //            Matter.Body.setPosition(wall2.matter,{x:wall2.cx(),y:wall2.cy()});
-            
-//            graphicOject.walls[1].height(height);
-//            console.log("Building...");
+//            
         }
     }
 }
@@ -2702,8 +2751,8 @@ function sortByAttribute(distance,chosen,orientation){
 
 function positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName){
     var elements = getActiveLayer().layer.select('g.node').members;
-        console.log("Position element");
-    console.log(elements);
+//        console.log("Position element");
+//    console.log(elements);
     for (var elIndex in elements) {
         console.log("position "+ elements[elIndex]);
         var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
@@ -2720,3 +2769,19 @@ function positionElementsByAttribute(attributeGraphics,attributeValue,attributeT
     }
 }
 
+function highlightNodesByAttributeValue(attributeValue,attributeName,show){
+    
+    var groups = getActiveLayer().data[attributeName][attributeValue];
+    for (var index in groups){
+        let circle = getElementFromGroup(groups[index],'circle');
+
+        if(show){
+            blink(groups[index]);
+            circle.highlight.show();
+        }
+        else{
+            circle.highlight.hide();           
+        }
+    }
+    
+}
