@@ -305,6 +305,10 @@ function addMissingElementsToWorld(world, layer) {
                 World.add(world, matterObject);
             } else if (group.type === 'rect') {
                 add_element_to_world(world, group);
+            } else if (group.type === 'text'){
+                console.log("ADDING TEXT: " +group.node.textContent );
+                add_element_to_world(world, group);
+//                console.log(group);
             }
         }
     }
@@ -527,6 +531,26 @@ function addElementsToWorld(world, layer) {
 
             World.add(world, matterObject);
         }
+        else if (group.type === "text"){
+        
+        var bbox = group.node.getBBox();
+        var width = bbox.width;
+        var height = bbox.height;
+        
+        let valueX = bbox.x + (width/2) - (nodeRadius/2);
+       
+        let valueY = bbox.y;
+        
+        var matterObject = Bodies.rectangle(valueX, valueY, nodeRadius, height, {isStatic: true
+        });
+        matterObject.density = 1;
+//      
+        matterObject.svg = group;
+        group.matter = matterObject;
+        World.add(world, matterObject);
+//        getActiveLayer().layer.rect(nodeRadius,height).move(valueX,valueY);
+    }
+        
     }
 }
 
@@ -585,7 +609,24 @@ function add_element_to_world(world, element) {
         matterObject.svg = element;
         element.matter = matterObject;
         World.add(world, matterObject);
-        // Edges
+    } else if (element.type === "text"){
+        
+        var bbox = element.node.getBBox();
+        var width = bbox.width;
+        var height = bbox.height;
+        
+        let valueX = bbox.x + (width/2) - (nodeRadius/2);
+       
+        let valueY = bbox.y;
+        
+        var matterObject = Bodies.rectangle(valueX, valueY, nodeRadius, height, {isStatic: true
+        });
+        matterObject.density = 1;
+//      
+        matterObject.svg = element;
+        element.matter = matterObject;
+        World.add(world, matterObject);
+//        getActiveLayer().layer.rect(nodeRadius,height).move(valueX,valueY);
     }
 }
 
@@ -671,6 +712,8 @@ function add_attractor_to_world(world, element) {
         matterObject.svg = element;
         element.matter = matterObject;
         World.add(world, matterObject);
+    }else{
+        console.log(element);
     }
     return matterObject;
 }
@@ -1723,7 +1766,7 @@ function main() {
                     var nodeGraphics = currentBody.svg;
                     if (nodeGraphics) {
 
-                        if (nodeGraphics.type !== 'rect') {
+                        if (nodeGraphics.type !== 'rect' && nodeGraphics.type !== 'text') {
 //                     console.log(currentBody.svg);
 
                             let newX = currentBody.position.x;
@@ -2031,7 +2074,8 @@ function addAttributesDraggingEvents(element, attributeName) {
             rx: 5,
             ry: 5,
             stroke: "#858796",
-            class: 'toolable proxy'
+            class: 'toolable proxy',
+            value: attributeName
         }).center(startingPoint.x, startingPoint.y);
 
         label = drawer.text(attributeName).attr({
@@ -2215,6 +2259,8 @@ function addAttributeValues(attributeName,droppingZone, x, y, width, drawer, dir
                 }
 
             });
+            }).attr({
+            attrType:attributeName
         });
 
         label.attr({
@@ -2657,8 +2703,8 @@ function buildWall(graphicObject,width,height,originPosition,mode,insideSpace,or
 
 
             wall1.height(height);
-            console.log("height: "+height);
-            console.log("step: "+step);
+//            console.log("height: "+height);
+//            console.log("step: "+step);
 //            if(step<0&&height===0){
 //                graphicObject.crossedPoint = !graphicObject.crossedPoint ;
 //            }
