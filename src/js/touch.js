@@ -19,18 +19,18 @@ function stopSliding(e) {
     this.node.releasePointerCapture(e.pointerId);
 }
 
-function slide(event) {  
-    if (this.node.allowed){
-        let x = event.pageX-this.cx()-this.node.dx;
-        let y = event.pageY-this.cy()-this.node.dy;
-        this.dmove(x,y);
-        updateEdgesEnds(getElementFromGroup(this,'circle'),this.cx()-this.childDX,this.cy()-this.childDY);
-        this.node.initX = this.cx()-this.childDX;
-        this.node.initY = this.cy()-this.childDY;
-        
-        if (this.matter){
+function slide(event) {
+    if (this.node.allowed) {
+        let x = event.pageX - this.cx() - this.node.dx;
+        let y = event.pageY - this.cy() - this.node.dy;
+        this.dmove(x, y);
+        updateEdgesEnds(getElementFromGroup(this, 'circle'), this.cx() - this.childDX, this.cy() - this.childDY);
+        this.node.initX = this.cx() - this.childDX;
+        this.node.initY = this.cy() - this.childDY;
+
+        if (this.matter) {
             this.matter.position.x = this.node.initX;
-            this.matter.position.y = this.node.initY; 
+            this.matter.position.y = this.node.initY;
 //              Matter.Body.setPosition(this.matter,(this.node.initX,this.node.initY));
 //            this.matter.position.x +=5;
 //            console.log(this.matter.position.x);
@@ -101,7 +101,6 @@ function removeTouchEvents(nodeParent) {
 // modes are often set by the user or even the layer itself
 
 function addLayerEvents(layer, drawer) {
-    console.log(drawer);
     let mc = new Hammer(layer);
 
     // let the pan gesture support all directions.
@@ -115,7 +114,6 @@ function addLayerEvents(layer, drawer) {
     let line = null;
     let rect = null;
     let intersection = null;
-    let verifier = null;
     let touchCanvas = true;
 
     mc.on("panstart", function (ev) {
@@ -124,19 +122,8 @@ function addLayerEvents(layer, drawer) {
         rect = layer.createSVGRect();
         rect.x = startingPoint.x;
         rect.y = startingPoint.y;
-//        console.log("hits an element?")
-        verifier = layer.createSVGRect();
-        verifier.x = startingPoint.x;
-        verifier.y = startingPoint.y;
-        verifier.width = 1;
-        verifier.height = 1;
-        let elements = layer.getIntersectionList(verifier, null);
-        for (var i = 0; i < elements.length; i++) {
-            if (elements[i].tagName === "circle" || $(elements[i]).attr("tool")) {
-                touchCanvas = false;
-                break;
-            }
-        }
+        touchCanvas = isFreePoint(layer,startingPoint.x,startingPoint.y);
+
 
 
         if (touchCanvas) {
@@ -334,7 +321,6 @@ function addSelectionEvents(nodeParent) {
 
     mc.on('pressup', function (event) {
         addNodeToSelection(nodeParent);
-
     });
 }
 function addPressEvents(mc, toolGraphics, drawer, type, child) {
@@ -343,12 +329,12 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
         mc.get('press').set({time: 300});
 
         mc.on('press', function (event) {
-            
+
             event.preventDefault();
             $(event.target).attr('oncontextmenu', 'return false');
             mc.off('panmove');
-            
-            
+
+
 
             let line = null;
             let startingPoint = null;
@@ -363,7 +349,7 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
             let theGroup = toolGraphics.parent();
             let angle;
             let center;
-            
+
             blink(theGroup);
 
             mc.on("panstart", function (ev) {
@@ -439,21 +425,30 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
             addDragEvents(mc, toolGraphics.parent(), toolGraphics);
         });
         
-    } else if (type === 'bending') {
+    } 
+    else if (type === 'bending') {
+
 //        console.log();
         addLayerEvents(getActiveLayer().layer.node, getActiveLayer().layer);
+    }
+    else if (type === 'wall'){
+        
+    }
+    else if (type === 'position'){
+        
     }
 }
 
 function moveElements(event, nodeGraphics, child) {
+    console.log("moving");
     let currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
 
 //    console.log("Previous");
 //    console.log(x,y);
 
-    var x = currentPoint.x-$("#accordionSidebar").width() - child.previousX;
-    var y = currentPoint.y-70 - child.previousY;
-    
+    var x = currentPoint.x - $("#accordionSidebar").width() - child.previousX;
+    var y = currentPoint.y - 70 - child.previousY;
+
 
 //    console.log(child.disToCenterX+x,child.disToCenterY+y);
 //    getActiveLayer().layer.circle(5).center(x,y).fill("red");
@@ -461,10 +456,10 @@ function moveElements(event, nodeGraphics, child) {
 //    console.log(x,y);
 
 /// THE IF IS NOT THE BEST THING TO DO BUT WE NEED TO KEEP GOING. 
-    if(nodeGraphics === child){
-        nodeGraphics.center(child.disToCenterX+x,child.disToCenterY+y);
-    }else{
-        nodeGraphics.dmove(x,y);
+    if (nodeGraphics === child) {
+        nodeGraphics.center(child.disToCenterX + x, child.disToCenterY + y);
+    } else {
+        nodeGraphics.dmove(x, y);
         child.previousX = nodeGraphics.cx();
         child.previousY = nodeGraphics.cy();
     }
@@ -484,8 +479,8 @@ function moveElements(event, nodeGraphics, child) {
 //    child.previousX += 5;
 //    child.previousY += 5;   
 //    console.log(nodeGraphics.cx());
-    
-    if (nodeGraphics.matter){
+
+    if (nodeGraphics.matter) {
 ////        nodeGraphics.matter.isStatic = f
 //        nodeGraphics.matter.position.x = child.previousX;
 //        nodeGraphics.matter.position.y = child.previousY;
@@ -495,16 +490,16 @@ function moveElements(event, nodeGraphics, child) {
 //        console.log("Changing the position...");
 //        nodeGraphics.matter.position.x =  nodeGraphics.matter.position.x +5;
 //        nodeGraphics.matter.position.y = nodeGraphics.matter.position.y + 5;
-        
-        Matter.Body.setPosition(nodeGraphics.matter,{x:child.cx(),y:child.cy()});
+
+        Matter.Body.setPosition(nodeGraphics.matter, {x: child.cx(), y: child.cy()});
 
 //        console.log(nodeGraphics.matter.position.x);
 //        console.log(nodeGraphics.matter.position.y);
-        
+
 //        Matter.Body.setStatic(nodeGraphics.matter,true);
 //        nodeGraphics.matter.isStatic = true;
     }
-    
+
 
 //    
 //    
@@ -522,14 +517,12 @@ function addDragEvents(hammer, ghostFather, ghost) {
 
 
     let startingPoint = null;
-    
+
     hammer.on("panstart", function (ev) {
 
         startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
         var initX = startingPoint.x - $("#accordionSidebar").width();
         var initY = startingPoint.y - 70;
-        console.log("INIT POS");
-        console.log(initX, initY);
         ghost.previousX = initX;
         ghost.previousY = initY;
 
@@ -555,7 +548,7 @@ function getActiveLayer() {
 }
 
 function addToolEvents(tool, type) {
-//    console.log($(tool).prop('disabled'));
+
     if (!$(tool).prop('disabled')) {
         let mc = new Hammer(tool);
 
@@ -568,27 +561,22 @@ function addToolEvents(tool, type) {
         let path = null;
         let ghost = null;
         let ghostFather = null;
-
-
-        let testCircle = null;
+        
+        let attributeLand = null;
 
         mc.on("panstart", function (ev) {
-
+        
             startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-//tool.getBoundingClientRect().x;
+
             var initX = startingPoint.x - $("#accordionSidebar").width();
             var initY = startingPoint.y - 70;
-            console.log("INIT POS");
-            console.log(initX, initY);
-            //        console.log(startingPoint);
+
             path = $($(tool).children()[0]).children()[0].getAttribute("d");
             ghostFather = getActiveLayer().layer.group();
 
-
-
+            console.log(initX,initY);
 
             ghost = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
-            //        ghost.draggable();
             var relationAspect = ghost.width() / ghost.height();
             ghost.height(50);
             ghost.width(50 * relationAspect);
@@ -598,45 +586,226 @@ function addToolEvents(tool, type) {
                     .text(type)
                     .center(ghost.cx(), ghost.cy() + ghost.height() * 0.6)
                     );
-
-            console.log(ghost.cx(), ghost.cy());
-
+            
             ghost.previousX = initX;
             ghost.previousY = initY;
-
-//            testCircle = getActiveLayer().layer.circle(5).center(ghost.previousX,ghost.previousY);
-
+            
             //set the distance between the group and the tool
             ghostFather.childDX = ghostFather.cx() - getElementFromGroup(ghostFather, 'path').cx();
             ghostFather.childDY = ghostFather.cy() - getElementFromGroup(ghostFather, 'path').cy();
-
-
         });
 
         mc.on("panmove", function (event) {
             currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
 
-            var x = currentPoint.x-$("#accordionSidebar").width();
-            var y = currentPoint.y-70;
-//            console.log("Previous");
-//            console.log(x,y);
-
-            var x = currentPoint.x - $("#accordionSidebar").width() - ghost.previousX;
-            var y = currentPoint.y - 70 - ghost.previousY;
-            ghostFather.dmove(x, y);
+            var x = currentPoint.x - $("#accordionSidebar").width() ;
+            var y = currentPoint.y - 70 ;
+            ghostFather.dmove(x- ghost.previousX, y- ghost.previousY);
             ghost.previousX = ghostFather.cx();
             ghost.previousY = ghostFather.cy();
+            
+            if (type === 'wall' || type === 'position'){
+                attributeLand = isClassedGraphics(getActiveLayer().layer.node,x,y,'toolable');
+            }
+            
         });
 
         mc.on("panend", function (ev) {
+            currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+
+//            console.log("Previous");
+//            console.log(x,y);
+
+            var x = currentPoint.x - $("#accordionSidebar").width() ;
+            var y = currentPoint.y - 70 ;
             ghost.front();
-            //        ghost.draggable();
             let mc = new Hammer(ghost.node);
+            
+            
+            if (attributeLand){
+                var attributeGraphics = getCrossedClassedGraphicObject(getActiveLayer().layer.node,x,y,'toolable');
+                
+                if (type==='wall'){
+                    
+                    attributeGraphics.attr({"stroke-dasharray":4,stroke:'red','stroke-width':3});
+                    if ($(attributeGraphics.node).hasClass('proxy')){
+                        console.log("proxy");
+                        addBuilderWallsEvents(attributeGraphics,attributeGraphics.parent());
+                    }else{
+                        addBuilderWallsEvents(attributeGraphics,attributeGraphics);
+                    }
+                    
+                }
+                
+                else if(type ==='position'){
+                    
+                    console.log("Positioning elements");
+                    var attributeValue = attributeGraphics.labelGraphics.node.id.split("-")[1];
+                    
+                    var attributeTypeName = attributeGraphics.attr("attribute-type");
+
+                    console.log(attributeValue);
+                    console.log(attributeTypeName);
+
+                    positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName);
+                    
+                }
+                ghostFather.remove();
+                
+                blink(attributeGraphics);
+
+            }else{
+                if (type === 'wall' || type === 'position'){
+                    ghostFather.remove();
+                }
+            }
+            
+            
 
             addDragEvents(mc, ghostFather, ghost);
             addPressEvents(mc, ghost, getActiveLayer().layer, type);
             //        console.log(activeLayer);
+            
+            
         });
     }
 
+}
+
+function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
+    
+    
+    if (!attributeGraphicsParent.hammer){
+        attributeGraphicsParent.hammer = new Hammer (attributeGraphicsParent.node);
+    }
+        
+    var hammer = attributeGraphicsParent.hammer;
+
+    
+    hammer.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
+    
+//    hammer.on("panstart", function (event) {
+//        console.log("Wall to the top");
+//        var point = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
+////tool.getBoundingClientRect().x;
+//        var initX = point.x - $("#accordionSidebar").width();
+//        var initY = point.y - 70;
+//    });
+    
+    
+    let startingPoint = null;
+    let currentPoint = null;
+    let height = null;
+    let direction = null;
+    var x  = null;
+//    var
+    let intersection = null;
+    let touchCanvas = true;
+
+    hammer.on("panstart", function (ev) {
+        startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+        console.log("Initialize wall...");
+    });
+
+    hammer.on("panmove", function (ev) {
+        console.log("Building wall...");
+
+        currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+        height =  Math.abs(currentPoint.y - startingPoint.y);
+        
+        if (direction==='up'){
+        
+    //        var y = getActiveLayer().bottom.line.y()-getActiveLayer().bottom.line.attr("stroke-width");
+            let y = getActiveLayer().bottom.line.cy();
+
+            if ($(attributeGraphics.node).hasClass('proxy')){
+                //the proxy thing
+                for (var index in getActiveLayer().bottom.valueLabels){
+                    //    insideSpace = 30;
+                    var x = getActiveLayer().bottom.valueLabels[index].cx();
+        //            console.log("Y value");
+        //            console.log(y);
+    //                getActiveLayer().layer.circle(1).center(x,getActiveLayer().bottom.valueLabels[index].cy()).fill("red").front();
+                    buildWall(getActiveLayer().bottom.valueLabels[index],7,height,[x,y],'both',29,direction
+                            );
+                }
+            }else{
+                buildWall(attributeGraphics,7,height,[attributeGraphics.cx(),y],'both',29,direction);
+            }
+        
+        }else if(direction ==='down'){
+            let y = getActiveLayer().bottom.line.cy();
+
+            if ($(attributeGraphics.node).hasClass('proxy')){
+                //the proxy thing
+                for (var index in getActiveLayer().bottom.valueLabels){
+                    //    insideSpace = 30;
+                    var x = getActiveLayer().bottom.valueLabels[index].cx();
+        //            console.log("Y value");
+        //            console.log(y);
+    //                getActiveLayer().layer.circle(1).center(x,getActiveLayer().bottom.valueLabels[index].cy()).fill("red").front();
+                    buildWall(getActiveLayer().bottom.valueLabels[index],7,height,[x,y],'both',29,direction);
+                }
+            }else{
+                buildWall(attributeGraphics,7,height,[attributeGraphics.cx(),y],'both',29,direction);
+            }
+        }
+        
+    });
+    
+    
+    hammer.on("panend", function (ev) {
+        console.log(attributeGraphics);
+    });
+    
+    hammer.on('panleft',function(event){
+        direction = 'left';
+        
+        console.log("Wall to the left");
+
+    });
+    
+    hammer.on("panright", function (event) {
+        direction = 'right';
+        console.log("Wall to the right");
+    });
+    
+    hammer.on("panup", function (event) {
+        direction = 'up'
+        console.log("Wall to the top");
+
+    });
+    
+    hammer.on("pandown", function (event) {
+        direction = 'down'
+        console.log("Wall to the down");
+    });
+    
+    hammer.on('panend',function(event){
+        console.log("Wall built!");
+    });
+    
+//    hammer.on("swiperight", function (event) {
+//        console.log("Wall to the right");
+//    });
+//    
+//    hammer.on("swipeleft", function (event) {
+//        console.log("Wall to the left");
+//    });
+//    
+//    hammer.on("swipedown", function (event) {
+//        console.log("Wall to the down");
+//    });
+    
+}
+
+function addAttributeValuesEvents(nodeGraphics,attributeName){
+    nodeGraphics.on('pointerdown',function(){
+        highlightNodesByAttributeValue(nodeGraphics.node.textContent,attributeName,true);   
+    });
+    
+    nodeGraphics.on('pointerup',function(){
+        highlightNodesByAttributeValue(nodeGraphics.node.textContent,attributeName,false);   
+    });
+    
 }
