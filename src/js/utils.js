@@ -212,3 +212,13 @@ function highlightBackground(object,color){
     }, duration);
 }
 
+
+function interpolate(value, originalMin, originalMax, newMin, newMax) {
+    var oldRange = (originalMax - originalMin);
+    var newRange = (newMax - newMin);
+    var newValue = (((value - originalMin) * newRange) / oldRange) + newMin;
+    if (isNaN(newValue)) { // true when the oldRange is zero (i.e., when the oldMax and oldMin are equal)
+        newValue = value;
+    }
+    return newValue;
+}
