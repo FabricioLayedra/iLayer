@@ -304,10 +304,10 @@ function addMissingElementsToWorld(world, layer) {
 
                 World.add(world, matterObject);
             } else if (group.type === 'rect') {
-                add_element_to_world(world, group);
+                addElementToWorld(world, group);
             } else if (group.type === 'text'){
                 console.log("ADDING TEXT: " +group.node.textContent );
-                add_element_to_world(world, group);
+                addElementToWorld(world, group);
 //                console.log(group);
             }
         }
@@ -554,7 +554,7 @@ function addElementsToWorld(world, layer) {
     }
 }
 
-function add_element_to_world(world, element) {
+function addElementToWorld(world, element) {
     var Bodies = Matter.Bodies;
     var World = Matter.World;
 
@@ -563,6 +563,7 @@ function add_element_to_world(world, element) {
 
     if (!element.matter && circle) {
 
+        console.log("Adding node...");
         var x = circle.cx();
         var y = circle.cy();
         var radius = circle.attr("r");
@@ -572,9 +573,9 @@ function add_element_to_world(world, element) {
 
 
         var matterObject = Bodies.circle(x, y, radius);
-        matterObject.frictionAir = 0.025;
+        matterObject.frictionAir = 0.05;
         matterObject.restitution = 0.025;
-        matterObject.restitution = 10000;
+
 
         //nodeData.matter = matterObject;
         matterObject.svg = element;
@@ -582,6 +583,8 @@ function add_element_to_world(world, element) {
 
         World.add(world, matterObject);
     } else if (element.type === "rect") {
+        console.log("Adding rect...");
+
         var x = element.attr('x');
         var y = element.attr('y');
         var width = element.width();
@@ -610,7 +613,8 @@ function add_element_to_world(world, element) {
         element.matter = matterObject;
         World.add(world, matterObject);
     } else if (element.type === "text"){
-        
+        console.log("Adding atttribute Value...");
+
         var bbox = element.node.getBBox();
         var width = bbox.width;
         var height = bbox.height;
@@ -621,6 +625,9 @@ function add_element_to_world(world, element) {
         
         var matterObject = Bodies.rectangle(valueX, valueY, nodeRadius, height, {isStatic: true
         });
+        
+        console.log(matterObject);
+        
         matterObject.density = 1;
 //      
         matterObject.svg = element;
@@ -630,7 +637,7 @@ function add_element_to_world(world, element) {
     }
 }
 
-function add_attractor_to_world(world, element) {
+function addAttractorToWorld(world, element) {
     var Bodies = Matter.Bodies;
     var World = Matter.World;
 
@@ -712,8 +719,62 @@ function add_attractor_to_world(world, element) {
         matterObject.svg = element;
         element.matter = matterObject;
         World.add(world, matterObject);
-    }else{
-        console.log(element);
+    }else if (element.type === 'text'){
+        console.log("Adding text as an attractor...");
+        var bbox = element.node.getBBox();
+        var width = bbox.width;
+        var height = bbox.height;
+        
+        var direction = element.direction;
+        
+        let valueX = bbox.x + (width/2) - (nodeRadius/2);
+       
+        let valueY = bbox.y;
+        
+        getActiveLayer().layer.rect(nodeRadius, height).move(valueX, valueY);
+        
+        let matterX = 0;
+        let matterY = 0;
+        let matterWidth = 0;
+        let matterHeight = 0;
+        
+        if(direction === 'horizontal'){
+            matterX = valueX + (nodeRadius/2);
+            matterY = valueY + (height/2);
+            matterWidth = nodeRadius;
+            matterHeight = 5;
+        }else{
+            matterX = valueX + (nodeRadius/2);
+            matterY = valueY + (height/2);
+            matterWidth = 5;
+            matterHeight = nodeRadius;
+        }
+        
+        
+        
+        var matterObject = Bodies.rectangle(matterX, matterY ,  matterWidth, matterHeight, {isStatic: true,
+
+            plugin: {
+                attractors: [
+                    function (theAttractor, theBody) {
+                        let x = 0, y = 0, angle, d = 100;
+                        if (theBody.attractedTo && theBody.attractedTo.includes(theAttractor)) {
+                            let deltaX = theAttractor.position.x - theBody.position.x;
+                            let deltaY = theAttractor.position.y - theBody.position.y;
+                            angle = Math.atan(-deltaY, -deltaX);
+                            x = (deltaX + d * Math.cos(angle)) * 1e-5;
+                            y = (deltaY + d * Math.sin(angle)) * 1e-5;
+                        }
+                        return {x: x, y: y};
+                    }
+                ]
+            }
+        });
+
+//      
+        matterObject.svg = element;
+        element.matter = matterObject;
+        World.add(world, matterObject);
     }
     return matterObject;
 }
@@ -1576,7 +1637,7 @@ function makeAttractor(svgElement) {
     }
 
     var world = engine.world;
-    add_attractor_to_world(world, attractorGraphics);
+    addAttractorToWorld(world, attractorGraphics);
 
     var attractor = attractorGraphics.matter;
 
@@ -1590,7 +1651,7 @@ function makeAttractor(svgElement) {
         var body = graphics.matter;
 
         if (!body) {
-            add_element_to_world(world, graphics);
+            addElementToWorld(world, graphics);
             body = graphics.matter;
         } else {
             // IMPORTANT: we need to do this to update objects that are attracted to more than one attractor
@@ -2419,7 +2480,7 @@ function addAttractorsToWorld(distance, chosen) {
         console.log(positions[attractIndex]);
         var attractorGraphics = getActiveLayer().layer.rect(width, height).move(positions[attractIndex], y).fill(getActiveLayer().color);
 
-        add_attractor_to_world(world, attractorGraphics);
+        addAttractorToWorld(world, attractorGraphics);
 
         //    addElementsToWorld(world,'1');
 
@@ -2443,7 +2504,7 @@ function addAttractorsToWorld(distance, chosen) {
                     //add attractee
                     //        console.log(attractee);
                     if (!body) {
-                        add_element_to_world(world, elements[elIndex]);
+                        addElementToWorld(world, elements[elIndex]);
                         body = elements[elIndex].matter;
                     } else {
                         // IMPORTANT: we need to do this to update objects that are attracted to more than one attractor
@@ -2525,7 +2586,7 @@ function sortByAttributeWalls(distance, chosen, orientation) {
 
             label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex] + width / 2, fixedAxis + height / 2 - 5, 'authors2016', aff).attr({fill: "white"});
 
-            add_attractor_to_world(world, attractorGraphics);
+            addAttractorToWorld(world, attractorGraphics);
 
 
             //    addElementsToWorld(world,'1');
@@ -2550,7 +2611,7 @@ function sortByAttributeWalls(distance, chosen, orientation) {
                         //add attractee
                         //        console.log(attractee);
                         if (!body) {
-                            add_element_to_world(world, elements[elIndex]);
+                            addElementToWorld(world, elements[elIndex]);
                             body = elements[elIndex].matter;
                         } else {
                             // IMPORTANT: we need to do this to update objects that are attracted to more than one attractor
@@ -2653,13 +2714,13 @@ function setWalls(distance, chosen, orientation) {
         var time = 500;
         wall1.animate(time).height(generalHeight).after(function () {
             addDragEvents(new Hammer(wall1.node), wall1, wall1);
-            add_attractor_to_world(world, wall1);
+            addAttractorToWorld(world, wall1);
         });
 //            
         let wall2 = getActiveLayer().layer.rect(5, 0).move(position + width / 2 + nodeRadius / 2 + 5, fixedAxis - generalHeight).fill(getActiveLayer().color).back();
         wall2.animate(time).height(generalHeight).after(function () {
             addDragEvents(new Hammer(wall2.node), wall2, wall2);
-            add_attractor_to_world(world, wall2);
+            addAttractorToWorld(world, wall2);
         });
     }
 }
@@ -2682,7 +2743,7 @@ function buildWall(graphicObject,width,height,originPosition,mode,insideSpace,or
 //            getActiveLayer().layer.circle(3).center(originXleft,originY).fill('green').front();
             let wall1 = getActiveLayer().layer.rect(wallWidth,0).move(originXleft,originY).fill(getActiveLayer().color).back();
             
-            add_attractor_to_world(world, wall1);
+            addAttractorToWorld(world, wall1);
             addDragEvents(new Hammer(wall1.node),wall1,wall1);
             
             
@@ -2690,7 +2751,7 @@ function buildWall(graphicObject,width,height,originPosition,mode,insideSpace,or
             
 
 
-            add_attractor_to_world(world, wall2);
+            addAttractorToWorld(world, wall2);
             addDragEvents(new Hammer(wall2.node),wall2,wall2);
 
             
@@ -2874,4 +2935,39 @@ function highlightNodesByAttributeValue(attributeValue,attributeName,show){
         }
     }
     
+}
+
+function addAttributeValueAsAttractor(attributeGraphics,attributeValue,attributeTypeName) {
+
+    var World = Matter.World;
+    var Composite = Matter.Composite;
+
+    var world = getPhysicsEngine(getActiveLayerName()).world;
+
+    addAttractorToWorld(world, attributeGraphics);
+
+    var attractor = attributeGraphics.matter;
+
+    var elements = getActiveLayer().data[attributeTypeName][attributeValue];
+//    
+    for (var elIndex in elements) {
+//
+        var body = elements[elIndex].matter;
+//
+        if (!body) {
+            addElementToWorld(world,elements[elIndex]);
+            body = elements[elIndex].matter;
+        } else {
+//            // IMPORTANT: we need to do this to update objects that are attracted to more than one attractor
+            Composite.remove(world, body);
+            World.add(world, body);
+        }
+////        console.log(elements[]);
+        if (!body.attractedTo) {
+            body.attractedTo = new Array();
+        }
+        body.attractedTo.push(attractor);
+//
+    }
+
 }
