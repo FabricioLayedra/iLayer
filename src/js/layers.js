@@ -2273,15 +2273,13 @@ function setVisibilityOfAttributeValues(droppingZone, opacity, progressive) {
     }
 }
 
-function addAttributeValues(attributeName, droppingZone, x, y, width, drawer, direction, proxy) {
+function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, direction, proxy) {
 
     let values = getAttributeValues(attributeName);
 //    let values = {min: -102, max: 785};
-    
+
     let activeLayer = getActiveLayer();
     let isCategorical = $.isArray(values);
-
-    let space = width / values.length;
     droppingZone.valueLabels = new Array();
 
     let finalX = null;
@@ -2299,18 +2297,25 @@ function addAttributeValues(attributeName, droppingZone, x, y, width, drawer, di
 
     if (isCategorical) {
 
+        if (direction === "horizontal") {
+            let d = 50;
+            space -= (d * 2);
+            x += d;
+        }
+
+        let gap = space / (values.length - 1);
+
         values.forEach(function (value, index) {
 
 //            let parts = direction === "horizontal" ? value.match(/.{1,11}/g) : value.match(/.{1,13}/g);
-            let parts = direction === "horizontal" ? value.match(/.{1,11}/g) : value.match(/.{1,7}/g);
+            let parts = direction === "horizontal" ? value.match(/.{1,11}/g) : value.match(/.{1,9}/g);
 
             if (direction === "horizontal") {
-                finalX = x + (space * index);
+                finalX = x + (gap * index);
                 finalY = y;
             } else {
-
-                finalX = x;
-                finalY = y - (space * index);
+                finalX = x - 15;
+                finalY = y + (gap * index);
             }
 
             let label = drawer.text(function (add) {
@@ -2351,7 +2356,7 @@ function addAttributeValues(attributeName, droppingZone, x, y, width, drawer, di
         let shiftMax = 0;
         let maxLabel = drawer.text('' + values.max).attr(labelAttributes);
         if (direction === "horizontal") {
-            finalX = x + width + shiftMax;
+            finalX = x + space + shiftMax;
             finalY = y + 10;
             minTick = drawer.line(x, y - 2, x, y + 10).attr(majorTicksAttributes);
             maxTick = drawer.line(finalX, y - 2, finalX, y + 10).attr(majorTicksAttributes);
