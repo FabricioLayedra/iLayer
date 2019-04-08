@@ -2301,6 +2301,9 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
             let d = 50;
             space -= (d * 2);
             x += d;
+        } else {
+            values.reverse();
+            space -= 50;
         }
 
         let gap = space / (values.length - 1);
