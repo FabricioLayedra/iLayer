@@ -731,7 +731,7 @@ function addAttractorToWorld(world, element) {
        
         let valueY = bbox.y;
         
-        getActiveLayer().layer.rect(nodeRadius, height).move(valueX, valueY);
+//        getActiveLayer().layer.rect(nodeRadius, height).move(valueX, valueY);
         
         let matterX = 0;
         let matterY = 0;
@@ -2439,13 +2439,21 @@ function getValuesByAttributeDict(elements, textSet) {
 
 function getAttributeValues(attributeName){
     
-    var nodes = getActiveLayer().layer.select('g.node').members;
-    var activeLayerAtributesLabels = getActiveLayer().attributes;
+//    var nodes = getActiveLayer().layer.select('g.node').members;
+//    var activeLayerAtributesLabels = getActiveLayer().attributes;
+//    console.log(attributeName);
+//    console.log(getValuesByAttributeDict(nodes, activeLayerAtributesLabels)[attributeName]);
+
+    var attributeValues = Object.keys(getActiveLayer().data[attributeName]);
     
-    console.log(attributeName);
-    console.log(getValuesByAttributeDict(nodes, activeLayerAtributesLabels)[attributeName]);
-    return Object.keys(getActiveLayer().data[attributeName]);
-    
+    if (isNumericArray(attributeValues)){
+        var min = Math.min.apply(null, attributeValues); 
+        var max = Math.max.apply(null, attributeValues); 
+        return {min:min,max:max};
+
+    }else{
+        return attributeValues;
+    }
 }
 
 function addAttractorsToWorld(distance, chosen) {
@@ -2732,7 +2740,7 @@ function buildWall(graphicObject,width,height,originPosition,mode,insideSpace,or
 
     if (mode==='both'){
         if (!graphicObject.walls){
-            var wallWidth = width;
+            var wallWidth = 2;
             var wallHeight = height;
             var originXleft = originPosition[0]-insideSpace;
                         
@@ -2741,13 +2749,13 @@ function buildWall(graphicObject,width,height,originPosition,mode,insideSpace,or
             var originY = originPosition[1];
             var staticAxis = 'x'; 
 //            getActiveLayer().layer.circle(3).center(originXleft,originY).fill('green').front();
-            let wall1 = getActiveLayer().layer.rect(wallWidth,0).move(originXleft,originY).fill(getActiveLayer().color).back();
+            let wall1 = getActiveLayer().layer.rect(wallWidth,1).move(originXleft,originY).fill('gray').attr({'stroke':'transparent','stroke-width':40}).back();
             
             addAttractorToWorld(world, wall1);
             addDragEvents(new Hammer(wall1.node),wall1,wall1);
             
             
-            let wall2 = getActiveLayer().layer.rect(width,0).move(originXright,originY).fill(getActiveLayer().color).back();
+            let wall2 = getActiveLayer().layer.rect(wallWidth,1).move(originXright,originY).fill('gray').attr({'stroke':'transparent','stroke-width':40}).back();
             
 
 

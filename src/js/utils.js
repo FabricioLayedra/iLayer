@@ -212,3 +212,11 @@ function highlightBackground(object,color){
     }, duration);
 }
 
+function isNumericArray(array){
+    for (var index in array){
+        if (isNaN(array[index])){
+            return false;
+        }
+    }
+    return true;
+}
