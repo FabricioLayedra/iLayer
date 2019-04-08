@@ -604,7 +604,7 @@ function addToolEvents(tool, type) {
             ghost.previousX = ghostFather.cx();
             ghost.previousY = ghostFather.cy();
             
-            if (type === 'wall' || type === 'position'){
+            if (type === 'wall' || type === 'position' || type === 'attractor'){
                 attributeLand = isClassedGraphics(getActiveLayer().layer.node,x,y,'toolable');
             }
             
@@ -677,12 +677,41 @@ function addToolEvents(tool, type) {
 //                    positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName);
                     
                 }
+                
+                else if(type ==='attractor'){
+                    console.log("Attracting elements");
+//                    addAttributeValueAsAttractor(attributeGraphics,attributeGraphics.node.textContent,attributeTypeName);
+                    
+                    if ($(attributeGraphics.node).hasClass('proxy')){
+
+                        console.log("proxy");
+                        var labelsGraphics = attributeGraphics.values;
+                        var attributeTypeName = attributeGraphics.attr("value");
+                        
+//                        console.log(attributeGraphics.attr("isDiscrete"));
+                        for (var index in labelsGraphics){
+//                            console.log(attributeGraphics.values[index]);
+                            var labelGraphic = labelsGraphics[index];
+                            var attributeValue = labelGraphic.node.textContent;
+                            addAttributeValueAsAttractor(labelGraphic,attributeValue,attributeTypeName);
+
+                        }
+//                        addBuilderWallsEvents(attributeGraphics,attributeGraphics.parent());
+                    }else{
+                        
+                        var attributeTypeName = attributeGraphics.attr("attrType");
+                        addAttributeValueAsAttractor(attributeGraphics,attributeGraphics.node.textContent,attributeTypeName);
+                    }
+                    
+                    
+                }
+                
                 ghostFather.remove();
                 
                 blink(attributeGraphics);
 
             }else{
-                if (type === 'wall' || type === 'position'){
+                if (type === 'wall' || type === 'position' || type === 'attractor'){
                     ghostFather.remove();
                 }
             }
