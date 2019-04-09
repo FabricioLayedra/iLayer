@@ -703,6 +703,8 @@ function addToolEvents(tool, type) {
 
                         }
 
+
+
 //                        console.log("proxy");
                         addBuilderWallsEvents(attributeGraphics, attributeGraphics.parent());
                     } else {
