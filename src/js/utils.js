@@ -250,3 +250,19 @@ function showHideEdges(){
         edgesHidden = false;
     }
 }
+
+function getElementFromGroupByPropertyValue(group, property,value) {
+
+    try {
+        var children = group.children();
+
+        for (var i = 0; i < children.length; i++) {
+            if (children[i][property] === value) {
+                return children[i];
+            }
+        }
+        return null;
+    } catch (err) {
+        return null;
+    }
+}
