@@ -457,7 +457,18 @@ function moveElements(event, nodeGraphics, child) {
 
 /// THE IF IS NOT THE BEST THING TO DO BUT WE NEED TO KEEP GOING. 
     if (nodeGraphics === child) {
-        nodeGraphics.center(child.disToCenterX + x, child.disToCenterY + y);
+//        console.log("child");
+        if(nodeGraphics.wall){
+//            console.log("wall");
+            if(nodeGraphics.direction === "horizontal"){
+//                console.log("in horizontal");
+                nodeGraphics.center(child.disToCenterX + x, child.cy());
+            }else if (nodeGraphics.direction === "vertical") {
+//                console.log("in vertical");
+                nodeGraphics.center(child.cx(), child.disToCenterY + y);
+            }
+        }
+        
     } else {
         nodeGraphics.dmove(x, y);
         child.previousX = nodeGraphics.cx();
@@ -481,23 +492,7 @@ function moveElements(event, nodeGraphics, child) {
 //    console.log(nodeGraphics.cx());
 
     if (nodeGraphics.matter) {
-////        nodeGraphics.matter.isStatic = f
-//        nodeGraphics.matter.position.x = child.previousX;
-//        nodeGraphics.matter.position.y = child.previousY;
-//        console.log(nodeGraphics.matter.position.x);
-//        console.log(nodeGraphics.matter.position.y);
-
-//        console.log("Changing the position...");
-//        nodeGraphics.matter.position.x =  nodeGraphics.matter.position.x +5;
-//        nodeGraphics.matter.position.y = nodeGraphics.matter.position.y + 5;
-
         Matter.Body.setPosition(nodeGraphics.matter, {x: child.cx(), y: child.cy()});
-
-//        console.log(nodeGraphics.matter.position.x);
-//        console.log(nodeGraphics.matter.position.y);
-
-//        Matter.Body.setStatic(nodeGraphics.matter,true);
-//        nodeGraphics.matter.isStatic = true;
     }
 
 
@@ -636,7 +631,7 @@ function addToolEvents(tool, type) {
 
                     }
                     if ($(attributeGraphics.node).hasClass('proxy')){
-                        console.log("proxy");
+//                        console.log("proxy");
                         addBuilderWallsEvents(attributeGraphics,attributeGraphics.parent());
                     }else{
                         addBuilderWallsEvents(attributeGraphics,attributeGraphics);
@@ -730,6 +725,8 @@ function addToolEvents(tool, type) {
 
 function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
     
+    //Takes the orientation of the values (axis x or y)
+    var orientation = attributeGraphics.direction;
     
     if (!attributeGraphicsParent.hammer){
         attributeGraphicsParent.hammer = new Hammer (attributeGraphicsParent.node);
@@ -737,140 +734,108 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
         
     var hammer = attributeGraphicsParent.hammer;
 
-    
     hammer.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
-    
-//    hammer.on("panstart", function (event) {
-//        console.log("Wall to the top");
-//        var point = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
-////tool.getBoundingClientRect().x;
-//        var initX = point.x - $("#accordionSidebar").width();
-//        var initY = point.y - 70;
-//    });
-    
     
     let startingPoint = null;
     let currentPoint = null;
     let height = null;
+    let width = null;
     let direction = null;
-    var x  = null;
-//    var
-    let intersection = null;
-    let touchCanvas = true;
+    var axis = null;
+    var wallSize = 2;
+    var insideSpace = 30;
+
+    
+    if (orientation === 'horizontal'){
+        axis = getActiveLayer().bottom;
+        
+        hammer.on("panup", function (event) {
+            direction = 'up'
+            console.log("Going to the top");
+
+        });
+
+        hammer.on("pandown", function (event) {
+            direction = 'down'
+            console.log("Going to the down");
+        });
+    }
+    
+    else if (orientation === 'vertical'){
+        axis = getActiveLayer().left;
+        
+        hammer.on('panleft',function(event){
+            direction = 'left';
+            console.log("Going to the left");
+        });
+
+        hammer.on("panright", function (event) {
+            direction = 'right';
+            console.log("Going to the right");
+        });
+    }
 
     hammer.on("panstart", function (ev) {
         startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-        console.log("Initialize wall...");
     });
 
     hammer.on("panmove", function (ev) {
-//        console.log("Building wall...");
-
         currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
         height =  Math.abs(currentPoint.y - startingPoint.y);
+        width = Math.abs(currentPoint.x - startingPoint.x);
         
-        if (direction==='up'){
-        
-    //        var y = getActiveLayer().bottom.line.y()-getActiveLayer().bottom.line.attr("stroke-width");
-            let y = getActiveLayer().bottom.line.cy();
+        if (orientation==="horizontal"){
+
+            var y = axis.line.cy();
+//            console.log("changing");
+//            console.log(y);
 
             if ($(attributeGraphics.node).hasClass('proxy')){
                 //the proxy thing
-                for (var index in getActiveLayer().bottom.valueLabels){
-                    //    insideSpace = 30;
-                    var x = getActiveLayer().bottom.valueLabels[index].cx();
-        //            console.log("Y value");
-        //            console.log(y);
-    //                getActiveLayer().layer.circle(1).center(x,getActiveLayer().bottom.valueLabels[index].cy()).fill("red").front();
+                console.log(getElementFromGroup(attributeGraphics.parent(),'text').node.getBBox());
+//                buildWall(getElementFromGroup(attributeGraphics.parent(),'text'),wallSize,height,[25,1004],'both',insideSpace,direction);
+                
+                for (var index in axis.valueLabels){
+                    
+                    var x = axis.valueLabels[index].cx();
+                    
                     //BOLD THE TEXT
-                    getActiveLayer().bottom.valueLabels[index].attr({'font-weight':'bold'});
-                    buildWall(getActiveLayer().bottom.valueLabels[index],7,height,[x,y],'both',29,direction
-                            );
+                    boldText(axis.valueLabels[index]);
+                    
+                    buildWall(axis.valueLabels[index],wallSize,height,[x,y],'both',insideSpace,direction);
                 }
             }else{
-                buildWall(attributeGraphics,7,height,[attributeGraphics.cx(),y],'both',29,direction);
-            }
-        
-        }else if(direction ==='down'){
-            let y = getActiveLayer().bottom.line.cy();
+                buildWall(attributeGraphics,wallSize,height,[attributeGraphics.cx(),y],'both',insideSpace,direction);
+            }   
+        }else if (orientation === "vertical"){
+            let x = axis.line.cx();
 
             if ($(attributeGraphics.node).hasClass('proxy')){
                 //the proxy thing
-                for (var index in getActiveLayer().bottom.valueLabels){
-                    //    insideSpace = 30;
-                    var x = getActiveLayer().bottom.valueLabels[index].cx();
-        //            console.log("Y value");
-        //            console.log(y);
-    //                getActiveLayer().layer.circle(1).center(x,getActiveLayer().bottom.valueLabels[index].cy()).fill("red").front();
-                        getActiveLayer().bottom.valueLabels[index].attr({'font-weight':'bold'});
-
-                    buildWall(getActiveLayer().bottom.valueLabels[index],7,height,[x,y],'both',29,direction);
+                for (var index in axis.valueLabels){
+                    var y = axis.valueLabels[index].cy();
+                    //BOLD THE TEXT
+                    boldText(axis.valueLabels[index]);
+                    buildWall(axis.valueLabels[index],width,wallSize,[x,y],'both',insideSpace,direction);
                 }
             }else{
-                buildWall(attributeGraphics,7,height,[attributeGraphics.cx(),y],'both',29,direction);
+                buildWall(attributeGraphics,width,wallSize,[x,attributeGraphics.cy()],'both',insideSpace,direction);
             }
         }
-        
     });
     
     
     hammer.on("panend", function (ev) {
         if ($(attributeGraphics.node).hasClass('proxy')){
-                //the proxy thing
-            for (var index in getActiveLayer().bottom.valueLabels){
-//              getActiveLayer().bottom.valueLabels[index].animate(300).attr({'font-weight':'normal'});
-                getActiveLayer().bottom.valueLabels[index].attr({'font-weight':'normal'});
+            for (var index in axis.valueLabels){
+                unBoldText(axis.valueLabels[index]);
             }
         }else{
             let attributeName = attributeGraphics.attr("attrType");
             let attributeValue = attributeGraphics.node.textContent;
             highlightNodesByAttributeValue(attributeValue,attributeName,false);  
-
         }
-//        if(attributeGraphics.){
-
-//        }
-                    
     });
-    
-    hammer.on('panleft',function(event){
-        direction = 'left';
-        
-        console.log("Wall to the left");
-
-    });
-    
-    hammer.on("panright", function (event) {
-        direction = 'right';
-        console.log("Wall to the right");
-    });
-    
-    hammer.on("panup", function (event) {
-        direction = 'up'
-//        console.log("Wall to the top");
-
-    });
-    
-    hammer.on("pandown", function (event) {
-        direction = 'down'
-        console.log("Wall to the down");
-    });
-    
-    hammer.on('panend',function(event){
-        console.log("Wall built!");
-    });
-    
-//    hammer.on("swiperight", function (event) {
-//        console.log("Wall to the right");
-//    });
-//    
-//    hammer.on("swipeleft", function (event) {
-//        console.log("Wall to the left");
-//    });
-//    
-//    hammer.on("swipedown", function (event) {
-//        console.log("Wall to the down");
-//    });
     
 }
 

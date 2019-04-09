@@ -212,7 +212,6 @@ function highlightBackground(object,color){
     }, duration);
 }
 
-
 function interpolate(value, originalMin, originalMax, newMin, newMax) {
     var oldRange = (originalMax - originalMin);
     var newRange = (newMax - newMin);
@@ -221,4 +220,33 @@ function interpolate(value, originalMin, originalMax, newMin, newMax) {
         newValue = value;
     }
     return newValue;
+}
+
+function isNumericArray(array){
+    for (var index in array){
+        if (isNaN(array[index])){
+            return false;
+        }
+    }
+    return true;
+}
+
+function boldText(textGraphics){
+    textGraphics.attr({'font-weight':'bold'});
+}
+
+function unBoldText(textGraphics){
+    textGraphics.attr({'font-weight':'normal'});
+}
+
+var edgesHidden = false;
+
+function showHideEdges(){
+    if (!edgesHidden){
+        getActiveLayer().layer.select('g.edge').attr({"opacity":0});
+        edgesHidden = true;
+    }else{
+        getActiveLayer().layer.select('g.edge').attr({"opacity":1});
+        edgesHidden = false;
+    }
 }
