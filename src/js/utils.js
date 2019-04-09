@@ -220,3 +220,11 @@ function isNumericArray(array){
     }
     return true;
 }
+
+function boldText(textGraphics){
+    textGraphics.attr({'font-weight':'bold'});
+}
+
+function unBoldText(textGraphics){
+    textGraphics.attr({'font-weight':'normal'});
+}
