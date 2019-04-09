@@ -439,7 +439,7 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
     }
 }
 
-function moveElements(event, nodeGraphics, child) {
+function moveElements(event, nodeGraphics, child,isProxy,graphicProxy) {
     console.log("moving");
     let currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
 
@@ -467,7 +467,63 @@ function moveElements(event, nodeGraphics, child) {
 //                console.log("in vertical");
                 nodeGraphics.center(child.cx(), child.disToCenterY + y);
             }
+            if (isProxy){
+                console.log("Move all of them");
+
+                for (var index in graphicProxy.axis.valueLabels){
+                    
+                    
+                    var wall = null;
+                    if(nodeGraphics.direction === "horizontal"){
+                        if (nodeGraphics.position === "left"){
+                            wall = graphicProxy.axis.valueLabels[index].walls[0];
+                            if(!wall.initialX){
+                                wall.initialX = wall.cx();
+                            }
+    //                        console.log(wallX.cx()+x);
+                            wall.center(wall.initialX +x, wall.cy());
+                        }
+                        else if (nodeGraphics.position === "right"){
+                            
+                            wall = graphicProxy.axis.valueLabels[index].walls[1];
+                            if(!wall.initialX){
+                                wall.initialX = wall.cx();
+                            }
+    //                        console.log(wallX.cx()+x);
+                            wall.center(wall.initialX +x, wall.cy());
+                            
+//                        graphicProxy.axis.valueLabels[index].walls[0] = wallX;
+                        }
+                    }
+                    else if (nodeGraphics.direction === "vertical") {
+                        if (nodeGraphics.position === "top"){
+                            wall = graphicProxy.axis.valueLabels[index].walls[0];
+                            if(!wall.initialY){
+                                wall.initialY = wall.cy();
+                            }
+    //                        console.log(wallX.cx()+x);
+                            wall.center(wall.cx(), wall.initialY +y);
+                        }
+                        else{
+                            
+                            wall = graphicProxy.axis.valueLabels[index].walls[1];
+                            if(!wall.initialY){
+                                wall.initialY = wall.cy();
+                            }
+    //                        console.log(wallX.cx()+x);
+                            wall.center(wall.cx(), wall.initialY +y);
+                            
+//                        graphicProxy.axis.valueLabels[index].walls[0] = wallX;
+                        }
+                    }
+                    if (wall.matter) {
+                        Matter.Body.setPosition(wall.matter, {x: wall.cx(), y: wall.cy()});
+                    }
+                    
+                }
+            }
         }
+        
         
     } else {
         nodeGraphics.dmove(x, y);
@@ -503,7 +559,7 @@ function moveElements(event, nodeGraphics, child) {
 //    nodeGraphics.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
 }
 
-function addDragEvents(hammer, ghostFather, ghost) {
+function addDragEvents(hammer, ghostFather, ghost,isProxy,graphicProxy) {
 
     // let the pan gesture support all directions.
     // this will block the vertical scrolling on a touch-device while on the element
@@ -527,7 +583,7 @@ function addDragEvents(hammer, ghostFather, ghost) {
     });
 
     hammer.on("panmove", function (ev) {
-        moveElements(ev, ghostFather, ghost);
+        moveElements(ev, ghostFather, ghost,isProxy,graphicProxy);
     });
 
 //    mc.on("panend", function (ev) {
@@ -742,7 +798,7 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
     let width = null;
     let direction = null;
     var axis = null;
-    var wallSize = 2;
+    var wallSize = 1.1;
     var insideSpace = 30;
 
     
@@ -785,15 +841,18 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
         width = Math.abs(currentPoint.x - startingPoint.x);
         
         if (orientation==="horizontal"){
-
+            
             var y = axis.line.cy();
 //            console.log("changing");
 //            console.log(y);
 
             if ($(attributeGraphics.node).hasClass('proxy')){
-                //the proxy thing
-                console.log(getElementFromGroup(attributeGraphics.parent(),'text').node.getBBox());
-//                buildWall(getElementFromGroup(attributeGraphics.parent(),'text'),wallSize,height,[25,1004],'both',insideSpace,direction);
+                attributeGraphics.axis = axis;
+
+//                the proxy thing
+//                change line 797 after demo 
+//                var x = attributeGraphics.rbox().cx - $("#accordionSidebar").width()-10;
+                buildWall(attributeGraphics,wallSize,height,[attributeGraphics.rbox().cx - $("#accordionSidebar").width(),1004],'both',insideSpace-15,direction,true);
                 
                 for (var index in axis.valueLabels){
                     
@@ -810,7 +869,11 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
         }else if (orientation === "vertical"){
             let x = axis.line.cx();
 
+            buildWall(attributeGraphics,width,wallSize,[x,attributeGraphics.rbox().cy - 70],'both',insideSpace-15,direction,true);
+
             if ($(attributeGraphics.node).hasClass('proxy')){
+                attributeGraphics.axis = axis;
+
                 //the proxy thing
                 for (var index in axis.valueLabels){
                     var y = axis.valueLabels[index].cy();
