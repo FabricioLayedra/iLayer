@@ -100,19 +100,18 @@ function addDroppingZones(layerName) {
     var layerHeight = drawer.height();
     let rectAttributes = {stroke: 'none', fill: '#ddd', opacity: 0};
     let lineAttributes = {stroke: 'black', 'stroke-width': 2, fill: '#efefef', opacity: 0, linecap: 'round'};
-    let d = 55;
+    let h = 55;
+    let w = 70;
 
     layer.bottom = {
-        line: drawer.line(0, 0, drawer.width() + 4, 0).move(0, layerHeight - d).attr(lineAttributes),
-        rect: drawer.rect("100%", d).move(0, layerHeight - d).attr(rectAttributes)
+        line: drawer.line(w, 0, drawer.width() - w - 20, 0).move(w, layerHeight - h).attr(lineAttributes),
+        rect: drawer.rect("100%", h).move(0, layerHeight - h).attr(rectAttributes)
     };
-
-    d = 109;
     layer.left = {
-        line: drawer.line(0, 0, 0, drawer.height() + 4).move(d, 0).attr(lineAttributes),
-        rect: drawer.rect(d, "100%").move(0, 0).attr(rectAttributes)
+        line: drawer.line(0, h, 0, drawer.height() - 40).move(w, 40).attr(lineAttributes),
+        rect: drawer.rect(w, "100%").move(0, 0).attr(rectAttributes)
     };
-
+    
 }
 
 function createSVG(container, layerName, width, height, color) {
@@ -192,6 +191,10 @@ function addEvents(id) {
     $("#visibility-" + id).on('pointerdown', function () {
         console.log("Touching");
         showHideLayer(id);
+    });
+    
+    $("#hidderEdges").on('pointerdown', function () {
+        showHideEdges();
     });
 }
 
@@ -276,40 +279,10 @@ function addMissingElementsToWorld(world, layer) {
         var group = elements[i];
 
         if (actualWorldElements.includes(group.matter)) {
-            console.log("YA INGRESADO")
+            console.log("Element already in the world!")
         } else {
-            let circle = getElementFromGroup(group, "circle");
-            if (circle) {
-                var x = group.cx() - group.childDX;
-                //            console.log(circle.cx());
-                //            console.log(group.cx()-group.childDX);
 
-                var y = group.cy() - group.childDY;
-                //            console.log(circle.cy());
-                //            console.log(group.cy()-group.childDY)
-                //            LAYERS[layer].layer.circle(5).center(x,y).attr({fill:"red",opacity:0.25});
-
-                var radius = circle.attr("r");
-                //            var deltaX = group.cx()-circle.cx();
-                //            var deltaY = group.cy()-circle.cy();
-
-                var matterObject = Bodies.circle(x, y, radius);
-
-                //nodeData.matter = matterObject;
-                matterObject.svg = group;
-                group.matter = matterObject;
-                //            console.log(group.x());
-                group.initX = x;
-                group.initY = y;
-
-                World.add(world, matterObject);
-            } else if (group.type === 'rect') {
-                addElementToWorld(world, group);
-            } else if (group.type === 'text'){
-                console.log("ADDING TEXT: " +group.node.textContent );
-                addElementToWorld(world, group);
-//                console.log(group);
-            }
+            addElementToWorld(world,group);
         }
     }
 
@@ -493,64 +466,12 @@ function addGravity(engine, x, y, factor) {
 
 
 function addElementsToWorld(world, layer) {
-    var Bodies = Matter.Bodies;
-    var World = Matter.World;
 
     var elements = LAYERS[layer].layer.children();
 
     for (var i = 0; i < elements.length; i++) {
         var group = elements[i];
-//        console.log(group.children());
-        let circle = getElementFromGroup(group, "circle");
-//        count+=1;
-//        console.log(count);
-//        console.log(circle);
-//        if (element.type === "circle") {  
-        if (circle) {
-            var x = group.cx() - group.childDX;
-//            console.log(circle.cx());
-//            console.log(group.cx()-group.childDX);
-
-            var y = group.cy() - group.childDY;
-//            console.log(circle.cy());
-//            console.log(group.cy()-group.childDY)
-//            LAYERS[layer].layer.circle(5).center(x,y).attr({fill:"red",opacity:0.25});
-
-            var radius = circle.attr("r");
-//            var deltaX = group.cx()-circle.cx();
-//            var deltaY = group.cy()-circle.cy();
-
-            var matterObject = Bodies.circle(x, y, radius);
-
-            //nodeData.matter = matterObject;
-            matterObject.svg = group;
-            group.matter = matterObject;
-//            console.log(group.x());
-            group.initX = x;
-            group.initY = y;
-
-            World.add(world, matterObject);
-        }
-        else if (group.type === "text"){
-        
-        var bbox = group.node.getBBox();
-        var width = bbox.width;
-        var height = bbox.height;
-        
-        let valueX = bbox.x + (width/2) - (nodeRadius/2);
-       
-        let valueY = bbox.y;
-        
-        var matterObject = Bodies.rectangle(valueX, valueY, nodeRadius, height, {isStatic: true
-        });
-        matterObject.density = 1;
-//      
-        matterObject.svg = group;
-        group.matter = matterObject;
-        World.add(world, matterObject);
-//        getActiveLayer().layer.rect(nodeRadius,height).move(valueX,valueY);
-    }
-        
+        addElementToWorld(world,group);
     }
 }
 
@@ -559,82 +480,132 @@ function addElementToWorld(world, element) {
     var World = Matter.World;
 
     var circle = getElementFromGroup(element, "circle");
-
-
+    
+    
+    
     if (!element.matter && circle) {
 
         console.log("Adding node...");
-        var x = circle.cx();
-        var y = circle.cy();
+        var x = element.cx() - element.childDX;
+//            console.log(circle.cx());
+//            console.log(group.cx()-group.childDX);
+
+        var y = element.cy() - element.childDY;
+//            console.log(circle.cy());
+//            console.log(group.cy()-group.childDY)
+//            LAYERS[layer].layer.circle(5).center(x,y).attr({fill:"red",opacity:0.25});
+
         var radius = circle.attr("r");
-
-//        console.log("Parameters child");
-//        console.log(x,y,radius);
-
+//            var deltaX = group.cx()-circle.cx();
+//            var deltaY = group.cy()-circle.cy();
 
         var matterObject = Bodies.circle(x, y, radius);
+
+        matterObject.svg = element;
+        element.matter = matterObject;
+        element.initX = x;
+        element.initY = y;
+
         matterObject.frictionAir = 0.05;
         matterObject.restitution = 0.025;
-
-
-        //nodeData.matter = matterObject;
-        matterObject.svg = element;
-        element.matter = matterObject;
-
+        
         World.add(world, matterObject);
-    } else if (element.type === "rect") {
+    } 
+    else if (element.type === "rect") {
         console.log("Adding rect...");
 
-        var x = element.attr('x');
-        var y = element.attr('y');
-        var width = element.width();
-        var height = element.height();
+        
+        var opacity = element.attr("opacity");
+        console.log("Adding text");
+        console.log("Opacity: "+opacity);
+        
+        
+        if (opacity !== 0){
 
-        let valueX = 0;
-        let valueY = 0;
+            var x = element.attr('x');
+            var y = element.attr('y');
+            var width = element.width();
+            var height = element.height();
 
-        if (width > height) {
-            valueX = x + width / 2;
-            valueY = y;
-        } else if (height > width) {
-            valueX = x + width / 2;
-            valueY = y + height / 2;
+            let valueX = 0;
+            let valueY = 0;
+
+            if (width > height) {
+                valueX = x + width / 2;
+                valueY = y;
+            } else if (height > width) {
+                valueX = x + width / 2;
+                valueY = y + height / 2;
+            }
+
+            var matterObject = Bodies.rectangle(valueX, valueY, width, height, {isStatic: true
+            });
+            matterObject.density = 1;
+    //      
+            matterObject.svg = element;
+            element.matter = matterObject;
+            World.add(world, matterObject);
+            
         }
-//        console.log("************VALUES**********");
-//       
-//        console.log(width,height);
-//        console.log(x,y);
-//        console.log(valueX,valueY);
-        var matterObject = Bodies.rectangle(valueX, valueY, width, height, {isStatic: true
-        });
-        matterObject.density = 1;
-//      
-        matterObject.svg = element;
-        element.matter = matterObject;
-        World.add(world, matterObject);
-    } else if (element.type === "text"){
-        console.log("Adding atttribute Value...");
+
+    } 
+    else if (element.type === "text"){
 
         var bbox = element.node.getBBox();
+//        console.log(bbox);        
         var width = bbox.width;
         var height = bbox.height;
+
         
-        let valueX = bbox.x + (width/2) - (nodeRadius/2);
+        var direction = element.direction;
+        let matterX = 0;
+        let matterY = 0;
+        let matterWidth = 0;
+        let matterHeight = 0;
+        
+        if(direction === 'horizontal'){
+            matterWidth = nodeRadius;
+            matterHeight = 5;
+            var valueX = bbox.x + (width/2);
        
-        let valueY = bbox.y;
-        
-        var matterObject = Bodies.rectangle(valueX, valueY, nodeRadius, height, {isStatic: true
+            var valueY = bbox.y;
+        }else{
+            matterWidth = 5;
+            matterHeight = nodeRadius;
+            //desfase
+            var valueX = bbox.x + (width/2)+10;
+       
+            var valueY = bbox.y + (height/2);
+        }
+
+        var matterObject = Bodies.rectangle(valueX, valueY,  matterWidth, matterHeight, {isStatic: true
         });
         
-        console.log(matterObject);
-        
-        matterObject.density = 1;
-//      
         matterObject.svg = element;
         element.matter = matterObject;
         World.add(world, matterObject);
-//        getActiveLayer().layer.rect(nodeRadius,height).move(valueX,valueY);
+        
+    } 
+    else if (element.type === 'line'){
+        
+        console.log("Adding line");
+
+        var opacity = element.attr("opacity");
+        console.log("Adding text");
+        console.log("Opacity: "+opacity);
+        if (opacity !== 0){
+            
+            var bbox = element.node.getBBox();
+
+            var matterObject = Bodies.rectangle(bbox.x+bbox.width/2, bbox.y+bbox.height/2,  1, bbox.height, {isStatic: true
+            });
+
+            matterObject.svg = element;
+            element.matter = matterObject;
+            World.add(world, matterObject);
+        }
     }
+    return matterObject;
 }
 
 function addAttractorToWorld(world, element) {
@@ -719,40 +690,42 @@ function addAttractorToWorld(world, element) {
         matterObject.svg = element;
         element.matter = matterObject;
         World.add(world, matterObject);
-    }else if (element.type === 'text'){
+    } else if (element.type === 'text') {
         console.log("Adding text as an attractor...");
         var bbox = element.node.getBBox();
+        console.log(bbox);
+        
+        
+        
         var width = bbox.width;
         var height = bbox.height;
-        
+
         var direction = element.direction;
-        
-        let valueX = bbox.x + (width/2) - (nodeRadius/2);
-       
+
+        let valueX = bbox.x + (width / 2) - (nodeRadius / 2);
+
         let valueY = bbox.y;
         
-        getActiveLayer().layer.rect(nodeRadius, height).move(valueX, valueY);
+//        getActiveLayer().layer.rect(nodeRadius, height).move(valueX, valueY);
         
         let matterX = 0;
         let matterY = 0;
         let matterWidth = 0;
         let matterHeight = 0;
-        
-        if(direction === 'horizontal'){
-            matterX = valueX + (nodeRadius/2);
-            matterY = valueY + (height/2);
+
+        if (direction === 'horizontal') {
+            matterX = valueX + (nodeRadius / 2);
+            matterY = valueY + (height / 2);
             matterWidth = nodeRadius;
             matterHeight = 5;
-        }else{
-            matterX = valueX + (nodeRadius/2);
-            matterY = valueY + (height/2);
+        } else {
+            matterX = valueX + (nodeRadius / 2);
+            matterY = valueY + (height / 2);
             matterWidth = 5;
             matterHeight = nodeRadius;
         }
-        
-        
-        
-        var matterObject = Bodies.rectangle(matterX, matterY ,  matterWidth, matterHeight, {isStatic: true,
+
+        var matterObject = Bodies.rectangle(bbox.x, bbox.y ,  matterWidth, matterHeight, {isStatic: true,
 
             plugin: {
                 attractors: [
@@ -926,8 +899,8 @@ function drawGraph(layer_name, g) {
 
     LAYERS[layer_name].attributes = dataKeys;
 //    console.log("DICTIONARY");
-    LAYERS[layer_name].data = getValuesByAttributeDict(SVG.select('g.node').members,dataKeys);
-    
+    LAYERS[layer_name].data = getValuesByAttributeDict(SVG.select('g.node').members, dataKeys);
+
     addAttributesAsTools(dataKeys);
 
 
@@ -952,7 +925,7 @@ function drawGraph(layer_name, g) {
         var edgePath = drawPathInLayer(draw, fromCenterX, fromCenterY,
                 controlX, controlY, toCenterX, toCenterY, id, graphId, layer_name);
 
-        var group = draw.group().attr({id: "path-" + id, });
+        var group = draw.group().attr({id: "path-" + id, class:'edge' });
         //    console.log(group);
         group.add(edgePath);
         group.layerName = layer_name;
@@ -1827,7 +1800,7 @@ function main() {
                     var nodeGraphics = currentBody.svg;
                     if (nodeGraphics) {
 
-                        if (nodeGraphics.type !== 'rect' && nodeGraphics.type !== 'text') {
+                        if (!!getElementFromGroup(nodeGraphics,'circle')) {
 //                     console.log(currentBody.svg);
 
                             let newX = currentBody.position.x;
@@ -2109,7 +2082,7 @@ function createHighlight(object, animate, hideAfter, color) {
 
 }
 
-function addAttributesDraggingEvents(element, attributeName,isDiscrete) {
+function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
 
     let mc = new Hammer(element);
     mc.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
@@ -2122,25 +2095,12 @@ function addAttributesDraggingEvents(element, attributeName,isDiscrete) {
     let theDroppingZone = null;
     let activeLayer = null;
     let drawer = null;
-    let spaceBefore = 70;
     let direction = null;
 
     mc.on("panstart", function (ev) {
 
         drawer = getActiveLayer().layer;
         startingPoint = {x: ev.srcEvent.pageX - $("#accordionSidebar").width(), y: ev.srcEvent.pageY - 70};
-
-        rect = drawer.rect($(element).width() * 1.5, $(element).height() * 1.5).attr({
-            fill: '#d8d9df',
-            rx: 5,
-            ry: 5,
-            stroke: "#858796",
-            class: 'toolable proxy',
-            value: attributeName,
-            isDiscrete: isDiscrete
-        }).center(startingPoint.x, startingPoint.y);
-        
-        rect.values = [];
 
         label = drawer.text(attributeName).attr({
             fill: 'black',
@@ -2149,6 +2109,18 @@ function addAttributesDraggingEvents(element, attributeName,isDiscrete) {
             "dominant-baseline": "middle",
             "font-size": "18px"
         }).move(startingPoint.x, startingPoint.y - 10);
+
+        rect = drawer.rect(Math.min(label.rbox().w + 10, 82), 30).attr({
+            fill: '#d8d9df',
+            rx: 5,
+            ry: 5,
+            stroke: "#858796",
+            class: 'toolable proxy',
+            value: attributeName,
+            isDiscrete: isDiscrete
+        }).center(startingPoint.x, startingPoint.y);
+
+        rect.values = [];
 
         group = drawer.group();
         group.add(rect);
@@ -2184,24 +2156,23 @@ function addAttributesDraggingEvents(element, attributeName,isDiscrete) {
 
             if (theDistance < 0) {
                 if (!theDroppingZone.valueLabels) {
+
                     let x = null;
                     let y = null;
                     let space = null;
-                    let padding = 10;
+                    rect.direction = direction;
 
                     if (direction === "horizontal") {
-                        rect.direction = "horizontal";
-                        x = rect.rbox().w + padding + 50;
+                        x = activeLayer.bottom.line.x();
                         y = theDroppingZone.rect.cy() - 25;
-                        space = theDroppingZone.rect.rbox().w - rect.width() / 2 - spaceBefore;
+                        space = activeLayer.bottom.line.width();
                     } else {
-                        rect.direction = "vertical";
-                        x = theDroppingZone.rect.cx();
-                        y = theDroppingZone.rect.y() + theDroppingZone.rect.bbox().h - rect.height() - padding - 70;
-                        space = theDroppingZone.rect.bbox().h - rect.height() - 70;
+                        x = activeLayer.left.rect.cx();
+                        y = activeLayer.left.line.y();
+                        space = activeLayer.left.line.rbox().h;
                     }
 
-                    addAttributeValues(attributeName,theDroppingZone, x, y, space, drawer, direction,rect);
+                    addAttributeValues(attributeName, theDroppingZone, x, y, space, drawer, direction, rect);
 
                 } else {
                     setVisibilityOfAttributeValues(theDroppingZone, 0.5);
@@ -2228,40 +2199,22 @@ function addAttributesDraggingEvents(element, attributeName,isDiscrete) {
                 let x = null;
                 let y = null;
 
-                /*console.log(currentPoint.y - startingPoint.y);
-                 console.log("theDroppingZone.cy()");
-                 console.log(theDroppingZone.rect.cy());
-                 console.log("startingPoint.y: " + startingPoint.y);
-                 console.log("newY: " + y);*/
-
                 if (direction === "horizontal") {
-                    x = -startingPoint.x + rect.width() / 2 + 5;
+                    x = -startingPoint.x + activeLayer.bottom.line.x() + activeLayer.bottom.line.rbox().w + rect.rbox().w / 2 + 5;
                     y = theDroppingZone.line.cy() - startingPoint.y;
                 } else {
                     x = -startingPoint.x + theDroppingZone.rect.width();
                     y = -startingPoint.y + rect.height() / 2 + 5;
                 }
 
-                if (direction === "horizontal") {
-
-                    group.animate(250).move(x, y);
-                    theDroppingZone.line.animate(250).attr({x1: rect.bbox().w + 10});
-
-                    // changing the appearance of the left dropping zone in response to the new axis created in the bottom
-                    activeLayer.left.rect.attr({width: rect.bbox().w + 10});
-                    activeLayer.left.line.cx(rect.bbox().w + 10);
-                    activeLayer.left.line.animate(250).attr({y1: rect.bbox().h + 10, y2: theDroppingZone.rect.y() + 1});
-
-                } else {
-                    group.animate(250).move(x, y);
-                }
+                group.animate(250).move(x, y);
 
                 theDroppingZone.rect.animate(250).attr({opacity: 0});
 
                 setTimeout(function () {
 
                     theDroppingZone.line.animate(250).attr({opacity: 1});
-                    setVisibilityOfAttributeValues(theDroppingZone, 1, true);
+                    setVisibilityOfAttributeValues(theDroppingZone, 1, false);
 
                 }, 350);
 
@@ -2295,67 +2248,175 @@ function setVisibilityOfAttributeValues(droppingZone, opacity, progressive) {
     }
 }
 
-function addAttributeValues(attributeName,droppingZone, x, y, width, drawer, direction,proxy) {
+function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, direction, proxy) {
 
-    var values = getAttributeValues(attributeName);
+    let values = getAttributeValues(attributeName);
+//    let values = {min: -102, max: 785};
 
-    var space = width / values.length;
+    let activeLayer = getActiveLayer();
+    let isCategorical = $.isArray(values);
     droppingZone.valueLabels = new Array();
-    
-    values.forEach(function (value, index) {
 
-        let parts = direction === "horizontal" ? value.match(/.{1,11}/g) : value.match(/.{1,13}/g);
-        let finalX = null;
-        let finalY = null;
+    let finalX = null;
+    let finalY = null;
+
+    let labelAttributes = {
+        fill: activeLayer.color,
+        "text-anchor": direction === "horizontal" ? "middle" : "end",
+        "alignment-baseline": "hanging",
+        "dominant-baseline": "middle",
+        "font-size": "14px",
+        class: 'toolable',
+        attrType: attributeName
+    };
+
+    if (isCategorical) {
 
         if (direction === "horizontal") {
-            finalX = x + (space * index);
-            finalY = y;
+            let d = 50;
+            space -= (d * 2);
+            x += d;
         } else {
-            finalX = x;
-            finalY = y - (space * index);
+            values.reverse();
+            space -= 50;
         }
 
-        let label = drawer.text(function (add) {
-            parts.forEach(function (part) {
-                if (direction === "vertical") {
-                    add.tspan(part.trim()).dy(15).attr('x', finalX + 47);
-                } else {
-                    add.tspan(part.trim()).dy(15).attr('x', finalX);
-                }
+        let gap = space / (values.length - 1);
 
+        values.forEach(function (value, index) {
+
+//            let parts = direction === "horizontal" ? value.match(/.{1,11}/g) : value.match(/.{1,13}/g);
+            let parts = direction === "horizontal" ? value.match(/.{1,11}/g) : value.match(/.{1,9}/g);
+
+            if (direction === "horizontal") {
+                finalX = x + (gap * index);
+                finalY = y;
+            } else {
+                finalX = x - 15;
+                finalY = y + (gap * index);
+            }
+
+            let label = drawer.text(function (add) {
+                parts.forEach(function (part) {
+                    if (direction === "vertical") {
+                        add.tspan(part.trim()).dy(15).attr('x', finalX + 47);
+                    } else {
+                        add.tspan(part.trim()).dy(15).attr('x', finalX);
+                    }
+                });
             });
-            }).attr({
-            attrType:attributeName
+
+            label.attr(labelAttributes);
+
+            label.direction = direction;
+            addAttributeValuesEvents(label, attributeName);
+            label.move(finalX, finalY);
+            proxy.values.push(label);
+            droppingZone.valueLabels.push(label);
+
         });
 
-        label.attr({
-            fill: getActiveLayer().color,
-            "text-anchor": direction === "horizontal" ? "middle" : "end",
-            "alignment-baseline": "hanging",
-            "dominant-baseline": "middle",
-            "font-size": "14px",
-            class: 'toolable',
-        });
-        
-        label.direction = direction;
-        
-        addAttributeValuesEvents(label,attributeName);
+    } else {
+
+        space -= nodeRadius * 2;
+
+        // this is a continuous data attribute
+        let minTick;
+        let maxTick;
+        let minLabel = drawer.text('' + values.min).attr(labelAttributes);
+
+        if (direction === "horizontal") {
+            x += nodeRadius;
+            minLabel.move(x, y + 10);
+        } else {
+            minLabel.move(activeLayer.left.line.x() - 15, activeLayer.bottom.line.y() - minLabel.rbox().h / 2 - nodeRadius);
+        }
+
+        let majorTicksAttributes = {stroke: 'black', 'stroke-width': 1.5};
+        let minorTicksAttributes = {stroke: 'grey', 'stroke-width': 1};
+        let shiftMax = 0;
+        let maxLabel = drawer.text('' + values.max).attr(labelAttributes);
+        if (direction === "horizontal") {
+            finalX = x + space + shiftMax;
+            finalY = y + 10;
+            minTick = drawer.line(x, y - 2, x, y + 10).attr(majorTicksAttributes);
+            maxTick = drawer.line(finalX, y - 2, finalX, y + 10).attr(majorTicksAttributes);
+        } else {
+            finalX = activeLayer.left.line.x() - 15, y + 10;
+            finalY = activeLayer.left.line.y() + nodeRadius;
+            minTick = drawer.line(activeLayer.left.line.x(), minLabel.cy(), activeLayer.left.line.x() - 10, minLabel.cy()).attr(majorTicksAttributes);
+        }
+        maxLabel.move(finalX, finalY);
+
+        // this has to be done after the maxLabel has been moved
+        if (direction === "vertical") {
+            maxTick = drawer.line(activeLayer.left.line.x(), maxLabel.cy(), activeLayer.left.line.x() - 10, maxLabel.cy()).attr(majorTicksAttributes);
+        }
+
+        droppingZone.valueLabels.push(minLabel);
+        droppingZone.valueLabels.push(maxLabel);
+        droppingZone.valueLabels.push(minTick);
+        droppingZone.valueLabels.push(maxTick);
+
+        let nMajorTicks = 10;
+        let init;
+        let end;
+
+        if (direction === "horizontal") {
+            init = minLabel.cx();
+            end = maxLabel.cx();
+        } else {
+            init = minLabel.cy();
+            end = maxLabel.cy();
+        }
+
+        let increment = (Math.max(init, end) - Math.min(init, end)) / nMajorTicks;
+
+        // adding the major tick marks
+        var upperLimit = Math.max(init, end);
+
+        for (var pos = Math.min(init, end); pos < upperLimit; pos += increment) {
+            let shouldAddMajorTick = direction === "horizontal" ? pos !== init : pos !== end;
+            if (shouldAddMajorTick) {
+                let majorTick;
+                let interpolation = Math.round(interpolate(pos, init, end, values.min, values.max) * 100) / 100;
+                let majorLabel = drawer.text('' + interpolation).attr(labelAttributes);
+
+                if (direction === "horizontal") {
+                    majorTick = drawer.line(pos, activeLayer.bottom.line.y(), pos, activeLayer.bottom.line.y() + 10).attr(majorTicksAttributes);
+                    majorLabel.move(pos, y + 10);
+                } else {
+                    majorTick = drawer.line(activeLayer.left.line.x(), pos, activeLayer.left.line.x() - 10, pos).attr(majorTicksAttributes);
+                    majorLabel.move(activeLayer.left.line.x() - 15, pos - majorLabel.rbox().h / 2);
+                }
+                droppingZone.valueLabels.push(majorTick);
+                droppingZone.valueLabels.push(majorLabel);
+            }
+
+            // adding the minor tick marks
+            let nMinorTicks = 10;
+            for (var i = pos; i < pos + increment && i < upperLimit; i += (increment / nMinorTicks)) {
+                if (i !== pos) {
+                    let minorTick;
+                    if (direction === "horizontal") {
+                        minorTick = drawer.line(i, activeLayer.bottom.line.y(), i, activeLayer.bottom.line.y() + 7).attr(minorTicksAttributes);
+                    } else {
+                        minorTick = drawer.line(activeLayer.left.line.x(), i, activeLayer.left.line.x() - 7, i).attr(minorTicksAttributes);
+                    }
+                    droppingZone.valueLabels.push(minorTick);
+                }
+            }
 
 
 
-//        if (direction === "vertical") {
-//            label.move(finalX + 100, finalY);
-//        } else {
-//            
-//        }
 
-        label.move(finalX, finalY);
-        
-        proxy.values.push(label);
 
-        droppingZone.valueLabels.push(label);
-    });
+
+        }
+
+    }
+
+
 }
 
 function addAttributesAsTools(attributesSet) {
@@ -2371,7 +2432,7 @@ function addAttributesAsTools(attributesSet) {
 
         $("#search-bar-container").before(attrTool);
         // true because everything is discrete now
-        addAttributesDraggingEvents($("#" + attribute)[0], attribute,true);
+        addAttributesDraggingEvents($("#" + attribute)[0], attribute, true);
 
     }
 
@@ -2437,15 +2498,24 @@ function getValuesByAttributeDict(elements, textSet) {
     return uniqueAttrValues;
 }
 
+
 function getAttributeValues(attributeName){
     
-    var nodes = getActiveLayer().layer.select('g.node').members;
-    var activeLayerAtributesLabels = getActiveLayer().attributes;
+//    var nodes = getActiveLayer().layer.select('g.node').members;
+//    var activeLayerAtributesLabels = getActiveLayer().attributes;
+//    console.log(attributeName);
+//    console.log(getValuesByAttributeDict(nodes, activeLayerAtributesLabels)[attributeName]);
+
+    var attributeValues = Object.keys(getActiveLayer().data[attributeName]);
     
-    console.log(attributeName);
-    console.log(getValuesByAttributeDict(nodes, activeLayerAtributesLabels)[attributeName]);
-    return Object.keys(getActiveLayer().data[attributeName]);
-    
+    if (isNumericArray(attributeValues)){
+        var min = Math.min.apply(null, attributeValues); 
+        var max = Math.max.apply(null, attributeValues); 
+        return {min:min,max:max};
+
+    }else{
+        return attributeValues;
+    }
 }
 
 function addAttractorsToWorld(distance, chosen) {
@@ -2727,80 +2797,135 @@ function setWalls(distance, chosen, orientation) {
 
 var crossedPoint = false;
 
-function buildWall(graphicObject,width,height,originPosition,mode,insideSpace,orientation){
+function buildWall(graphicObject, width, height, originPosition, mode, insideSpace, orientation,isProxy) {
     var world = getPhysicsEngine(getActiveLayerName()).world;
-
+    var direction = graphicObject.direction;
+    console.log(direction);
+    
     if (mode==='both'){
         if (!graphicObject.walls){
-            var wallWidth = width;
-            var wallHeight = height;
-            var originXleft = originPosition[0]-insideSpace;
-                        
-            var originXright = originPosition[0]+insideSpace-width;
+            if (direction==="horizontal"){
+                console.log("drawing horizontal");
+                let originXleft = originPosition[0]-insideSpace;
+                let originXright = originPosition[0]+insideSpace-width;
+                let originY = originPosition[1];
+                
+                let wall1 = getActiveLayer().layer.rect(width,1).move(originXleft,originY).fill('gray').attr({'stroke':'transparent','stroke-width':40}).back();
+                wall1.position = "left"
 
-            var originY = originPosition[1];
-            var staticAxis = 'x'; 
-//            getActiveLayer().layer.circle(3).center(originXleft,originY).fill('green').front();
-            let wall1 = getActiveLayer().layer.rect(wallWidth,0).move(originXleft,originY).fill(getActiveLayer().color).back();
-            
-            addAttractorToWorld(world, wall1);
-            addDragEvents(new Hammer(wall1.node),wall1,wall1);
-            
-            
-            let wall2 = getActiveLayer().layer.rect(width,0).move(originXright,originY).fill(getActiveLayer().color).back();
-            
+                wall1.direction = direction;
+                wall1.wall = true;
+                addAttractorToWorld(world, wall1);
+                addDragEvents(new Hammer(wall1.node),wall1,wall1,isProxy,graphicObject);
 
 
-            addAttractorToWorld(world, wall2);
-            addDragEvents(new Hammer(wall2.node),wall2,wall2);
+                let wall2 = getActiveLayer().layer.rect(width,1).move(originXright,originY).fill('gray').attr({'stroke':'transparent','stroke-width':40}).back();
 
-            
+                addAttractorToWorld(world, wall2);
+                addDragEvents(new Hammer(wall2.node),wall2,wall2,isProxy,graphicObject);
+                wall2.position = "right"
+                wall2.direction = direction;
+                wall2.wall = true;
+
+                graphicObject.walls = [wall1,wall2];
+            }else if(direction==='vertical'){
+                
+                let originYtop = originPosition[1]-insideSpace;
+                let originYbottom = originPosition[1]+insideSpace-height;
+                let originX = originPosition[0];
+
+                let wall1 = getActiveLayer().layer.rect(width,height).move(originX,originYtop).fill('gray').attr({'stroke':'transparent','stroke-width':40}).back();
+                wall1.direction = direction;
+                wall1.position = "top"
+                wall1.wall = true;
+
+                addAttractorToWorld(world, wall1);
+                addDragEvents(new Hammer(wall1.node),wall1,wall1,isProxy,graphicObject);
 
 
-            graphicObject.walls = [wall1,wall2];
-            
-        }else{
-            var currentHeight = null;
-            if(graphicObject.walls[0].height()===0){
-                currentHeight = 1;
-            }else{
-                currentHeight = graphicObject.walls[0].height();
+                let wall2 = getActiveLayer().layer.rect(width,height).move(originX,originYbottom).fill('gray').attr({'stroke':'transparent','stroke-width':40}).back();
+                
+                addAttractorToWorld(world, wall2);
+                addDragEvents(new Hammer(wall2.node),wall2,wall2,isProxy,graphicObject);
+                
+                wall2.position = "bottom";
+                wall2.direction = direction;
+                wall2.wall = true;
+
+                graphicObject.walls = [wall1,wall2];
             }
-           
-            var step = height - graphicObject.walls[0].height();
-            var wall1 = graphicObject.walls[0];
-            var wall2 = graphicObject.walls[1];
+            
+        }else {
+            if (direction === "horizontal"){
+                
+                var scale =  height / graphicObject.walls[0].height();
 
 
-            wall1.height(height);
-//            console.log("height: "+height);
-//            console.log("step: "+step);
-//            if(step<0&&height===0){
-//                graphicObject.crossedPoint = !graphicObject.crossedPoint ;
-//            }
-//            
-//            if (!graphicObject.crossedPoint){
-                wall1.y(wall1.y()-step);
-                wall2.y(wall2.y()-step);
-//            }
+                var step = height - graphicObject.walls[0].height();
+                var wall1 = graphicObject.walls[0];
+                var wall2 = graphicObject.walls[1];
 
-            wall2.height(height);
-//            if (orientation==="up"){
-//                console.log("orientation");
-//                var scale =  height / currentHeight;
-//                Matter.Body.scale(wall1.matter,1,scale);
-//                Matter.Body.scale(wall2.matter,1,scale);
-//            }
-//            
-//            Matter.Body.setPosition(wall1.matter,{x:wall1.cx(),y:wall1.cy()});
-//
-//            Matter.Body.setPosition(wall2.matter,{x:wall2.cx(),y:wall2.cy()});
-//            
+                wall1.height(height);
+    //            console.log("height: "+height);
+    //            console.log("step: "+step);
+    //            if(step<0&&height===0){
+    //                graphicObject.crossedPoint = !graphicObject.crossedPoint ;
+    //            }
+    //            
+    //            if (!graphicObject.crossedPoint){
+                    wall1.y(wall1.y()-step);
+                    wall2.y(wall2.y()-step);
+    //            }
+
+                wall2.height(height);
+
+
+                Matter.Body.scale(wall1.matter,1,scale);
+                Matter.Body.scale(wall2.matter,1,scale);
+    //            
+                Matter.Body.setPosition(wall1.matter,{x:wall1.cx(),y:wall1.cy()});
+    
+                Matter.Body.setPosition(wall2.matter,{x:wall2.cx(),y:wall2.cy()});
+            }else if(direction === "vertical"){
+                var scale =  width / graphicObject.walls[0].width();
+
+
+                var wall1 = graphicObject.walls[0];
+                var wall2 = graphicObject.walls[1];
+
+
+                wall1.width(width);
+//                console.log("height: "+height);
+//                console.log("step: "+step);
+//                if(step<0&&height===0){
+//                    graphicObject.crossedPoint = !graphicObject.crossedPoint ;
+//                }
+//                
+//                if (!graphicObject.crossedPoint){
+//                    wall1.y(wall1.y()-step);
+//                    wall2.y(wall2.y()-step);
+//                }
+
+    //            
+                
+                wall2.width(width);
+                
+                
+                
+                Matter.Body.scale(wall1.matter,scale,1);
+                Matter.Body.scale(wall2.matter,scale,1);
+                
+                Matter.Body.setPosition(wall1.matter,{x:wall1.cx(),y:wall1.cy()});
+    
+                Matter.Body.setPosition(wall2.matter,{x:wall2.cx(),y:wall2.cy()});
+                
+                wall1.matter.bounds.max.x = wall1.matter.bounds.max.x+5;
+            }
         }
     }
 }
 
-function sortByAttribute(distance,chosen,orientation){
+function sortByAttribute(distance, chosen, orientation) {
 
     var textSet = getActiveLayer().attributes;
     var elements = getActiveLayer().layer.select('g.node').members;
@@ -2819,7 +2944,7 @@ function sortByAttribute(distance,chosen,orientation){
         var attractorGraphics = null;
         var label = null;
         if (axisX && !getActiveLayer().axis.x) {
-            attractorGraphics = getActiveLayer().layer.rect(width, height).move(positions[attractIndex], fixedAxis).fill(getActiveLayer().color).attr({"class": "toolable","attribute-type":chosen});
+            attractorGraphics = getActiveLayer().layer.rect(width, height).move(positions[attractIndex], fixedAxis).fill(getActiveLayer().color).attr({"class": "toolable", "attribute-type": chosen});
             label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex] + width / 2, fixedAxis + height / 2 - 5, 'authors2016', aff).attr({fill: "white"});
             attractorGraphics.labelGraphics = label;
 //            for (var elIndex in elements) {
@@ -2855,17 +2980,17 @@ function sortByAttribute(distance,chosen,orientation){
         }
 
     }
-    
+
 //    setWalls(10,'affiliation','down');
-    
-    if (axisX){
-        getActiveLayer().axis.x =true;
-    }else{
+
+    if (axisX) {
+        getActiveLayer().axis.x = true;
+    } else {
         getActiveLayer().axis.y = true;
     }
 }
 
-function positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName,orientation){
+function positionElementsByAttribute(attributeGraphics, attributeValue, attributeTypeName, orientation) {
     var elements = getActiveLayer().layer.select('g.node').members;
 //        console.log("Position element");
 //    console.log(elements);
@@ -2874,70 +2999,69 @@ function positionElementsByAttribute(attributeGraphics,attributeValue,attributeT
         var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
 //        console.log(data);
         let element = elements[elIndex];
-        
+
         if (data[attributeTypeName].toString() === attributeValue) {
             let pointX = null;
             let pointY = null;
-            if(attributeGraphics.type === 'rect'){
-                if (orientation === "horizontal"){
+            if (attributeGraphics.type === 'rect') {
+                if (orientation === "horizontal") {
                     pointX = getRectMiddle(attributeGraphics)[0] - element.cx();
-                    console.log(" For "+ attributeValue);
+                    console.log(" For " + attributeValue);
                     console.log(pointX);
                     elements[elIndex].animate(500).dx(pointX).during(function () {
-                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                        });
+                        updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+                    });
 
-                }else{
+                } else {
                     pointY = getRectMiddle(attributeGraphics)[1] - element.cy();
-                    console.log(" For "+ attributeValue);
+                    console.log(" For " + attributeValue);
                     console.log(pointY);
                     elements[elIndex].animate(500).dy(pointY).during(function () {
-                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                        });
+                        updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+                    });
                 }
-            }else if (attributeGraphics.type === 'text'){
-                if (orientation === "horizontal"){
-                    pointX = attributeGraphics.node.getBBox().x + (attributeGraphics.node.getBBox().width/2)-element.cx();
+            } else if (attributeGraphics.type === 'text') {
+                if (orientation === "horizontal") {
+                    pointX = attributeGraphics.node.getBBox().x + (attributeGraphics.node.getBBox().width / 2) - element.cx();
 
-                    console.log(" For "+ attributeValue);
+                    console.log(" For " + attributeValue);
                     console.log(pointX);
                     elements[elIndex].animate(500).dx(pointX).during(function () {
-                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                        });
+                        updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+                    });
 
-                }else{
-                    pointY = attributeGraphics.node.getBBox().y + (attributeGraphics.node.getBBox().height/2)-element.cy();
-                    console.log(" For "+ attributeValue);
+                } else {
+                    pointY = attributeGraphics.node.getBBox().y + (attributeGraphics.node.getBBox().height / 2) - element.cy();
+                    console.log(" For " + attributeValue);
                     console.log(pointY);
                     elements[elIndex].animate(500).dy(pointY).during(function () {
-                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                        });
+                        updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+                    });
                 }
             }
 
         }
-        
+
     }
 }
 
-function highlightNodesByAttributeValue(attributeValue,attributeName,show){
-    
-    var groups = getActiveLayer().data[attributeName][attributeValue];
-    for (var index in groups){
-        let circle = getElementFromGroup(groups[index],'circle');
+function highlightNodesByAttributeValue(attributeValue, attributeName, show) {
 
-        if(show){
+    var groups = getActiveLayer().data[attributeName][attributeValue];
+    for (var index in groups) {
+        let circle = getElementFromGroup(groups[index], 'circle');
+
+        if (show) {
             blink(groups[index]);
             circle.highlight.show();
-        }
-        else{
-            circle.highlight.hide();           
+        } else {
+            circle.highlight.hide();
         }
     }
-    
+
 }
 
-function addAttributeValueAsAttractor(attributeGraphics,attributeValue,attributeTypeName) {
+function addAttributeValueAsAttractor(attributeGraphics, attributeValue, attributeTypeName) {
 
     var World = Matter.World;
     var Composite = Matter.Composite;
@@ -2955,7 +3079,7 @@ function addAttributeValueAsAttractor(attributeGraphics,attributeValue,attribute
         var body = elements[elIndex].matter;
 //
         if (!body) {
-            addElementToWorld(world,elements[elIndex]);
+            addElementToWorld(world, elements[elIndex]);
             body = elements[elIndex].matter;
         } else {
 //            // IMPORTANT: we need to do this to update objects that are attracted to more than one attractor
