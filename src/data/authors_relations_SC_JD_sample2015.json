@@ -3,42 +3,42 @@
         {
             "group": 1, 
             "id": "Alice Thudt",
-            "affiliation": "University of Calgary",
+            "affiliation": "UOC",
             "number of papers": 3,
             "citations": 15
         }, 
         {
             "group": 1, 
             "id": "Mona Hosseinkhani Loorak",
-            "affiliation": "University of Calgary",
+            "affiliation": "UOC",
             "number of papers": 4,
             "citations": 5
         }, 
         {
             "group": 1, 
             "id": "Sheelagh Carpendale",
-            "affiliation": "Simon Fraser University",
+            "affiliation": "SFU",
             "number of papers": 33,
             "citations": 45
         }, 
         {
             "group": 1, 
             "id": "Charles Perin",
-            "affiliation": "University of Toronto",
+            "affiliation": "UofT",
             "number of papers": 8,
             "citations": 11
         }, 
         {
             "group": 1, 
             "id": "Dominikus Baur",
-            "affiliation": "University of British Columbia",
+            "affiliation": "UBC",
             "number of papers": 2,
             "citations": 15
         }, 
         {
             "group": 1, 
             "id": "Christopher Collins",
-            "affiliation": "University of Ontario",
+            "affiliation": "UOIT",
             "number of papers": 12,
             "citations": 15
         }, 
