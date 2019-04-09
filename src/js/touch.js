@@ -851,8 +851,8 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
 
 //                the proxy thing
 //                change line 797 after demo 
-//                var x = attributeGraphics.rbox().cx - $("#accordionSidebar").width()-10;
-                buildWall(attributeGraphics,wallSize,height,[attributeGraphics.rbox().cx - $("#accordionSidebar").width(),1004],'both',insideSpace-15,direction,true);
+                var xProxy =attributeGraphics.rbox().cx - $("#accordionSidebar").width();
+                buildWall(attributeGraphics,wallSize,height,[xProxy,y],'both',insideSpace,direction,true);
                 
                 for (var index in axis.valueLabels){
                     
@@ -868,8 +868,8 @@ function addBuilderWallsEvents(attributeGraphics,attributeGraphicsParent){
             }   
         }else if (orientation === "vertical"){
             let x = axis.line.cx();
-
-            buildWall(attributeGraphics,width,wallSize,[x,attributeGraphics.rbox().cy - 70],'both',insideSpace-15,direction,true);
+            var yProxy = attributeGraphics.rbox().cy - 70;
+            buildWall(attributeGraphics,width,wallSize,[x,yProxy],'both',insideSpace,direction,true);
 
             if ($(attributeGraphics.node).hasClass('proxy')){
                 attributeGraphics.axis = axis;
