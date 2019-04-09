@@ -1420,6 +1420,7 @@ function newLayerItem(callback) {
 }
 
 function sendSelectionToLayer(destination) {
+
     for (var i = 0; i < SELECTION.length; i++) {
         let object = SELECTION[i];
         let svg_destination = getSvgId(destination);
@@ -1486,6 +1487,11 @@ function includeSelection(layerName) {
             //            getElementFromGroup(object,'circle').highlight = null;
             var circle = getElementFromGroup(object, 'circle');
 
+
+            circle.highlight.attr({stroke: LAYERS[layerName].color});
+
+
+
             dataKeys = Object.keys(circle.nodeData.authorInfo);
             //removing the keys I do not want
             dataKeys = arrayRemove(dataKeys, 'id');
@@ -1504,9 +1510,8 @@ function includeSelection(layerName) {
 
             getElementFromGroup(object, 'path').attr({fill: LAYERS[layerName].color, "stroke-fill": LAYERS[layerName].color});
 
-            createHighlight(object);
+
         }
-//            createHighlight(object, true, true, LAYERS[layerName].color);
 
         object.off("pointerdown");
         addTouchEvents(object);
@@ -2055,10 +2060,10 @@ function createHighlight(object, animate, hideAfter, color) {
     object.add(highlight);
 
     highlight.filter(function (add) {
-        add.gaussianBlur(2)
-                .componentTransfer({
-                    rgb: {type: 'discrete', tableValues: [0, 2, 0.4, 0.6, 0.8, 1]}
-                });
+        add.gaussianBlur(3)
+//                .componentTransfer({
+//                    rgb: {type: 'discrete', tableValues: [0, 2, 0.4, 0.6, 0.8, 1]}
+//                });
     });
 
     if (animate) {
@@ -2316,8 +2321,6 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
         });
 
     } else {
-
-
 
         // this is a continuous data attribute
         let minTick;
