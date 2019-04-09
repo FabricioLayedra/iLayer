@@ -8,7 +8,7 @@ var distLabelGroup = 0;
 var selectionFlag = false;
 
 //var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
-var datafile = "./data/authors_relations_SC_JD_sample2015.json";
+var datafile = "./data/authors_relations_Sheelagh.json";
 
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
@@ -390,15 +390,15 @@ function createPhysicsWorld(layer_name, boundaries) {
     // create an engine
     var engine = Engine.create();
 
-    var render = Render.create({
-        element: document.body,
-        engine: engine,
-        options: {
-            width: generalWidth,
-            height: generalHeight
-        }
-    });
-    Render.run(render);
+//    var render = Render.create({
+//        element: document.body,
+//        engine: engine,
+//        options: {
+//            width: generalWidth,
+//            height: generalHeight
+//        }
+//    });
+//    Render.run(render);
 //    
 
     // create demo scene
@@ -861,10 +861,10 @@ function drawGraph(layer_name, g) {
         var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId, color);
         var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + (radius / 2), graphId, labelName);
         var r = circle.attr('r') + circle.attr('stroke-width') / 2;
-        var ear = drawEarInCircle(draw, r, circle.cx(), circle.cy(), LAYERS[layer_name]["color"]);
+//        var ear = drawEarInCircle(draw, r, circle.cx(), circle.cy(), LAYERS[layer_name]["color"]);
 
         //addition of the elements
-        group.add(ear);
+//        group.add(ear);
         group.add(circle);
         group.add(label);
 
@@ -2810,7 +2810,7 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 let originXright = originPosition[0]+insideSpace-width;
                 let originY = originPosition[1];
                 
-                let wall1 = getActiveLayer().layer.rect(width,1).move(originXleft,originY).fill('gray').attr({'stroke':'transparent','stroke-width':40}).back();
+                let wall1 = getActiveLayer().layer.rect(width,1).move(originXleft,originY).fill('gray').attr({'stroke':'transparent','stroke-width':20}).back();
                 wall1.position = "left"
 
                 wall1.direction = direction;
@@ -2819,7 +2819,7 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 addDragEvents(new Hammer(wall1.node),wall1,wall1,isProxy,graphicObject);
 
 
-                let wall2 = getActiveLayer().layer.rect(width,1).move(originXright,originY).fill('gray').attr({'stroke':'transparent','stroke-width':40}).back();
+                let wall2 = getActiveLayer().layer.rect(width,1).move(originXright,originY).fill('gray').attr({'stroke':'transparent','stroke-width':20}).back();
 
                 addAttractorToWorld(world, wall2);
                 addDragEvents(new Hammer(wall2.node),wall2,wall2,isProxy,graphicObject);
@@ -2834,7 +2834,7 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 let originYbottom = originPosition[1]+insideSpace-height;
                 let originX = originPosition[0];
 
-                let wall1 = getActiveLayer().layer.rect(width,height).move(originX,originYtop).fill('gray').attr({'stroke':'transparent','stroke-width':40}).back();
+                let wall1 = getActiveLayer().layer.rect(width,height).move(originX,originYtop).fill('gray').attr({'stroke':'transparent','stroke-width':20}).back();
                 wall1.direction = direction;
                 wall1.position = "top"
                 wall1.wall = true;
@@ -2843,7 +2843,7 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 addDragEvents(new Hammer(wall1.node),wall1,wall1,isProxy,graphicObject);
 
 
-                let wall2 = getActiveLayer().layer.rect(width,height).move(originX,originYbottom).fill('gray').attr({'stroke':'transparent','stroke-width':40}).back();
+                let wall2 = getActiveLayer().layer.rect(width,height).move(originX,originYbottom).fill('gray').attr({'stroke':'transparent','stroke-width':20}).back();
                 
                 addAttractorToWorld(world, wall2);
                 addDragEvents(new Hammer(wall2.node),wall2,wall2,isProxy,graphicObject);
@@ -2990,7 +2990,7 @@ function sortByAttribute(distance, chosen, orientation) {
     }
 }
 
-function positionElementsByAttribute(attributeGraphics, attributeValue, attributeTypeName, orientation) {
+function positionElementsByAttribute(attributeGraphics, attributeValue, attributeTypeName, orientation,isDiscrete) {
     var elements = getActiveLayer().layer.select('g.node').members;
 //        console.log("Position element");
 //    console.log(elements);
@@ -2999,6 +2999,8 @@ function positionElementsByAttribute(attributeGraphics, attributeValue, attribut
         var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
 //        console.log(data);
         let element = elements[elIndex];
+        
+//        if ()
 
         if (data[attributeTypeName].toString() === attributeValue) {
             let pointX = null;

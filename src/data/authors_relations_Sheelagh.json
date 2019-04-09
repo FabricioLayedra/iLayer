@@ -1,0 +1,324 @@
+{
+    "nodes": [
+        {
+            "affiliation": "UofT", 
+            "citations": 17, 
+            "group": 1, 
+            "id": "Nathalie Henry Riche"
+        }, 
+        {
+            "affiliation": "UofT", 
+            "citations": 60, 
+            "group": 1, 
+            "id": "Mona Hosseinkhani Loorak"
+        }, 
+        {
+            "affiliation": "UOC", 
+            "citations": 30, 
+            "group": 1, 
+            "id": "Sheelagh Carpendale"
+        }, 
+        {
+            "affiliation": "UOC", 
+            "citations": 38, 
+            "group": 1, 
+            "id": "Uta Hinrichs"
+        }, 
+        {
+            "affiliation": "SFU", 
+            "citations": 36, 
+            "group": 1, 
+            "id": "Elena Fanea"
+        }, 
+        {
+            "affiliation": "SFU", 
+            "citations": 50, 
+            "group": 1, 
+            "id": "Yvonne Jansen"
+        }, 
+        {
+            "affiliation": "UOC", 
+            "citations": 65, 
+            "group": 1, 
+            "id": "Marian D\u00f6rk"
+        }, 
+        {
+            "affiliation": "UOIT", 
+            "citations": 4, 
+            "group": 1, 
+            "id": "M. L. Lantin"
+        }, 
+        {
+            "affiliation": "INRIA", 
+            "citations": 16, 
+            "group": 1, 
+            "id": "Charles A. H. Baker"
+        }, 
+        {
+            "affiliation": "SFU", 
+            "citations": 8, 
+            "group": 1, 
+            "id": "Gerald Penn"
+        }, 
+        {
+            "affiliation": "SFU", 
+            "citations": 53, 
+            "group": 1, 
+            "id": "Charles Perin"
+        }, 
+        {
+            "affiliation": "UBC", 
+            "citations": 50, 
+            "group": 1, 
+            "id": "Jagoda Walny"
+        }, 
+        {
+            "affiliation": "SFU", 
+            "citations": 26, 
+            "group": 1, 
+            "id": "Amy K. Karlson"
+        }, 
+        {
+            "affiliation": "INRIA", 
+            "citations": 4, 
+            "group": 1, 
+            "id": "Petra Isenberg"
+        }, 
+        {
+            "affiliation": "UBC", 
+            "citations": 33, 
+            "group": 1, 
+            "id": "Alice Thudt"
+        }, 
+        {
+            "affiliation": "INRIA", 
+            "citations": 29, 
+            "group": 1, 
+            "id": "Holly Schmidt"
+        }, 
+        {
+            "affiliation": "UofT", 
+            "citations": 37, 
+            "group": 1, 
+            "id": "Dominikus Baur"
+        }, 
+        {
+            "affiliation": "UOC", 
+            "citations": 60, 
+            "group": 1, 
+            "id": "Noreen Kamal"
+        }, 
+        {
+            "affiliation": "UOIT", 
+            "citations": 26, 
+            "group": 1, 
+            "id": "Nelson Wong"
+        }, 
+        {
+            "affiliation": "UBC", 
+            "citations": 53, 
+            "group": 1, 
+            "id": "Bongshin Lee"
+        }, 
+        {
+            "affiliation": "UOIT", 
+            "citations": 54, 
+            "group": 1, 
+            "id": "Matthew Tobiasz"
+        }, 
+        {
+            "affiliation": "UBC", 
+            "citations": 34, 
+            "group": 1, 
+            "id": "Dan Gruen"
+        }, 
+        {
+            "affiliation": "UBC", 
+            "citations": 41, 
+            "group": 1, 
+            "id": "Christopher Collins"
+        }, 
+        {
+            "affiliation": "UofT", 
+            "citations": 3, 
+            "group": 1, 
+            "id": "Samuel Huron"
+        }, 
+        {
+            "affiliation": "UOIT", 
+            "citations": 8, 
+            "group": 1, 
+            "id": "Michael Hill"
+        }, 
+        {
+            "affiliation": "SFU", 
+            "citations": 50, 
+            "group": 1, 
+            "id": "Johanna E. van der Heyden"
+        }, 
+        {
+            "affiliation": "UOIT", 
+            "citations": 26, 
+            "group": 1, 
+            "id": "Paul Johns"
+        }
+    ], 
+    "links": [
+        {
+            "source": "Alice Thudt", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 355
+        }, 
+        {
+            "source": "Amy K. Karlson", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 448
+        }, 
+        {
+            "source": "Bongshin Lee", 
+            "target": "Sheelagh Carpendale", 
+            "value": 3, 
+            "id": 1246
+        }, 
+        {
+            "source": "Charles A. H. Baker", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 1614
+        }, 
+        {
+            "source": "Charles Perin", 
+            "target": "Sheelagh Carpendale", 
+            "value": 2, 
+            "id": 1649
+        }, 
+        {
+            "source": "Christopher Collins", 
+            "target": "Sheelagh Carpendale", 
+            "value": 4, 
+            "id": 1988
+        }, 
+        {
+            "source": "Dan Gruen", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 2271
+        }, 
+        {
+            "source": "Dominikus Baur", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 3052
+        }, 
+        {
+            "source": "Elena Fanea", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 3292
+        }, 
+        {
+            "source": "Gerald Penn", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 4133
+        }, 
+        {
+            "source": "Holly Schmidt", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 4939
+        }, 
+        {
+            "source": "Jagoda Walny", 
+            "target": "Sheelagh Carpendale", 
+            "value": 2, 
+            "id": 5311
+        }, 
+        {
+            "source": "Johanna E. van der Heyden", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 6066
+        }, 
+        {
+            "source": "M. L. Lantin", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 7444
+        }, 
+        {
+            "source": "Marian D\u00f6rk", 
+            "target": "Sheelagh Carpendale", 
+            "value": 2, 
+            "id": 7721
+        }, 
+        {
+            "source": "Matthew Tobiasz", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 8096
+        }, 
+        {
+            "source": "Michael Hill", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 8312
+        }, 
+        {
+            "source": "Mona Hosseinkhani Loorak", 
+            "target": "Sheelagh Carpendale", 
+            "value": 2, 
+            "id": 8736
+        }, 
+        {
+            "source": "Nathalie Henry Riche", 
+            "target": "Sheelagh Carpendale", 
+            "value": 4, 
+            "id": 8912
+        }, 
+        {
+            "source": "Nelson Wong", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 8987
+        }, 
+        {
+            "source": "Noreen Kamal", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 9157
+        }, 
+        {
+            "source": "Paul Johns", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 9420
+        }, 
+        {
+            "source": "Petra Isenberg", 
+            "target": "Sheelagh Carpendale", 
+            "value": 3, 
+            "id": 9630
+        }, 
+        {
+            "source": "Samuel Huron", 
+            "target": "Sheelagh Carpendale", 
+            "value": 2, 
+            "id": 10590
+        }, 
+        {
+            "source": "Uta Hinrichs", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 12251
+        }, 
+        {
+            "source": "Yvonne Jansen", 
+            "target": "Sheelagh Carpendale", 
+            "value": 1, 
+            "id": 13337
+        }
+    ]
+}
