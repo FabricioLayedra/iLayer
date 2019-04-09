@@ -2318,15 +2318,18 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
 
     } else {
 
+        space -= nodeRadius * 2;
+
         // this is a continuous data attribute
         let minTick;
         let maxTick;
         let minLabel = drawer.text('' + values.min).attr(labelAttributes);
 
         if (direction === "horizontal") {
+            x += nodeRadius;
             minLabel.move(x, y + 10);
         } else {
-            minLabel.move(activeLayer.left.line.x() - 15, activeLayer.bottom.line.y() - minLabel.rbox().h / 2);
+            minLabel.move(activeLayer.left.line.x() - 15, activeLayer.bottom.line.y() - minLabel.rbox().h / 2 - nodeRadius);
         }
 
         let majorTicksAttributes = {stroke: 'black', 'stroke-width': 1.5};
@@ -2340,7 +2343,7 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
             maxTick = drawer.line(finalX, y - 2, finalX, y + 10).attr(majorTicksAttributes);
         } else {
             finalX = activeLayer.left.line.x() - 15, y + 10;
-            finalY = activeLayer.left.line.y();
+            finalY = activeLayer.left.line.y() + nodeRadius;
             minTick = drawer.line(activeLayer.left.line.x(), minLabel.cy(), activeLayer.left.line.x() - 10, minLabel.cy()).attr(majorTicksAttributes);
         }
         maxLabel.move(finalX, finalY);
