@@ -111,7 +111,7 @@ function addDroppingZones(layerName) {
         line: drawer.line(0, h, 0, drawer.height() - 40).move(w, 40).attr(lineAttributes),
         rect: drawer.rect(w, "100%").move(0, 0).attr(rectAttributes)
     };
-    
+
 }
 
 function createSVG(container, layerName, width, height, color) {
@@ -192,7 +192,7 @@ function addEvents(id) {
         console.log("Touching");
         showHideLayer(id);
     });
-    
+
     $("#hidderEdges").on('pointerdown', function () {
         showHideEdges();
     });
@@ -282,7 +282,7 @@ function addMissingElementsToWorld(world, layer) {
             console.log("Element already in the world!")
         } else {
 
-            addElementToWorld(world,group);
+            addElementToWorld(world, group);
         }
     }
 
@@ -471,7 +471,7 @@ function addElementsToWorld(world, layer) {
 
     for (var i = 0; i < elements.length; i++) {
         var group = elements[i];
-        addElementToWorld(world,group);
+        addElementToWorld(world, group);
     }
 }
 
@@ -480,9 +480,9 @@ function addElementToWorld(world, element) {
     var World = Matter.World;
 
     var circle = getElementFromGroup(element, "circle");
-    
-    
-    
+
+
+
     if (!element.matter && circle) {
 
         console.log("Adding node...");
@@ -508,19 +508,18 @@ function addElementToWorld(world, element) {
 
         matterObject.frictionAir = 0.05;
         matterObject.restitution = 0.025;
-        
+
         World.add(world, matterObject);
-    } 
-    else if (element.type === "rect") {
+    } else if (element.type === "rect") {
         console.log("Adding rect...");
 
-        
+
         var opacity = element.attr("opacity");
         console.log("Adding text");
-        console.log("Opacity: "+opacity);
-        
-        
-        if (opacity !== 0){
+        console.log("Opacity: " + opacity);
+
+
+        if (opacity !== 0) {
 
             var x = element.attr('x');
             var y = element.attr('y');
@@ -541,63 +540,61 @@ function addElementToWorld(world, element) {
             var matterObject = Bodies.rectangle(valueX, valueY, width, height, {isStatic: true
             });
             matterObject.density = 1;
-    //      
+            //      
             matterObject.svg = element;
             element.matter = matterObject;
             World.add(world, matterObject);
-            
+
         }
 
-    } 
-    else if (element.type === "text"){
+    } else if (element.type === "text") {
 
         var bbox = element.node.getBBox();
 //        console.log(bbox);        
         var width = bbox.width;
         var height = bbox.height;
 
-        
+
         var direction = element.direction;
         let matterX = 0;
         let matterY = 0;
         let matterWidth = 0;
         let matterHeight = 0;
-        
-        if(direction === 'horizontal'){
+
+        if (direction === 'horizontal') {
             matterWidth = nodeRadius;
             matterHeight = 5;
-            var valueX = bbox.x + (width/2);
-       
+            var valueX = bbox.x + (width / 2);
+
             var valueY = bbox.y;
-        }else{
+        } else {
             matterWidth = 5;
             matterHeight = nodeRadius;
             //desfase
-            var valueX = bbox.x + (width/2)+10;
-       
-            var valueY = bbox.y + (height/2);
+            var valueX = bbox.x + (width / 2) + 10;
+
+            var valueY = bbox.y + (height / 2);
         }
 
-        var matterObject = Bodies.rectangle(valueX, valueY,  matterWidth, matterHeight, {isStatic: true
+        var matterObject = Bodies.rectangle(valueX, valueY, matterWidth, matterHeight, {isStatic: true
         });
-        
+
         matterObject.svg = element;
         element.matter = matterObject;
         World.add(world, matterObject);
-        
-    } 
-    else if (element.type === 'line'){
-        
+
+    } else if (element.type === 'line') {
+
         console.log("Adding line");
 
         var opacity = element.attr("opacity");
         console.log("Adding text");
-        console.log("Opacity: "+opacity);
-        if (opacity !== 0){
-            
+        console.log("Opacity: " + opacity);
+        if (opacity !== 0) {
+
             var bbox = element.node.getBBox();
 
-            var matterObject = Bodies.rectangle(bbox.x+bbox.width/2, bbox.y+bbox.height/2,  1, bbox.height, {isStatic: true
+            var matterObject = Bodies.rectangle(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2, 1, bbox.height, {isStatic: true
             });
 
             matterObject.svg = element;
@@ -694,9 +691,9 @@ function addAttractorToWorld(world, element) {
         console.log("Adding text as an attractor...");
         var bbox = element.node.getBBox();
         console.log(bbox);
-        
-        
-        
+
+
+
         var width = bbox.width;
         var height = bbox.height;
 
@@ -705,9 +702,9 @@ function addAttractorToWorld(world, element) {
         let valueX = bbox.x + (width / 2) - (nodeRadius / 2);
 
         let valueY = bbox.y;
-        
+
 //        getActiveLayer().layer.rect(nodeRadius, height).move(valueX, valueY);
-        
+
         let matterX = 0;
         let matterY = 0;
         let matterWidth = 0;
@@ -725,7 +722,7 @@ function addAttractorToWorld(world, element) {
             matterHeight = nodeRadius;
         }
 
-        var matterObject = Bodies.rectangle(bbox.x, bbox.y ,  matterWidth, matterHeight, {isStatic: true,
+        var matterObject = Bodies.rectangle(bbox.x, bbox.y, matterWidth, matterHeight, {isStatic: true,
 
             plugin: {
                 attractors: [
@@ -925,7 +922,7 @@ function drawGraph(layer_name, g) {
         var edgePath = drawPathInLayer(draw, fromCenterX, fromCenterY,
                 controlX, controlY, toCenterX, toCenterY, id, graphId, layer_name);
 
-        var group = draw.group().attr({id: "path-" + id, class:'edge' });
+        var group = draw.group().attr({id: "path-" + id, class: 'edge'});
         //    console.log(group);
         group.add(edgePath);
         group.layerName = layer_name;
@@ -1800,7 +1797,7 @@ function main() {
                     var nodeGraphics = currentBody.svg;
                     if (nodeGraphics) {
 
-                        if (!!getElementFromGroup(nodeGraphics,'circle')) {
+                        if (!!getElementFromGroup(nodeGraphics, 'circle')) {
 //                     console.log(currentBody.svg);
 
                             let newX = currentBody.position.x;
@@ -2270,6 +2267,8 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
         attrType: attributeName
     };
 
+    space -= nodeRadius * 2;
+
     if (isCategorical) {
 
         if (direction === "horizontal") {
@@ -2293,7 +2292,7 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
                 finalY = y;
             } else {
                 finalX = x - 15;
-                finalY = y + (gap * index);
+                finalY = y + (gap * index) + nodeRadius;
             }
 
             let label = drawer.text(function (add) {
@@ -2318,7 +2317,7 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
 
     } else {
 
-        space -= nodeRadius * 2;
+
 
         // this is a continuous data attribute
         let minTick;
@@ -2499,21 +2498,21 @@ function getValuesByAttributeDict(elements, textSet) {
 }
 
 
-function getAttributeValues(attributeName){
-    
+function getAttributeValues(attributeName) {
+
 //    var nodes = getActiveLayer().layer.select('g.node').members;
 //    var activeLayerAtributesLabels = getActiveLayer().attributes;
 //    console.log(attributeName);
 //    console.log(getValuesByAttributeDict(nodes, activeLayerAtributesLabels)[attributeName]);
 
     var attributeValues = Object.keys(getActiveLayer().data[attributeName]);
-    
-    if (isNumericArray(attributeValues)){
-        var min = Math.min.apply(null, attributeValues); 
-        var max = Math.max.apply(null, attributeValues); 
-        return {min:min,max:max};
 
-    }else{
+    if (isNumericArray(attributeValues)) {
+        var min = Math.min.apply(null, attributeValues);
+        var max = Math.max.apply(null, attributeValues);
+        return {min: min, max: max};
+
+    } else {
         return attributeValues;
     }
 }
@@ -2797,68 +2796,68 @@ function setWalls(distance, chosen, orientation) {
 
 var crossedPoint = false;
 
-function buildWall(graphicObject, width, height, originPosition, mode, insideSpace, orientation,isProxy) {
+function buildWall(graphicObject, width, height, originPosition, mode, insideSpace, orientation, isProxy) {
     var world = getPhysicsEngine(getActiveLayerName()).world;
     var direction = graphicObject.direction;
     console.log(direction);
-    
-    if (mode==='both'){
-        if (!graphicObject.walls){
-            if (direction==="horizontal"){
+
+    if (mode === 'both') {
+        if (!graphicObject.walls) {
+            if (direction === "horizontal") {
                 console.log("drawing horizontal");
-                let originXleft = originPosition[0]-insideSpace;
-                let originXright = originPosition[0]+insideSpace-width;
+                let originXleft = originPosition[0] - insideSpace;
+                let originXright = originPosition[0] + insideSpace - width;
                 let originY = originPosition[1];
-                
-                let wall1 = getActiveLayer().layer.rect(width,1).move(originXleft,originY).fill('gray').attr({'stroke':'transparent','stroke-width':20}).back();
+
+                let wall1 = getActiveLayer().layer.rect(width, 1).move(originXleft, originY).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
                 wall1.position = "left"
 
                 wall1.direction = direction;
                 wall1.wall = true;
                 addAttractorToWorld(world, wall1);
-                addDragEvents(new Hammer(wall1.node),wall1,wall1,isProxy,graphicObject);
+                addDragEvents(new Hammer(wall1.node), wall1, wall1, isProxy, graphicObject);
 
 
-                let wall2 = getActiveLayer().layer.rect(width,1).move(originXright,originY).fill('gray').attr({'stroke':'transparent','stroke-width':20}).back();
+                let wall2 = getActiveLayer().layer.rect(width, 1).move(originXright, originY).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
 
                 addAttractorToWorld(world, wall2);
-                addDragEvents(new Hammer(wall2.node),wall2,wall2,isProxy,graphicObject);
+                addDragEvents(new Hammer(wall2.node), wall2, wall2, isProxy, graphicObject);
                 wall2.position = "right"
                 wall2.direction = direction;
                 wall2.wall = true;
 
-                graphicObject.walls = [wall1,wall2];
-            }else if(direction==='vertical'){
-                
-                let originYtop = originPosition[1]-insideSpace;
-                let originYbottom = originPosition[1]+insideSpace-height;
+                graphicObject.walls = [wall1, wall2];
+            } else if (direction === 'vertical') {
+
+                let originYtop = originPosition[1] - insideSpace;
+                let originYbottom = originPosition[1] + insideSpace - height;
                 let originX = originPosition[0];
 
-                let wall1 = getActiveLayer().layer.rect(width,height).move(originX,originYtop).fill('gray').attr({'stroke':'transparent','stroke-width':20}).back();
+                let wall1 = getActiveLayer().layer.rect(width, height).move(originX, originYtop).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
                 wall1.direction = direction;
                 wall1.position = "top"
                 wall1.wall = true;
 
                 addAttractorToWorld(world, wall1);
-                addDragEvents(new Hammer(wall1.node),wall1,wall1,isProxy,graphicObject);
+                addDragEvents(new Hammer(wall1.node), wall1, wall1, isProxy, graphicObject);
 
 
-                let wall2 = getActiveLayer().layer.rect(width,height).move(originX,originYbottom).fill('gray').attr({'stroke':'transparent','stroke-width':20}).back();
-                
+                let wall2 = getActiveLayer().layer.rect(width, height).move(originX, originYbottom).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
+
                 addAttractorToWorld(world, wall2);
-                addDragEvents(new Hammer(wall2.node),wall2,wall2,isProxy,graphicObject);
-                
+                addDragEvents(new Hammer(wall2.node), wall2, wall2, isProxy, graphicObject);
+
                 wall2.position = "bottom";
                 wall2.direction = direction;
                 wall2.wall = true;
 
-                graphicObject.walls = [wall1,wall2];
+                graphicObject.walls = [wall1, wall2];
             }
-            
-        }else {
-            if (direction === "horizontal"){
-                
-                var scale =  height / graphicObject.walls[0].height();
+
+        } else {
+            if (direction === "horizontal") {
+
+                var scale = height / graphicObject.walls[0].height();
 
 
                 var step = height - graphicObject.walls[0].height();
@@ -2866,28 +2865,28 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 var wall2 = graphicObject.walls[1];
 
                 wall1.height(height);
-    //            console.log("height: "+height);
-    //            console.log("step: "+step);
-    //            if(step<0&&height===0){
-    //                graphicObject.crossedPoint = !graphicObject.crossedPoint ;
-    //            }
-    //            
-    //            if (!graphicObject.crossedPoint){
-                    wall1.y(wall1.y()-step);
-                    wall2.y(wall2.y()-step);
-    //            }
+                //            console.log("height: "+height);
+                //            console.log("step: "+step);
+                //            if(step<0&&height===0){
+                //                graphicObject.crossedPoint = !graphicObject.crossedPoint ;
+                //            }
+                //            
+                //            if (!graphicObject.crossedPoint){
+                wall1.y(wall1.y() - step);
+                wall2.y(wall2.y() - step);
+                //            }
 
                 wall2.height(height);
 
 
-                Matter.Body.scale(wall1.matter,1,scale);
-                Matter.Body.scale(wall2.matter,1,scale);
-    //            
-                Matter.Body.setPosition(wall1.matter,{x:wall1.cx(),y:wall1.cy()});
-    
-                Matter.Body.setPosition(wall2.matter,{x:wall2.cx(),y:wall2.cy()});
-            }else if(direction === "vertical"){
-                var scale =  width / graphicObject.walls[0].width();
+                Matter.Body.scale(wall1.matter, 1, scale);
+                Matter.Body.scale(wall2.matter, 1, scale);
+                //            
+                Matter.Body.setPosition(wall1.matter, {x: wall1.cx(), y: wall1.cy()});
+
+                Matter.Body.setPosition(wall2.matter, {x: wall2.cx(), y: wall2.cy()});
+            } else if (direction === "vertical") {
+                var scale = width / graphicObject.walls[0].width();
 
 
                 var wall1 = graphicObject.walls[0];
@@ -2906,20 +2905,20 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
 //                    wall2.y(wall2.y()-step);
 //                }
 
-    //            
-                
+                //            
+
                 wall2.width(width);
-                
-                
-                
-                Matter.Body.scale(wall1.matter,scale,1);
-                Matter.Body.scale(wall2.matter,scale,1);
-                
-                Matter.Body.setPosition(wall1.matter,{x:wall1.cx(),y:wall1.cy()});
-    
-                Matter.Body.setPosition(wall2.matter,{x:wall2.cx(),y:wall2.cy()});
-                
-                wall1.matter.bounds.max.x = wall1.matter.bounds.max.x+5;
+
+
+
+                Matter.Body.scale(wall1.matter, scale, 1);
+                Matter.Body.scale(wall2.matter, scale, 1);
+
+                Matter.Body.setPosition(wall1.matter, {x: wall1.cx(), y: wall1.cy()});
+
+                Matter.Body.setPosition(wall2.matter, {x: wall2.cx(), y: wall2.cy()});
+
+                wall1.matter.bounds.max.x = wall1.matter.bounds.max.x + 5;
             }
         }
     }
@@ -2990,7 +2989,7 @@ function sortByAttribute(distance, chosen, orientation) {
     }
 }
 
-function positionElementsByAttribute(attributeGraphics, attributeValue, attributeTypeName, orientation,isDiscrete) {
+function positionElementsByAttribute(attributeGraphics, attributeValue, attributeTypeName, orientation, isDiscrete) {
     var elements = getActiveLayer().layer.select('g.node').members;
 //        console.log("Position element");
 //    console.log(elements);
@@ -2999,7 +2998,7 @@ function positionElementsByAttribute(attributeGraphics, attributeValue, attribut
         var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
 //        console.log(data);
         let element = elements[elIndex];
-        
+
 //        if ()
 
         if (data[attributeTypeName].toString() === attributeValue) {
