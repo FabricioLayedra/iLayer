@@ -594,6 +594,19 @@ function getActiveLayer() {
     return activeLayer;
 }
 
+function applyWallStyle(object) {
+
+    let drawer = getActiveLayer().layer;
+
+    if (object.type === 'text') {
+        object.attr({"stroke-dasharray": 4, stroke: 'green', 'stroke-width': 3});
+    } else if (object.type === 'rect') {
+        object.attr({stroke: '#f4bf42', 'stroke-width': 2.5});
+    }
+}
+
+
+
 function addToolEvents(tool, type) {
 
     if (!$(tool).prop('disabled')) {
@@ -659,10 +672,6 @@ function addToolEvents(tool, type) {
 
         mc.on("panend", function (ev) {
             currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-
-//            console.log("Previous");
-//            console.log(x,y);
-
             var x = currentPoint.x - $("#accordionSidebar").width();
             var y = currentPoint.y - 70;
             ghost.front();
@@ -675,38 +684,21 @@ function addToolEvents(tool, type) {
                 if (type === 'wall') {
 
 
+                    applyWallStyle(attributeGraphics);
 
-
-
-
-
-
-
-
-
-
-
-                    if (attributeGraphics.type === 'text') {
-
-                        // TODO change this 
-                        attributeGraphics.attr({"stroke-dasharray": 4, stroke: 'red', 'stroke-width': 3});
-
-                    } else if (attributeGraphics.type === 'rect') {
-                        attributeGraphics.attr({"stroke-dasharray": 4, stroke: 'red', 'stroke-width': 3});
-                    }
                     if ($(attributeGraphics.node).hasClass('proxy')) {
 
-                        var labelsGraphics = attributeGraphics.values;
-                        for (var index in labelsGraphics) {
-                            var labelGraphic = labelsGraphics[index];
+                        let labelsGraphics = attributeGraphics.values;
+                        for (let index in labelsGraphics) {
+                            let labelGraphic = labelsGraphics[index];
                             blink(labelGraphic);
-
                         }
 
-
-
-//                        console.log("proxy");
                         addBuilderWallsEvents(attributeGraphics, attributeGraphics.parent());
+                        
+                        // TODO: build the wall here, right after the wall tool has been added to the proxy
+                        // or to a single attribute value (that's perhaps in another if)
+
                     } else {
                         addBuilderWallsEvents(attributeGraphics, attributeGraphics);
                     }
@@ -725,6 +717,9 @@ function addToolEvents(tool, type) {
                         for (var index in labelsGraphics) {
 //                            console.log(attributeGraphics.values[index]);
                             var labelGraphic = labelsGraphics[index];
+
+                            blink(labelGraphic);
+
                             var attributeValue = labelGraphic.node.textContent;
                             console.log(labelGraphic, attributeValue, attributeTypeName);
                             positionElementsByAttribute(labelGraphic, attributeValue, attributeTypeName, direction);
@@ -737,9 +732,6 @@ function addToolEvents(tool, type) {
                         positionElementsByAttribute(attributeGraphics, attributeGraphics.node.textContent, attributeTypeName, direction);
 
                     }
-
-
-
 
 //                    positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName);
 

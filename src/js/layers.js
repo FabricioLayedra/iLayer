@@ -2200,7 +2200,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
 
                 let x = null;
                 let y = null;
-
+                
                 if (direction === "horizontal") {
                     x = -startingPoint.x + activeLayer.bottom.line.x() + activeLayer.bottom.line.rbox().w + rect.rbox().w / 2 + 5;
                     y = theDroppingZone.line.cy() - startingPoint.y;
@@ -2799,7 +2799,7 @@ function setWalls(distance, chosen, orientation) {
 
 var crossedPoint = false;
 
-function buildWall(graphicObject, width, height, originPosition, mode, insideSpace, orientation, isProxy) {
+function buildWall(graphicObject, width, height, originPosition, mode, insideSpace, orientation, isProxy, animated) {
     var world = getPhysicsEngine(getActiveLayerName()).world;
     var direction = graphicObject.direction;
     console.log(direction);
