@@ -9,11 +9,11 @@ var selectionFlag = false;
 
 //var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/usa_airports.json";
-var datafile = "./data/sample15papers2016.json";
+//var datafile = "./data/sample15papers2016.json";
 
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
-//var datafile = "./data/authors_relations_Sheelagh.json";
+var datafile = "./data/authors_relations_Sheelagh.json";
 
 //var datafile2 = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_19nodes_sample2016.json";
 
@@ -2064,7 +2064,7 @@ function createHighlight(object, animate, hideAfter, color) {
 
         } else {
             let firstChild = getElementFromGroup(object, 'path');
-            console.log("object:" + object.node.id);
+//            console.log("object:" + object.node.id);
             let coords1 = firstChild.getSegment(0).coords;
             let coords2 = firstChild.getSegment(1).coords;
 
@@ -2296,9 +2296,10 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
         "dominant-baseline": "middle",
         "font-size": "14px",
         class: 'toolable',
-        attrType: attributeName
+        attrType: attributeName,
+        attrDiscrete: getActiveLayer().data[attributeName].discrete
     };
-
+    
     space -= nodeRadius * 2;
 
     if (isCategorical) {
@@ -3030,23 +3031,19 @@ function positionElementsByAttribute(attributeGraphics, attributeValue, attribut
 //    console.log(elements);
     for (var elIndex in elements) {
 //        console.log("position "+ elements[elIndex]);
-        var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
+        var data = getElementFromGroupByPropertyValue(elements[elIndex],'type','circle').nodeData.authorInfo;
 //        console.log(data);
         let element = elements[elIndex];
-
-        if (isDiscrete){
 
             if (data[attributeTypeName].toString() === attributeValue) {
                 let pointX = null;
                 let pointY = null;
                 if (attributeGraphics.type === 'rect') {
                     if (orientation === "horizontal") {
-                        pointX = getRectMiddle(attributeGraphics)[0] - element.cx();
-                        console.log(" For " + attributeValue);
-                        console.log(pointX);
-                        elements[elIndex].animate(500).dx(pointX).during(function () {
-                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                        });
+//                        newPos = getRectMiddle(attributeGraphics)[0];
+//                        oldPos = element.cx();
+//                        console.log(" For " + attributeValue);
+//                        elementPos()
 
                     } else {
                         pointY = getRectMiddle(attributeGraphics)[1] - element.cy();
@@ -3057,26 +3054,11 @@ function positionElementsByAttribute(attributeGraphics, attributeValue, attribut
                         });
                     }
                 } else if (attributeGraphics.type === 'text') {
-                    if (orientation === "horizontal") {
-                        pointX = attributeGraphics.node.getBBox().x + (attributeGraphics.node.getBBox().width / 2) - element.cx();
+                   
 
-                        console.log(" For " + attributeValue);
-                        console.log(pointX);
-                        elements[elIndex].animate(500).dx(pointX).during(function () {
-                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                        });
-
-                    } else {
-                        pointY = attributeGraphics.node.getBBox().y + (attributeGraphics.node.getBBox().height / 2) - element.cy();
-                        console.log(" For " + attributeValue);
-                        console.log(pointY);
-                        elements[elIndex].animate(500).dy(pointY).during(function () {
-                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                        });
-                    }
                 }
 
-            }
+//            }
         }
         else{
             
