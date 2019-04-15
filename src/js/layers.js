@@ -2,17 +2,20 @@
 /*--------------------------------CONSTANTS-------------------------------------*/
 var count = 0;
 
-var nodeRadius = 40;
+var nodeRadius = 20;
 var distLabelGroup = 0;
 
 var selectionFlag = false;
 
 //var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
-var datafile = "./data/authors_relations_Sheelagh.json";
+//var datafile = "./data/usa_airports.json";
+var datafile = "./data/sample15papers2016.json";
 
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
-var datafile2 = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_19nodes_sample2016.json";
+//var datafile = "./data/authors_relations_Sheelagh.json";
+
+//var datafile2 = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_19nodes_sample2016.json";
 
 
 var LAYERS = {};
@@ -281,7 +284,6 @@ function addMissingElementsToWorld(world, layer) {
         if (actualWorldElements.includes(group.matter)) {
             console.log("Element already in the world!")
         } else {
-
             addElementToWorld(world, group);
         }
     }
@@ -390,15 +392,15 @@ function createPhysicsWorld(layer_name, boundaries) {
     // create an engine
     var engine = Engine.create();
 
-//    var render = Render.create({
-//        element: document.body,
-//        engine: engine,
-//        options: {
-//            width: generalWidth,
-//            height: generalHeight
-//        }
-//    });
-//    Render.run(render);
+    var render = Render.create({
+        element: document.body,
+        engine: engine,
+        options: {
+            width: generalWidth,
+            height: generalHeight
+        }
+    });
+    Render.run(render);
 //    
 
     // create demo scene
@@ -592,14 +594,16 @@ function addElementToWorld(world, element) {
         console.log("Opacity: " + opacity);
         if (opacity !== 0) {
 
-            var bbox = element.node.getBBox();
-
-            var matterObject = Bodies.rectangle(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2, 1, bbox.height, {isStatic: true
-            });
-
-            matterObject.svg = element;
-            element.matter = matterObject;
-            World.add(world, matterObject);
+            var bbox = element.rbox();
+            
+            console.log(bbox);
+            var lineBlock = Bodies.rectangle(bbox.x,bbox.y, 1004, 300, {isStatic: true});
+      //      console.log("MATTER");
+        //    console.log(lineBlock.setStatic());
+            lineBlock.svg = element;
+            element.matter = lineBlock;
+            World.add(world, lineBlock);
+            
         }
     }
     return matterObject;
@@ -766,22 +770,28 @@ function loadGraph(filename, key, directed) {
         var edges = json.links;
         var nodes = json.nodes;
 
+        var notIncluded = [];
         nodes.forEach(function (data) {
-//            console.log(data);
             var keys = Object.keys(data);
             dataInfo = {};
+
             dataInfo["name"] = data["id"];
             for (var index in keys) {
                 dataInfo[keys[index]] = data[keys[index]];
             }
 //            console.log(dataInfo);
-
-            g.setNode(format_id(data["id"]), {authorInfo: dataInfo});
+            if(data["lon"]==="" || data["lat"]===""){
+                notIncluded.push(format_id(data["id"]));
+            }else{
+                g.setNode(format_id(data["id"]), {authorInfo: dataInfo});
+            }
         });
 
         edges.forEach(function (data) {
             //Load it data-drivenish (TO DO)
-            g.setEdge(format_id(data["source"]), format_id(data["target"]), {colabInfo: {value: data["value"], id: data["id"]}});
+            if (!(notIncluded.includes(format_id(data["source"]))|| notIncluded.includes(format_id(data["target"])))){
+                g.setEdge(format_id(data["source"]), format_id(data["target"]), {colabInfo: { id: data["id"]}});
+            }
         });
 
         if (Object.keys(GRAPHS).includes(key)) {
@@ -856,7 +866,7 @@ function drawGraph(layer_name, g) {
 
         // creation of the elements
         var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId, color);
-        var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + (radius / 2), graphId, labelName);
+        var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + (radius / 2), graphId, labelName).attr({class:"node-label"});
         var r = circle.attr('r') + circle.attr('stroke-width') / 2;
 //        var ear = drawEarInCircle(draw, r, circle.cx(), circle.cy(), LAYERS[layer_name]["color"]);
 
@@ -888,23 +898,31 @@ function drawGraph(layer_name, g) {
         dataKeys = Object.keys(nodeData.authorInfo);
         //removing the keys I do not want
         dataKeys = arrayRemove(dataKeys, 'id');
-        dataKeys = arrayRemove(dataKeys, 'group');
+//        dataKeys = arrayRemove(dataKeys, 'group');
         dataKeys = arrayRemove(dataKeys, 'name');
-        dataKeys = arrayRemove(dataKeys, 'number of papers');
+        dataKeys = arrayRemove(dataKeys, 'Name');
+        dataKeys = arrayRemove(dataKeys, 'Number of Papers');
+        dataKeys = arrayRemove(dataKeys, 'Papers Published');
+
+//        dataKeys = arrayRemove(dataKeys, 'number of papers');
 
     });
-
+    
+    console.log(dataKeys);
+    
     LAYERS[layer_name].attributes = dataKeys;
 //    console.log("DICTIONARY");
     LAYERS[layer_name].data = getValuesByAttributeDict(SVG.select('g.node').members, dataKeys);
 
-    addAttributesAsTools(dataKeys);
 
 
     edges.forEach(function (edge) {
 
         var from = g.node(edge.v);
         var to = g.node(edge.w);
+        
+//        console.log(from);
+//        console.log(to);
 
         var id = edge.v + edge.w;
         var fromCenterX = from.svg.cx();
@@ -940,6 +958,9 @@ function drawGraph(layer_name, g) {
     });
 
     addHighlightToGroups(SVG.select('g').members);
+
+    addAttributesAsTools(dataKeys);
+
 
 //    forceLayout(g, pxs, pys);
 }
@@ -1083,12 +1104,15 @@ function updateHighlights(object) {
 }
 
 function updateEdgesEnds(nodeGraphics, coordX, coordY, directed) {
-    var x = !coordX ? nodeGraphics.cx() : coordX;
-    var y = !coordY ? nodeGraphics.cy() : coordY;
+//    console.log("INSIDE THE METHOD");
+//    console.log(nodeGraphics);
+    var x = !coordX ? nodeGraphics.rbox().cx -$("#accordionSidebar").width() : coordX;
+    var y = !coordY ? nodeGraphics.rbox().cy - 70 : coordY;
     var segment;
 
 //    if (directed){
     nodeGraphics.nodeData.inEdges.forEach(function (inEdge) {
+//        console.log("INEDGES");
         segment = inEdge.getSegment(1);
 //        console.log(x,y);
 //        console.log(inEdge.getSegment(1));
@@ -1105,7 +1129,9 @@ function updateEdgesEnds(nodeGraphics, coordX, coordY, directed) {
 
     });
     nodeGraphics.nodeData.outEdges.forEach(function (outEdge, i) {
-//        console.log(outEdge);
+//        console.log("OUTEDGES");
+
+        //        console.log(outEdge);
 
         segment = outEdge.getSegment(0);
         segment.coords[0] = x;
@@ -2009,7 +2035,7 @@ function createHighlight(object, animate, hideAfter, color) {
 
 
 
-        if (!object.node.id.includes("path")) {
+        if (object.node.id.includes("group")) {
             let firstChild = getElementFromGroup(object, 'circle');
 
 //                        console.log(object.id.includes("path"));
@@ -2038,7 +2064,7 @@ function createHighlight(object, animate, hideAfter, color) {
 
         } else {
             let firstChild = getElementFromGroup(object, 'path');
-
+            console.log("object:" + object.node.id);
             let coords1 = firstChild.getSegment(0).coords;
             let coords2 = firstChild.getSegment(1).coords;
 
@@ -2163,6 +2189,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
                     let y = null;
                     let space = null;
                     rect.direction = direction;
+                    rect.discrete = getActiveLayer().data[attributeName].discrete;
 
                     if (direction === "horizontal") {
                         x = activeLayer.bottom.line.x();
@@ -2326,7 +2353,7 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
         let minTick;
         let maxTick;
         let minLabel = drawer.text('' + values.min).attr(labelAttributes);
-
+        proxy.values = values;
         if (direction === "horizontal") {
             x += nodeRadius;
             minLabel.move(x, y + 10);
@@ -2342,17 +2369,21 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
             finalX = x + space + shiftMax;
             finalY = y + 10;
             minTick = drawer.line(x, y - 2, x, y + 10).attr(majorTicksAttributes);
+            proxy.values.minPos = x,
             maxTick = drawer.line(finalX, y - 2, finalX, y + 10).attr(majorTicksAttributes);
+            proxy.values.maxPos = finalX;
         } else {
             finalX = activeLayer.left.line.x() - 15, y + 10;
             finalY = activeLayer.left.line.y() + nodeRadius;
             minTick = drawer.line(activeLayer.left.line.x(), minLabel.cy(), activeLayer.left.line.x() - 10, minLabel.cy()).attr(majorTicksAttributes);
+            proxy.values.minPos = minLabel.cy();
         }
         maxLabel.move(finalX, finalY);
 
         // this has to be done after the maxLabel has been moved
         if (direction === "vertical") {
             maxTick = drawer.line(activeLayer.left.line.x(), maxLabel.cy(), activeLayer.left.line.x() - 10, maxLabel.cy()).attr(majorTicksAttributes);
+            proxy.values.maxPos = maxLabel.cy();
         }
 
         droppingZone.valueLabels.push(minLabel);
@@ -2473,29 +2504,30 @@ function calculateAttractorSizeNdStartingPoints(ammount, distance, axisLength, s
     return [sizeAttractor, startingPoints];
 }
 //
-function getValuesByAttributeDict(elements, textSet) {
+function getValuesByAttributeDict(elements, keySet) {
     var uniqueAttrValues = {};
-    for (var index in textSet) {
-        var text = textSet[index];
-        uniqueAttrValues[text] = {};
+    for (var index in keySet) {
+        var key = keySet[index];
+        uniqueAttrValues[key] = {"discrete":true,values:{}};
 
         for (var elIndex in elements) {
             var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
-            if (Object.keys(data).includes(text)) {
+            if (Object.keys(data).includes(key)) {
 
-                if (Object.keys(uniqueAttrValues[text]).includes(data[text])) {
+                if (Object.keys(uniqueAttrValues[key].values).includes(data[key].toString())) {
 //                    console.log(uniqueAttrValues[text][data[text]]);
 
-                    uniqueAttrValues[text][data[text]].push(elements[elIndex]);
+                    uniqueAttrValues[key].values[data[key]].push(elements[elIndex]);
 //                    uniqueAttrValues[text.toString()].push("prueba");
 
                 } else {
-                    uniqueAttrValues[text][data[text]] = [elements[elIndex]];
+                    uniqueAttrValues[key].values[data[key]] = [elements[elIndex]];
 //                    uniqueAttrValues[text][data[text]] = [elements[elIndex]];  
-
                 }
             }
         }
+        
+        uniqueAttrValues[key].discrete = !isNumericArray(Object.keys(uniqueAttrValues[key].values));
     }
     return uniqueAttrValues;
 }
@@ -2508,12 +2540,12 @@ function getAttributeValues(attributeName) {
 //    console.log(attributeName);
 //    console.log(getValuesByAttributeDict(nodes, activeLayerAtributesLabels)[attributeName]);
 
-    var attributeValues = Object.keys(getActiveLayer().data[attributeName]);
+    var attributeValues = Object.keys(getActiveLayer().data[attributeName].values);
 
     if (isNumericArray(attributeValues)) {
         var min = Math.min.apply(null, attributeValues);
         var max = Math.max.apply(null, attributeValues);
-        return {min: min, max: max};
+        return {min: min, max: max, isDiscrete:false};
 
     } else {
         return attributeValues;
@@ -3002,50 +3034,53 @@ function positionElementsByAttribute(attributeGraphics, attributeValue, attribut
 //        console.log(data);
         let element = elements[elIndex];
 
-//        if ()
+        if (isDiscrete){
 
-        if (data[attributeTypeName].toString() === attributeValue) {
-            let pointX = null;
-            let pointY = null;
-            if (attributeGraphics.type === 'rect') {
-                if (orientation === "horizontal") {
-                    pointX = getRectMiddle(attributeGraphics)[0] - element.cx();
-                    console.log(" For " + attributeValue);
-                    console.log(pointX);
-                    elements[elIndex].animate(500).dx(pointX).during(function () {
-                        updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                    });
+            if (data[attributeTypeName].toString() === attributeValue) {
+                let pointX = null;
+                let pointY = null;
+                if (attributeGraphics.type === 'rect') {
+                    if (orientation === "horizontal") {
+                        pointX = getRectMiddle(attributeGraphics)[0] - element.cx();
+                        console.log(" For " + attributeValue);
+                        console.log(pointX);
+                        elements[elIndex].animate(500).dx(pointX).during(function () {
+                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+                        });
 
-                } else {
-                    pointY = getRectMiddle(attributeGraphics)[1] - element.cy();
-                    console.log(" For " + attributeValue);
-                    console.log(pointY);
-                    elements[elIndex].animate(500).dy(pointY).during(function () {
-                        updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                    });
+                    } else {
+                        pointY = getRectMiddle(attributeGraphics)[1] - element.cy();
+                        console.log(" For " + attributeValue);
+                        console.log(pointY);
+                        elements[elIndex].animate(500).dy(pointY).during(function () {
+                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+                        });
+                    }
+                } else if (attributeGraphics.type === 'text') {
+                    if (orientation === "horizontal") {
+                        pointX = attributeGraphics.node.getBBox().x + (attributeGraphics.node.getBBox().width / 2) - element.cx();
+
+                        console.log(" For " + attributeValue);
+                        console.log(pointX);
+                        elements[elIndex].animate(500).dx(pointX).during(function () {
+                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+                        });
+
+                    } else {
+                        pointY = attributeGraphics.node.getBBox().y + (attributeGraphics.node.getBBox().height / 2) - element.cy();
+                        console.log(" For " + attributeValue);
+                        console.log(pointY);
+                        elements[elIndex].animate(500).dy(pointY).during(function () {
+                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
+                        });
+                    }
                 }
-            } else if (attributeGraphics.type === 'text') {
-                if (orientation === "horizontal") {
-                    pointX = attributeGraphics.node.getBBox().x + (attributeGraphics.node.getBBox().width / 2) - element.cx();
 
-                    console.log(" For " + attributeValue);
-                    console.log(pointX);
-                    elements[elIndex].animate(500).dx(pointX).during(function () {
-                        updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                    });
-
-                } else {
-                    pointY = attributeGraphics.node.getBBox().y + (attributeGraphics.node.getBBox().height / 2) - element.cy();
-                    console.log(" For " + attributeValue);
-                    console.log(pointY);
-                    elements[elIndex].animate(500).dy(pointY).during(function () {
-                        updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                    });
-                }
             }
-
         }
-
+        else{
+            
+        }
     }
 }
 
