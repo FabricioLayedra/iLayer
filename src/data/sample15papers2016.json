@@ -1,0 +1,1481 @@
+{
+    "nodes": [
+        {
+            "Number of Papers": 1, 
+            "lon": 29.3786332263582, 
+            "Affiliations": "Sabanci University, Turkey", 
+            "Citations": 12, 
+            "Affiliation": "Sabanci University, Turkey", 
+            "Papers Published": "c93c0e83-9c26-472b-b64c-b01f84c52d44", 
+            "lat": 40.8927159, 
+            "id": "Selim Balcisoy"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 9.10102976924761, 
+            "Affiliations": "Visualization Research Center (VISUS), University of Stuttgart, Germany", 
+            "Citations": 5, 
+            "Affiliation": "Visualization Research Center (VISUS), University of Stuttgart, Germany", 
+            "Papers Published": "8822a257-96c8-493e-a62c-0675aebffdf7", 
+            "lat": 48.7416439, 
+            "id": "Florian Friess"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 9.10102976924761, 
+            "Affiliations": "Visualization Research Center (VISUS), University of Stuttgart, Germany", 
+            "Citations": 5, 
+            "Affiliation": "Visualization Research Center (VISUS), University of Stuttgart, Germany", 
+            "Papers Published": "8822a257-96c8-493e-a62c-0675aebffdf7", 
+            "lat": 48.7416439, 
+            "id": "Katrin Scharnowski"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -84.3988408600158, 
+            "Affiliations": "Georgia Institute of Technology", 
+            "Citations": 10, 
+            "Affiliation": "Georgia Institute of Technology", 
+            "Papers Published": "534f7eda-2891-4da3-9670-3e691c138e06", 
+            "lat": 33.776033, 
+            "id": "Mengdie Hu"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Dept. of Comp. Sci. &#x0026", 
+            "Citations": 50, 
+            "Affiliation": "Dept. of Comp. Sci. &#x0026", 
+            "Papers Published": "3b051d3d-a928-41a0-8652-89c6ec31417c", 
+            "lat": "", 
+            "id": "Jiaxin Shi"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -78.8556576330566, 
+            "Affiliations": "IBM Research, United States of America", 
+            "Citations": 0, 
+            "Affiliation": "IBM Research, United States of America", 
+            "Papers Published": "42134d74-3b81-48f0-a033-68b5709d9ab9", 
+            "lat": 35.9042272, 
+            "id": "Rama Akkiraju"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Delft University of TechnologyUniversity of Bergen", 
+            "Citations": 3, 
+            "Affiliation": "Delft University of TechnologyUniversity of Bergen", 
+            "Papers Published": "bf93c1e5-b3b9-4284-8f12-2e436c528621", 
+            "lat": "", 
+            "id": "Noeska N. Smit"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -78.8556576330566, 
+            "Affiliations": "IBM Research, United States of America", 
+            "Citations": 0, 
+            "Affiliation": "IBM Research, United States of America", 
+            "Papers Published": "42134d74-3b81-48f0-a033-68b5709d9ab9", 
+            "lat": 35.9042272, 
+            "id": "Anbang Xu"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -122.308008943203, 
+            "Affiliations": "University of Washington", 
+            "Citations": 5, 
+            "Affiliation": "University of Washington", 
+            "Papers Published": "3e0c664c-16c0-4cff-8759-662b12737a4a", 
+            "lat": 47.6543238, 
+            "id": "Jeffrey Heer"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 9.1831892, 
+            "Affiliations": "University of Stuttgart", 
+            "Citations": 4, 
+            "Affiliation": "University of Stuttgart", 
+            "Papers Published": "c0b0966b-32aa-488a-ad14-58461c4f4bc4", 
+            "lat": 48.9095338, 
+            "id": "Daniel Weiskopf"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 114.2620337, 
+            "Affiliations": "Hong Kong University of Science and Technology", 
+            "Citations": 9, 
+            "Affiliation": "Hong Kong University of Science and Technology", 
+            "Papers Published": "e17c9037-872e-447b-ad25-221a71b9ec2f", 
+            "lat": 22.3386304, 
+            "id": "Qiaomu Shen"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 9.10102976924761, 
+            "Affiliations": "Institute of Technical Biochemistry (ITB), University of Stuttgart, Germany", 
+            "Citations": 5, 
+            "Affiliation": "Institute of Technical Biochemistry (ITB), University of Stuttgart, Germany", 
+            "Papers Published": "8822a257-96c8-493e-a62c-0675aebffdf7", 
+            "lat": 48.7416439, 
+            "id": "J\u00fcrgen Pleiss"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -74.0926419, 
+            "Affiliations": "University of Bergen", 
+            "Citations": 3, 
+            "Affiliation": "University of Bergen", 
+            "Papers Published": "bf93c1e5-b3b9-4284-8f12-2e436c528621", 
+            "lat": 40.8664885, 
+            "id": "Stefan Bruckner"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Unknown", 
+            "Citations": 50, 
+            "Affiliation": "Unknown", 
+            "Papers Published": "bc9d9cc6-db8e-4c68-9fd4-1115f6a5c92b", 
+            "lat": "", 
+            "id": "Steffen Koch"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 9.10102976924761, 
+            "Affiliations": "Stuttgart Media University", 
+            "Citations": 4, 
+            "Affiliation": "Stuttgart Media University", 
+            "Papers Published": "c0b0966b-32aa-488a-ad14-58461c4f4bc4", 
+            "lat": 48.7416439, 
+            "id": "Christof Seeger"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -0.1007315, 
+            "Affiliations": "City University, London, UK", 
+            "Citations": 12, 
+            "Affiliation": "City University, London, UK", 
+            "Papers Published": "c93c0e83-9c26-472b-b64c-b01f84c52d44", 
+            "lat": 51.5282561, 
+            "id": "Cagatay Turkay"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 9.1831892, 
+            "Affiliations": "University of Stuttgart", 
+            "Citations": 4, 
+            "Affiliation": "University of Stuttgart", 
+            "Papers Published": "c0b0966b-32aa-488a-ad14-58461c4f4bc4", 
+            "lat": 48.9095338, 
+            "id": "Kuno Kurzhals"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Tech., State Key Lab of Intell. Tech. &#x0026", 
+            "Citations": 50, 
+            "Affiliation": "Tech., State Key Lab of Intell. Tech. &#x0026", 
+            "Papers Published": "3b051d3d-a928-41a0-8652-89c6ec31417c", 
+            "lat": "", 
+            "id": "Zhen Li"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -84.3988408600158, 
+            "Affiliations": "Georgia Institute of Technology", 
+            "Citations": 10, 
+            "Affiliation": "Georgia Institute of Technology", 
+            "Papers Published": "534f7eda-2891-4da3-9670-3e691c138e06", 
+            "lat": 33.776033, 
+            "id": "John T. Stasko"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -83.0286625976912, 
+            "Affiliations": "Ohio State University, United States of America", 
+            "Citations": 0, 
+            "Affiliation": "Ohio State University, United States of America", 
+            "Papers Published": "42134d74-3b81-48f0-a033-68b5709d9ab9", 
+            "lat": 40.00570905, 
+            "id": "Han-Wei Shen"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 5.35016370644512, 
+            "Affiliations": "University of Bergen, Norway", 
+            "Citations": 12, 
+            "Affiliation": "University of Bergen, Norway", 
+            "Papers Published": "c93c0e83-9c26-472b-b64c-b01f84c52d44", 
+            "lat": 60.3689555, 
+            "id": "Helwig Hauser"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 127.0362318, 
+            "Affiliations": "Korea University, Seoul, South Korea", 
+            "Citations": 10, 
+            "Affiliation": "Korea University, Seoul, South Korea", 
+            "Papers Published": "7f5b69c7-ec31-4b81-9577-f3baab38d72a", 
+            "lat": 37.5901411, 
+            "id": "Jaegul Choo"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 0.135010835076038, 
+            "Affiliations": "Microsoft Research", 
+            "Citations": 22, 
+            "Affiliation": "Microsoft Research", 
+            "Papers Published": "8f69fb1e-4ff3-45ae-adaa-2dd5f6bb2e20", 
+            "lat": 52.19495145, 
+            "id": "Saleema Amershi"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Unknown", 
+            "Citations": 50, 
+            "Affiliation": "Unknown", 
+            "Papers Published": "bc9d9cc6-db8e-4c68-9fd4-1115f6a5c92b", 
+            "lat": "", 
+            "id": "Qi Han"
+        }, 
+        {
+            "Number of Papers": 2, 
+            "lon": 9.10102976924761, 
+            "Affiliations": "Visualization Research Center (VISUS), University of Stuttgart, Germany", 
+            "Citations": 6, 
+            "Affiliation": "Visualization Research Center (VISUS), University of Stuttgart, Germany", 
+            "Papers Published": "bc9d9cc6-db8e-4c68-9fd4-1115f6a5c92b;8822a257-96c8-493e-a62c-0675aebffdf7", 
+            "lat": 48.7416439, 
+            "id": "Thomas Ertl"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Leiden University Medical Center", 
+            "Citations": 3, 
+            "Affiliation": "Leiden University Medical Center", 
+            "Papers Published": "bf93c1e5-b3b9-4284-8f12-2e436c528621", 
+            "lat": "", 
+            "id": "Annelot Kraima"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "School of Software and TNListTsinghua University", 
+            "Citations": 50, 
+            "Affiliation": "School of Software and TNListTsinghua University", 
+            "Papers Published": "3b051d3d-a928-41a0-8652-89c6ec31417c", 
+            "lat": "", 
+            "id": "Jun Zhu"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -119.84581949869, 
+            "Affiliations": "University of California, Santa Barbara", 
+            "Citations": 22, 
+            "Affiliation": "University of California, Santa Barbara", 
+            "Papers Published": "8f69fb1e-4ff3-45ae-adaa-2dd5f6bb2e20", 
+            "lat": 34.4145937, 
+            "id": "Donghao Ren"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "The Center for Coastal and Ocean MappingThe University of New Hampshire", 
+            "Citations": 0, 
+            "Affiliation": "The Center for Coastal and Ocean MappingThe University of New Hampshire", 
+            "Papers Published": "ac45341f-033b-4f1f-9f5d-110cd44273eb", 
+            "lat": "", 
+            "id": "Andrew H. Stevens"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "School of Software and TNListTsinghua University", 
+            "Citations": 50, 
+            "Affiliation": "School of Software and TNListTsinghua University", 
+            "Papers Published": "3b051d3d-a928-41a0-8652-89c6ec31417c", 
+            "lat": "", 
+            "id": "Mengchen Liu"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Visual Computing Group, University of Magdeburg", 
+            "Citations": 2, 
+            "Affiliation": "Visual Computing Group, University of Magdeburg", 
+            "Papers Published": "dd935371-c205-45f5-a27a-904897ed0dff", 
+            "lat": "", 
+            "id": "Tobias G\u00fcnther"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -3.97934429228629, 
+            "Affiliations": "Swansea University", 
+            "Citations": 9, 
+            "Affiliation": "Swansea University", 
+            "Papers Published": "e17c9037-872e-447b-ad25-221a71b9ec2f", 
+            "lat": 51.6091578, 
+            "id": "Daniel W. Archambault"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Visual Computing Group, University of Magdeburg", 
+            "Citations": 2, 
+            "Affiliation": "Visual Computing Group, University of Magdeburg", 
+            "Papers Published": "dd935371-c205-45f5-a27a-904897ed0dff", 
+            "lat": "", 
+            "id": "Holger Theisel"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 8.1123441, 
+            "Affiliations": "University of Koblenz, Landau", 
+            "Citations": 3, 
+            "Affiliation": "University of Koblenz, Landau", 
+            "Papers Published": "bf93c1e5-b3b9-4284-8f12-2e436c528621", 
+            "lat": 49.1982825, 
+            "id": "Kai Lawonn"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -84.3988408600158, 
+            "Affiliations": "Georgia Institute of Technology, Atlanta, GA, USA", 
+            "Citations": 10, 
+            "Affiliation": "Georgia Institute of Technology, Atlanta, GA, USA", 
+            "Papers Published": "7f5b69c7-ec31-4b81-9577-f3baab38d72a", 
+            "lat": 33.776033, 
+            "id": "Haesun Park"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 0.135010835076038, 
+            "Affiliations": "Microsoft Research", 
+            "Citations": 22, 
+            "Affiliation": "Microsoft Research", 
+            "Papers Published": "8f69fb1e-4ff3-45ae-adaa-2dd5f6bb2e20", 
+            "lat": 52.19495145, 
+            "id": "Jason D. Williams"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 4.37396036815404, 
+            "Affiliations": "Delft University of Technology", 
+            "Citations": 3, 
+            "Affiliation": "Delft University of Technology", 
+            "Papers Published": "bf93c1e5-b3b9-4284-8f12-2e436c528621", 
+            "lat": 51.99882735, 
+            "id": "Elmar Eisemann"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 9.10102976924761, 
+            "Affiliations": "Institute of Technical Biochemistry (ITB), University of Stuttgart, Germany", 
+            "Citations": 5, 
+            "Affiliation": "Institute of Technical Biochemistry (ITB), University of Stuttgart, Germany", 
+            "Papers Published": "8822a257-96c8-493e-a62c-0675aebffdf7", 
+            "lat": 48.7416439, 
+            "id": "Silvia Fademrecht"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -84.3988408600158, 
+            "Affiliations": "Georgia Institute of Technology, Atlanta, GA, USA", 
+            "Citations": 10, 
+            "Affiliation": "Georgia Institute of Technology, Atlanta, GA, USA", 
+            "Papers Published": "7f5b69c7-ec31-4b81-9577-f3baab38d72a", 
+            "lat": 33.776033, 
+            "id": "Hannah Kim"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 29.3786332263582, 
+            "Affiliations": "Sabanci University, Turkey", 
+            "Citations": 12, 
+            "Affiliation": "Sabanci University, Turkey", 
+            "Papers Published": "c93c0e83-9c26-472b-b64c-b01f84c52d44", 
+            "lat": 40.8927159, 
+            "id": "Erdem Kaya"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "The Center for Coastal and Ocean MappingThe University of New Hampshire", 
+            "Citations": 0, 
+            "Affiliation": "The Center for Coastal and Ocean MappingThe University of New Hampshire", 
+            "Papers Published": "ac45341f-033b-4f1f-9f5d-110cd44273eb", 
+            "lat": "", 
+            "id": "Thomas Butkiewicz"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 114.2620337, 
+            "Affiliations": "Hong Kong University of Science and Technology", 
+            "Citations": 9, 
+            "Affiliation": "Hong Kong University of Science and Technology", 
+            "Papers Published": "e17c9037-872e-447b-ad25-221a71b9ec2f", 
+            "lat": 22.3386304, 
+            "id": "Yanhong Wu"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 4.37396036815404, 
+            "Affiliations": "Delft University of Technology", 
+            "Citations": 3, 
+            "Affiliation": "Delft University of Technology", 
+            "Papers Published": "bf93c1e5-b3b9-4284-8f12-2e436c528621", 
+            "lat": 51.99882735, 
+            "id": "Anna Vilanova"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -78.8556576330566, 
+            "Affiliations": "IBM Research, United States of America", 
+            "Citations": 0, 
+            "Affiliation": "IBM Research, United States of America", 
+            "Papers Published": "42134d74-3b81-48f0-a033-68b5709d9ab9", 
+            "lat": 35.9042272, 
+            "id": "Haibin Liu"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Unknown", 
+            "Citations": 50, 
+            "Affiliation": "Unknown", 
+            "Papers Published": "bc9d9cc6-db8e-4c68-9fd4-1115f6a5c92b", 
+            "lat": "", 
+            "id": "Florian Heimerl"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 121.4888922, 
+            "Affiliations": "New York University, Shanghai", 
+            "Citations": 9, 
+            "Affiliation": "New York University, Shanghai", 
+            "Papers Published": "e17c9037-872e-447b-ad25-221a71b9ec2f", 
+            "lat": 31.2253441, 
+            "id": "Nan Cao"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -122.308008943203, 
+            "Affiliations": "University of Washington", 
+            "Citations": 5, 
+            "Affiliation": "University of Washington", 
+            "Papers Published": "3e0c664c-16c0-4cff-8759-662b12737a4a", 
+            "lat": 47.6543238, 
+            "id": "Michael Correll"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Leiden University Medical Center", 
+            "Citations": 3, 
+            "Affiliation": "Leiden University Medical Center", 
+            "Papers Published": "bf93c1e5-b3b9-4284-8f12-2e436c528621", 
+            "lat": "", 
+            "id": "Hessam Sokooti"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Unknown", 
+            "Citations": 50, 
+            "Affiliation": "Unknown", 
+            "Papers Published": "bc9d9cc6-db8e-4c68-9fd4-1115f6a5c92b", 
+            "lat": "", 
+            "id": "Markus John"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 116.304119070565, 
+            "Affiliations": "Microsoft Research Asia", 
+            "Citations": 9, 
+            "Affiliation": "Microsoft Research Asia", 
+            "Papers Published": "e17c9037-872e-447b-ad25-221a71b9ec2f", 
+            "lat": 39.97834785, 
+            "id": "Weiwei Cui"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -97.7559491, 
+            "Affiliations": "Visa Research, United States of America", 
+            "Citations": 0, 
+            "Affiliation": "Visa Research, United States of America", 
+            "Papers Published": "42134d74-3b81-48f0-a033-68b5709d9ab9", 
+            "lat": 30.4286717, 
+            "id": "Liang Gou"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 0.135010835076038, 
+            "Affiliations": "Microsoft Research", 
+            "Citations": 22, 
+            "Affiliation": "Microsoft Research", 
+            "Papers Published": "8f69fb1e-4ff3-45ae-adaa-2dd5f6bb2e20", 
+            "lat": 52.19495145, 
+            "id": "Jina Suh"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 114.2620337, 
+            "Affiliations": "Hong Kong University of Science and Technology", 
+            "Citations": 9, 
+            "Affiliation": "Hong Kong University of Science and Technology", 
+            "Papers Published": "e17c9037-872e-447b-ad25-221a71b9ec2f", 
+            "lat": 22.3386304, 
+            "id": "Huamin Qu"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Twitter Inc.", 
+            "Citations": 10, 
+            "Affiliation": "Twitter Inc.", 
+            "Papers Published": "534f7eda-2891-4da3-9670-3e691c138e06", 
+            "lat": "", 
+            "id": "Krist Wongsuphasawat"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Sys.TNList LabCBICR Center", 
+            "Citations": 50, 
+            "Affiliation": "Sys.TNList LabCBICR Center", 
+            "Papers Published": "3b051d3d-a928-41a0-8652-89c6ec31417c", 
+            "lat": "", 
+            "id": "Chongxuan Li"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Sorbonne Universites, UPMC UnivParis06, CNRS, LIP6 UMR 7606, France", 
+            "Citations": 15, 
+            "Affiliation": "Sorbonne Universites, UPMC UnivParis06, CNRS, LIP6 UMR 7606, France", 
+            "Papers Published": "f0e83e6b-6470-4dfe-80de-3ce4eeab00bb", 
+            "lat": "", 
+            "id": "Julien Tierny"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -84.3988408600158, 
+            "Affiliations": "Georgia Institute of Technology, Atlanta, GA, USA", 
+            "Citations": 10, 
+            "Affiliation": "Georgia Institute of Technology, Atlanta, GA, USA", 
+            "Papers Published": "7f5b69c7-ec31-4b81-9577-f3baab38d72a", 
+            "lat": 33.776033, 
+            "id": "Emily Wall"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 9.10102976924761, 
+            "Affiliations": "Visualization Research Center (VISUS), University of Stuttgart, Germany", 
+            "Citations": 5, 
+            "Affiliation": "Visualization Research Center (VISUS), University of Stuttgart, Germany", 
+            "Papers Published": "8822a257-96c8-493e-a62c-0675aebffdf7", 
+            "lat": 48.7416439, 
+            "id": "Guido Reina"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Leiden University Medical Center", 
+            "Citations": 3, 
+            "Affiliation": "Leiden University Medical Center", 
+            "Papers Published": "bf93c1e5-b3b9-4284-8f12-2e436c528621", 
+            "lat": "", 
+            "id": "Marco DeRuiter"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -83.0286625976912, 
+            "Affiliations": "Ohio State University, United States of America", 
+            "Citations": 0, 
+            "Affiliation": "Ohio State University, United States of America", 
+            "Papers Published": "42134d74-3b81-48f0-a033-68b5709d9ab9", 
+            "lat": 40.00570905, 
+            "id": "Xiaotong Liu"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 0.135010835076038, 
+            "Affiliations": "Microsoft Research", 
+            "Citations": 22, 
+            "Affiliation": "Microsoft Research", 
+            "Papers Published": "8f69fb1e-4ff3-45ae-adaa-2dd5f6bb2e20", 
+            "lat": 52.19495145, 
+            "id": "Bongshin Lee"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 9.1831892, 
+            "Affiliations": "University of Stuttgart", 
+            "Citations": 4, 
+            "Affiliation": "University of Stuttgart", 
+            "Papers Published": "c0b0966b-32aa-488a-ad14-58461c4f4bc4", 
+            "lat": 48.9095338, 
+            "id": "Marcel Hlawatsch"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "The Center for Coastal and Ocean MappingThe University of New Hampshire", 
+            "Citations": 0, 
+            "Affiliation": "The Center for Coastal and Ocean MappingThe University of New Hampshire", 
+            "Papers Published": "ac45341f-033b-4f1f-9f5d-110cd44273eb", 
+            "lat": "", 
+            "id": "Colin Ware"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -1.55245712031677, 
+            "Affiliations": "University of Leeds", 
+            "Citations": 15, 
+            "Affiliation": "University of Leeds", 
+            "Papers Published": "f0e83e6b-6470-4dfe-80de-3ce4eeab00bb", 
+            "lat": 53.80387185, 
+            "id": "Hamish A. Carr"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": "", 
+            "Affiliations": "Dept. of Comp. Sci. &#x0026", 
+            "Citations": 50, 
+            "Affiliation": "Dept. of Comp. Sci. &#x0026", 
+            "Papers Published": "3b051d3d-a928-41a0-8652-89c6ec31417c", 
+            "lat": "", 
+            "id": "Shixia Liu"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -84.3988408600158, 
+            "Affiliations": "Georgia Institute of Technology, Atlanta, GA, USA", 
+            "Citations": 10, 
+            "Affiliation": "Georgia Institute of Technology, Atlanta, GA, USA", 
+            "Papers Published": "7f5b69c7-ec31-4b81-9577-f3baab38d72a", 
+            "lat": 33.776033, 
+            "id": "Alex Endert"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": -73.7776336, 
+            "Affiliations": "IBM T.J. Watson Research Center, Yorktown Heights, NY, USA", 
+            "Citations": 10, 
+            "Affiliation": "IBM T.J. Watson Research Center, Yorktown Heights, NY, USA", 
+            "Papers Published": "7f5b69c7-ec31-4b81-9577-f3baab38d72a", 
+            "lat": 41.2709274, 
+            "id": "Bum Chul Kwon"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 9.10102976924761, 
+            "Affiliations": "Visualization Research Center (VISUS), University of Stuttgart, Germany", 
+            "Citations": 5, 
+            "Affiliation": "Visualization Research Center (VISUS), University of Stuttgart, Germany", 
+            "Papers Published": "8822a257-96c8-493e-a62c-0675aebffdf7", 
+            "lat": 48.7416439, 
+            "id": "Michael Krone"
+        }, 
+        {
+            "Number of Papers": 1, 
+            "lon": 9.10102976924761, 
+            "Affiliations": "Institute of Technical Biochemistry (ITB), University of Stuttgart, Germany", 
+            "Citations": 5, 
+            "Affiliation": "Institute of Technical Biochemistry (ITB), University of Stuttgart, Germany", 
+            "Papers Published": "8822a257-96c8-493e-a62c-0675aebffdf7", 
+            "lat": 48.7416439, 
+            "id": "Tobias Kulschewski"
+        }
+    ], 
+    "links": [
+        {
+            "source": "Julien Tierny", 
+            "target": "Hamish A. Carr", 
+            "id": 1
+        }, 
+        {
+            "source": "Kai Lawonn", 
+            "target": "Annelot Kraima", 
+            "id": 2
+        }, 
+        {
+            "source": "Marco DeRuiter", 
+            "target": "Anna Vilanova", 
+            "id": 3
+        }, 
+        {
+            "source": "Marco DeRuiter", 
+            "target": "Elmar Eisemann", 
+            "id": 4
+        }, 
+        {
+            "source": "Noeska N. Smit", 
+            "target": "Kai Lawonn", 
+            "id": 5
+        }, 
+        {
+            "source": "Hessam Sokooti", 
+            "target": "Anna Vilanova", 
+            "id": 6
+        }, 
+        {
+            "source": "Kai Lawonn", 
+            "target": "Elmar Eisemann", 
+            "id": 7
+        }, 
+        {
+            "source": "Kai Lawonn", 
+            "target": "Stefan Bruckner", 
+            "id": 8
+        }, 
+        {
+            "source": "Stefan Bruckner", 
+            "target": "Elmar Eisemann", 
+            "id": 9
+        }, 
+        {
+            "source": "Elmar Eisemann", 
+            "target": "Anna Vilanova", 
+            "id": 10
+        }, 
+        {
+            "source": "Stefan Bruckner", 
+            "target": "Anna Vilanova", 
+            "id": 11
+        }, 
+        {
+            "source": "Annelot Kraima", 
+            "target": "Elmar Eisemann", 
+            "id": 12
+        }, 
+        {
+            "source": "Marco DeRuiter", 
+            "target": "Stefan Bruckner", 
+            "id": 13
+        }, 
+        {
+            "source": "Hessam Sokooti", 
+            "target": "Stefan Bruckner", 
+            "id": 14
+        }, 
+        {
+            "source": "Annelot Kraima", 
+            "target": "Marco DeRuiter", 
+            "id": 15
+        }, 
+        {
+            "source": "Marco DeRuiter", 
+            "target": "Hessam Sokooti", 
+            "id": 16
+        }, 
+        {
+            "source": "Annelot Kraima", 
+            "target": "Stefan Bruckner", 
+            "id": 17
+        }, 
+        {
+            "source": "Noeska N. Smit", 
+            "target": "Annelot Kraima", 
+            "id": 18
+        }, 
+        {
+            "source": "Noeska N. Smit", 
+            "target": "Elmar Eisemann", 
+            "id": 19
+        }, 
+        {
+            "source": "Noeska N. Smit", 
+            "target": "Marco DeRuiter", 
+            "id": 20
+        }, 
+        {
+            "source": "Annelot Kraima", 
+            "target": "Anna Vilanova", 
+            "id": 21
+        }, 
+        {
+            "source": "Hessam Sokooti", 
+            "target": "Elmar Eisemann", 
+            "id": 22
+        }, 
+        {
+            "source": "Kai Lawonn", 
+            "target": "Hessam Sokooti", 
+            "id": 23
+        }, 
+        {
+            "source": "Kai Lawonn", 
+            "target": "Marco DeRuiter", 
+            "id": 24
+        }, 
+        {
+            "source": "Noeska N. Smit", 
+            "target": "Anna Vilanova", 
+            "id": 25
+        }, 
+        {
+            "source": "Noeska N. Smit", 
+            "target": "Stefan Bruckner", 
+            "id": 26
+        }, 
+        {
+            "source": "Noeska N. Smit", 
+            "target": "Hessam Sokooti", 
+            "id": 27
+        }, 
+        {
+            "source": "Kai Lawonn", 
+            "target": "Anna Vilanova", 
+            "id": 28
+        }, 
+        {
+            "source": "Annelot Kraima", 
+            "target": "Hessam Sokooti", 
+            "id": 29
+        }, 
+        {
+            "source": "Hannah Kim", 
+            "target": "Haesun Park", 
+            "id": 30
+        }, 
+        {
+            "source": "Hannah Kim", 
+            "target": "Jaegul Choo", 
+            "id": 31
+        }, 
+        {
+            "source": "Jaegul Choo", 
+            "target": "Alex Endert", 
+            "id": 32
+        }, 
+        {
+            "source": "Hannah Kim", 
+            "target": "Emily Wall", 
+            "id": 33
+        }, 
+        {
+            "source": "Emily Wall", 
+            "target": "Jaegul Choo", 
+            "id": 34
+        }, 
+        {
+            "source": "Emily Wall", 
+            "target": "Alex Endert", 
+            "id": 35
+        }, 
+        {
+            "source": "Emily Wall", 
+            "target": "Haesun Park", 
+            "id": 36
+        }, 
+        {
+            "source": "Bum Chul Kwon", 
+            "target": "Jaegul Choo", 
+            "id": 37
+        }, 
+        {
+            "source": "Bum Chul Kwon", 
+            "target": "Haesun Park", 
+            "id": 38
+        }, 
+        {
+            "source": "Hannah Kim", 
+            "target": "Alex Endert", 
+            "id": 39
+        }, 
+        {
+            "source": "Bum Chul Kwon", 
+            "target": "Hannah Kim", 
+            "id": 40
+        }, 
+        {
+            "source": "Haesun Park", 
+            "target": "Alex Endert", 
+            "id": 41
+        }, 
+        {
+            "source": "Bum Chul Kwon", 
+            "target": "Emily Wall", 
+            "id": 42
+        }, 
+        {
+            "source": "Bum Chul Kwon", 
+            "target": "Alex Endert", 
+            "id": 43
+        }, 
+        {
+            "source": "Jaegul Choo", 
+            "target": "Haesun Park", 
+            "id": 44
+        }, 
+        {
+            "source": "Xiaotong Liu", 
+            "target": "Han-Wei Shen", 
+            "id": 45
+        }, 
+        {
+            "source": "Rama Akkiraju", 
+            "target": "Han-Wei Shen", 
+            "id": 46
+        }, 
+        {
+            "source": "Anbang Xu", 
+            "target": "Haibin Liu", 
+            "id": 47
+        }, 
+        {
+            "source": "Xiaotong Liu", 
+            "target": "Rama Akkiraju", 
+            "id": 48
+        }, 
+        {
+            "source": "Xiaotong Liu", 
+            "target": "Liang Gou", 
+            "id": 49
+        }, 
+        {
+            "source": "Liang Gou", 
+            "target": "Rama Akkiraju", 
+            "id": 50
+        }, 
+        {
+            "source": "Anbang Xu", 
+            "target": "Han-Wei Shen", 
+            "id": 51
+        }, 
+        {
+            "source": "Haibin Liu", 
+            "target": "Han-Wei Shen", 
+            "id": 52
+        }, 
+        {
+            "source": "Anbang Xu", 
+            "target": "Liang Gou", 
+            "id": 53
+        }, 
+        {
+            "source": "Xiaotong Liu", 
+            "target": "Anbang Xu", 
+            "id": 54
+        }, 
+        {
+            "source": "Xiaotong Liu", 
+            "target": "Haibin Liu", 
+            "id": 55
+        }, 
+        {
+            "source": "Anbang Xu", 
+            "target": "Rama Akkiraju", 
+            "id": 56
+        }, 
+        {
+            "source": "Liang Gou", 
+            "target": "Han-Wei Shen", 
+            "id": 57
+        }, 
+        {
+            "source": "Haibin Liu", 
+            "target": "Rama Akkiraju", 
+            "id": 58
+        }, 
+        {
+            "source": "Liang Gou", 
+            "target": "Haibin Liu", 
+            "id": 59
+        }, 
+        {
+            "source": "Nan Cao", 
+            "target": "Daniel W. Archambault", 
+            "id": 60
+        }, 
+        {
+            "source": "Yanhong Wu", 
+            "target": "Nan Cao", 
+            "id": 61
+        }, 
+        {
+            "source": "Yanhong Wu", 
+            "target": "Daniel W. Archambault", 
+            "id": 62
+        }, 
+        {
+            "source": "Nan Cao", 
+            "target": "Weiwei Cui", 
+            "id": 63
+        }, 
+        {
+            "source": "Daniel W. Archambault", 
+            "target": "Weiwei Cui", 
+            "id": 64
+        }, 
+        {
+            "source": "Yanhong Wu", 
+            "target": "Weiwei Cui", 
+            "id": 65
+        }, 
+        {
+            "source": "Daniel W. Archambault", 
+            "target": "Qiaomu Shen", 
+            "id": 66
+        }, 
+        {
+            "source": "Yanhong Wu", 
+            "target": "Qiaomu Shen", 
+            "id": 67
+        }, 
+        {
+            "source": "Qiaomu Shen", 
+            "target": "Huamin Qu", 
+            "id": 68
+        }, 
+        {
+            "source": "Yanhong Wu", 
+            "target": "Huamin Qu", 
+            "id": 69
+        }, 
+        {
+            "source": "Huamin Qu", 
+            "target": "Weiwei Cui", 
+            "id": 70
+        }, 
+        {
+            "source": "Qiaomu Shen", 
+            "target": "Weiwei Cui", 
+            "id": 71
+        }, 
+        {
+            "source": "Daniel W. Archambault", 
+            "target": "Huamin Qu", 
+            "id": 72
+        }, 
+        {
+            "source": "Nan Cao", 
+            "target": "Qiaomu Shen", 
+            "id": 73
+        }, 
+        {
+            "source": "Nan Cao", 
+            "target": "Huamin Qu", 
+            "id": 74
+        }, 
+        {
+            "source": "Bongshin Lee", 
+            "target": "Jason D. Williams", 
+            "id": 75
+        }, 
+        {
+            "source": "Donghao Ren", 
+            "target": "Bongshin Lee", 
+            "id": 76
+        }, 
+        {
+            "source": "Donghao Ren", 
+            "target": "Jina Suh", 
+            "id": 77
+        }, 
+        {
+            "source": "Donghao Ren", 
+            "target": "Saleema Amershi", 
+            "id": 78
+        }, 
+        {
+            "source": "Saleema Amershi", 
+            "target": "Jason D. Williams", 
+            "id": 79
+        }, 
+        {
+            "source": "Bongshin Lee", 
+            "target": "Jina Suh", 
+            "id": 80
+        }, 
+        {
+            "source": "Saleema Amershi", 
+            "target": "Bongshin Lee", 
+            "id": 81
+        }, 
+        {
+            "source": "Saleema Amershi", 
+            "target": "Jina Suh", 
+            "id": 82
+        }, 
+        {
+            "source": "Donghao Ren", 
+            "target": "Jason D. Williams", 
+            "id": 83
+        }, 
+        {
+            "source": "Jina Suh", 
+            "target": "Jason D. Williams", 
+            "id": 84
+        }, 
+        {
+            "source": "Kuno Kurzhals", 
+            "target": "Christof Seeger", 
+            "id": 85
+        }, 
+        {
+            "source": "Marcel Hlawatsch", 
+            "target": "Daniel Weiskopf", 
+            "id": 86
+        }, 
+        {
+            "source": "Kuno Kurzhals", 
+            "target": "Marcel Hlawatsch", 
+            "id": 87
+        }, 
+        {
+            "source": "Kuno Kurzhals", 
+            "target": "Daniel Weiskopf", 
+            "id": 88
+        }, 
+        {
+            "source": "Christof Seeger", 
+            "target": "Daniel Weiskopf", 
+            "id": 89
+        }, 
+        {
+            "source": "Marcel Hlawatsch", 
+            "target": "Christof Seeger", 
+            "id": 90
+        }, 
+        {
+            "source": "Andrew H. Stevens", 
+            "target": "Colin Ware", 
+            "id": 91
+        }, 
+        {
+            "source": "Andrew H. Stevens", 
+            "target": "Thomas Butkiewicz", 
+            "id": 92
+        }, 
+        {
+            "source": "Thomas Butkiewicz", 
+            "target": "Colin Ware", 
+            "id": 93
+        }, 
+        {
+            "source": "Tobias G\u00fcnther", 
+            "target": "Holger Theisel", 
+            "id": 94
+        }, 
+        {
+            "source": "Florian Friess", 
+            "target": "Katrin Scharnowski", 
+            "id": 95
+        }, 
+        {
+            "source": "Katrin Scharnowski", 
+            "target": "Thomas Ertl", 
+            "id": 96
+        }, 
+        {
+            "source": "Katrin Scharnowski", 
+            "target": "Guido Reina", 
+            "id": 97
+        }, 
+        {
+            "source": "Florian Friess", 
+            "target": "Guido Reina", 
+            "id": 98
+        }, 
+        {
+            "source": "Katrin Scharnowski", 
+            "target": "Silvia Fademrecht", 
+            "id": 99
+        }, 
+        {
+            "source": "Katrin Scharnowski", 
+            "target": "J\u00fcrgen Pleiss", 
+            "id": 100
+        }, 
+        {
+            "source": "Guido Reina", 
+            "target": "J\u00fcrgen Pleiss", 
+            "id": 101
+        }, 
+        {
+            "source": "J\u00fcrgen Pleiss", 
+            "target": "Thomas Ertl", 
+            "id": 102
+        }, 
+        {
+            "source": "Guido Reina", 
+            "target": "Silvia Fademrecht", 
+            "id": 103
+        }, 
+        {
+            "source": "Katrin Scharnowski", 
+            "target": "Tobias Kulschewski", 
+            "id": 104
+        }, 
+        {
+            "source": "Silvia Fademrecht", 
+            "target": "J\u00fcrgen Pleiss", 
+            "id": 105
+        }, 
+        {
+            "source": "Tobias Kulschewski", 
+            "target": "Thomas Ertl", 
+            "id": 106
+        }, 
+        {
+            "source": "Florian Friess", 
+            "target": "Tobias Kulschewski", 
+            "id": 107
+        }, 
+        {
+            "source": "Guido Reina", 
+            "target": "Thomas Ertl", 
+            "id": 108
+        }, 
+        {
+            "source": "Michael Krone", 
+            "target": "J\u00fcrgen Pleiss", 
+            "id": 109
+        }, 
+        {
+            "source": "Michael Krone", 
+            "target": "Florian Friess", 
+            "id": 110
+        }, 
+        {
+            "source": "Michael Krone", 
+            "target": "Katrin Scharnowski", 
+            "id": 111
+        }, 
+        {
+            "source": "Silvia Fademrecht", 
+            "target": "Tobias Kulschewski", 
+            "id": 112
+        }, 
+        {
+            "source": "Guido Reina", 
+            "target": "Tobias Kulschewski", 
+            "id": 113
+        }, 
+        {
+            "source": "Michael Krone", 
+            "target": "Thomas Ertl", 
+            "id": 114
+        }, 
+        {
+            "source": "Michael Krone", 
+            "target": "Guido Reina", 
+            "id": 115
+        }, 
+        {
+            "source": "Florian Friess", 
+            "target": "Silvia Fademrecht", 
+            "id": 116
+        }, 
+        {
+            "source": "Florian Friess", 
+            "target": "J\u00fcrgen Pleiss", 
+            "id": 117
+        }, 
+        {
+            "source": "Michael Krone", 
+            "target": "Silvia Fademrecht", 
+            "id": 118
+        }, 
+        {
+            "source": "Silvia Fademrecht", 
+            "target": "Thomas Ertl", 
+            "id": 119
+        }, 
+        {
+            "source": "Tobias Kulschewski", 
+            "target": "J\u00fcrgen Pleiss", 
+            "id": 120
+        }, 
+        {
+            "source": "Florian Friess", 
+            "target": "Thomas Ertl", 
+            "id": 121
+        }, 
+        {
+            "source": "Michael Krone", 
+            "target": "Tobias Kulschewski", 
+            "id": 122
+        }, 
+        {
+            "source": "Qi Han", 
+            "target": "Thomas Ertl", 
+            "id": 123
+        }, 
+        {
+            "source": "Markus John", 
+            "target": "Steffen Koch", 
+            "id": 124
+        }, 
+        {
+            "source": "Florian Heimerl", 
+            "target": "Thomas Ertl", 
+            "id": 125
+        }, 
+        {
+            "source": "Markus John", 
+            "target": "Qi Han", 
+            "id": 126
+        }, 
+        {
+            "source": "Qi Han", 
+            "target": "Steffen Koch", 
+            "id": 127
+        }, 
+        {
+            "source": "Steffen Koch", 
+            "target": "Thomas Ertl", 
+            "id": 128
+        }, 
+        {
+            "source": "Florian Heimerl", 
+            "target": "Markus John", 
+            "id": 129
+        }, 
+        {
+            "source": "Markus John", 
+            "target": "Thomas Ertl", 
+            "id": 130
+        }, 
+        {
+            "source": "Florian Heimerl", 
+            "target": "Qi Han", 
+            "id": 131
+        }, 
+        {
+            "source": "Florian Heimerl", 
+            "target": "Steffen Koch", 
+            "id": 132
+        }, 
+        {
+            "source": "Mengdie Hu", 
+            "target": "Krist Wongsuphasawat", 
+            "id": 133
+        }, 
+        {
+            "source": "Krist Wongsuphasawat", 
+            "target": "John T. Stasko", 
+            "id": 134
+        }, 
+        {
+            "source": "Mengdie Hu", 
+            "target": "John T. Stasko", 
+            "id": 135
+        }, 
+        {
+            "source": "Erdem Kaya", 
+            "target": "Selim Balcisoy", 
+            "id": 136
+        }, 
+        {
+            "source": "Cagatay Turkay", 
+            "target": "Selim Balcisoy", 
+            "id": 137
+        }, 
+        {
+            "source": "Cagatay Turkay", 
+            "target": "Erdem Kaya", 
+            "id": 138
+        }, 
+        {
+            "source": "Erdem Kaya", 
+            "target": "Helwig Hauser", 
+            "id": 139
+        }, 
+        {
+            "source": "Selim Balcisoy", 
+            "target": "Helwig Hauser", 
+            "id": 140
+        }, 
+        {
+            "source": "Cagatay Turkay", 
+            "target": "Helwig Hauser", 
+            "id": 141
+        }, 
+        {
+            "source": "Michael Correll", 
+            "target": "Jeffrey Heer", 
+            "id": 142
+        }, 
+        {
+            "source": "Mengchen Liu", 
+            "target": "Chongxuan Li", 
+            "id": 143
+        }, 
+        {
+            "source": "Jiaxin Shi", 
+            "target": "Jun Zhu", 
+            "id": 144
+        }, 
+        {
+            "source": "Jiaxin Shi", 
+            "target": "Shixia Liu", 
+            "id": 145
+        }, 
+        {
+            "source": "Jiaxin Shi", 
+            "target": "Zhen Li", 
+            "id": 146
+        }, 
+        {
+            "source": "Zhen Li", 
+            "target": "Shixia Liu", 
+            "id": 147
+        }, 
+        {
+            "source": "Mengchen Liu", 
+            "target": "Shixia Liu", 
+            "id": 148
+        }, 
+        {
+            "source": "Zhen Li", 
+            "target": "Jun Zhu", 
+            "id": 149
+        }, 
+        {
+            "source": "Chongxuan Li", 
+            "target": "Shixia Liu", 
+            "id": 150
+        }, 
+        {
+            "source": "Chongxuan Li", 
+            "target": "Jun Zhu", 
+            "id": 151
+        }, 
+        {
+            "source": "Mengchen Liu", 
+            "target": "Jiaxin Shi", 
+            "id": 152
+        }, 
+        {
+            "source": "Jiaxin Shi", 
+            "target": "Chongxuan Li", 
+            "id": 153
+        }, 
+        {
+            "source": "Mengchen Liu", 
+            "target": "Jun Zhu", 
+            "id": 154
+        }, 
+        {
+            "source": "Mengchen Liu", 
+            "target": "Zhen Li", 
+            "id": 155
+        }, 
+        {
+            "source": "Zhen Li", 
+            "target": "Chongxuan Li", 
+            "id": 156
+        }, 
+        {
+            "source": "Jun Zhu", 
+            "target": "Shixia Liu", 
+            "id": 157
+        }
+    ]
+}

@@ -266,3 +266,31 @@ function getElementFromGroupByPropertyValue(group, property,value) {
         return null;
     }
 }
+
+function elementPos(element,newPos,oldPos,orientation){
+    
+    let point = newPos - oldPos;
+
+//                                        console.log(getElementFromGroupByPropertyValue(element,'type','circle').node.id);
+    if (orientation === "horizontal"){
+    //    console.log(pointX);
+
+        element.animate(500).dx(point).during(function (pos, morph, eased, situation) {
+
+            let currentX = interpolate(pos, 0, 1, oldPos,newPos);
+
+    //        console.log("Updating edges...");
+            updateEdgesEnds(getElementFromGroupByPropertyValue(element,'type','circle'), currentX);
+        });
+    }else{
+    //    console.log(pointX);
+
+        element.animate(500).dy(point).during(function (pos, morph, eased, situation) {
+
+            let currentY = interpolate(pos, 0, 1, oldPos,newPos);
+
+    //        console.log("Updating edges...");
+            updateEdgesEnds(getElementFromGroupByPropertyValue(element,'type','circle'),null, currentY);
+        });
+    }
+}

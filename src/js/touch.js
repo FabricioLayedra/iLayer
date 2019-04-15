@@ -688,10 +688,13 @@ function addToolEvents(tool, type) {
 
                     if ($(attributeGraphics.node).hasClass('proxy')) {
 
-                        let labelsGraphics = attributeGraphics.values;
-                        for (let index in labelsGraphics) {
-                            let labelGraphic = labelsGraphics[index];
-                            blink(labelGraphic);
+
+                        var labelsGraphics = attributeGraphics.values;
+                        for (var index in labelsGraphics) {
+                            var labelGraphic = labelsGraphics[index];
+                            // IF ITS CONTINUOUS DATA THIS HAS TO CHANGE
+//                            blink(labelGraphic);
+
                         }
 
                         addBuilderWallsEvents(attributeGraphics, attributeGraphics.parent());
@@ -709,28 +712,104 @@ function addToolEvents(tool, type) {
 
                     if ($(attributeGraphics.node).hasClass('proxy')) {
 
-                        console.log("proxy");
+//                        console.log("proxy");
                         var labelsGraphics = attributeGraphics.values;
                         var attributeTypeName = attributeGraphics.attr("value");
 
-//                        console.log(attributeGraphics.attr("isDiscrete"));
-                        for (var index in labelsGraphics) {
-//                            console.log(attributeGraphics.values[index]);
-                            var labelGraphic = labelsGraphics[index];
+                        if (attributeGraphics.discrete){
+                            
+                            for (var index in labelsGraphics) {
+    //                            console.log(attributeGraphics.values[index]);
+                                var labelGraphic = labelsGraphics[index];
+                                var attributeValue = labelGraphic.node.textContent;
+                                console.log(labelGraphic, attributeValue, attributeTypeName);
+                                positionElementsByAttribute(labelGraphic, attributeValue, attributeTypeName, direction);
 
-                            blink(labelGraphic);
+                            }
+                        }
+                        else{
+                            console.log("CONTINUOUS:");
+                            console.log(attributeGraphics.discrete);
+                            console.log("SCALING DATA...");
+                            var scaleData = attributeGraphics.values;
+                            console.log(scaleData);
 
-                            var attributeValue = labelGraphic.node.textContent;
-                            console.log(labelGraphic, attributeValue, attributeTypeName);
-                            positionElementsByAttribute(labelGraphic, attributeValue, attributeTypeName, direction);
+//                            for (var index in nodes){
+//                                nodes[index].node.nodeData.authorInfo
+//                                
+//                            }
+                            
+//                            interpolate(value, originalMin, originalMax, newMin, newMax)
+                            
+//                            console.log(attributeGraphics.values);
+                            var uniqueAttributeValues =  Object.keys(getActiveLayer().data[attributeTypeName].values);
+//                            var minAttributeValue = Math.min(uniqueAttributeValues);
+//                            var maxAttributeValue = Math.max(uniqueAttributeValues);
+                            
+                            
+                            console.log("data to position");
+                            console.log(uniqueAttributeValues);
+//                            console.log(minAttributeValue,maxAttributeValue);
+                            
 
+
+                            console.log("INTERPOLATING...");
+
+                            
+                            for (var index in uniqueAttributeValues){
+                                
+                                console.log("Positioning...");
+                                
+                                
+                                var attributeValue = uniqueAttributeValues[index];
+                                
+                                console.log(attributeValue);
+                                console.log("VALUES FOR INTERPOLATION...");
+                                console.log(attributeValue,scaleData.min,scaleData.max,scaleData.minPos, scaleData.maxPos);
+                                var newPos = interpolate(attributeValue,scaleData.min,scaleData.max,scaleData.minPos, scaleData.maxPos);
+                                
+                                var currentNodes = getActiveLayer().data[attributeTypeName].values[attributeValue];
+                                console.log(currentNodes);
+                                console.log(currentNodes);
+                                console.log("Number of Nodes to position...");
+                                console.log(currentNodes.length);
+                                if (direction === "horizontal"){
+                                    
+                                    
+                                    
+                                    currentNodes.forEach(function(element){
+//                                       var element =  currentNodes[0];
+                                       var oldPos = element.rbox().cx -$("#accordionSidebar").width();
+                                       elementPos(element,newPos,oldPos,direction);
+                                    })
+                                    
+//                                    for (var elIndex in currentNodes){
+////                                        let element = currentNodes[elIndex];
+//
+//
+//                                    }   
+                                }
+                                else if  (direction === "vertical"){
+                                    currentNodes.forEach(function(element){
+//                                       var element =  currentNodes[0];
+                                       var oldPos = element.rbox().cy -70;
+                                       elementPos(element,newPos,oldPos,direction);
+                                    })
+                                }
+                            
+                            
+                            }
+                        }
+                            
+                            console.log("_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_");
+                           
                         }
 //                        addBuilderWallsEvents(attributeGraphics,attributeGraphics.parent());
-                    } else {
+                     else {
 
                         var attributeTypeName = attributeGraphics.attr("attrType");
                         positionElementsByAttribute(attributeGraphics, attributeGraphics.node.textContent, attributeTypeName, direction);
-
+``
                     }
 
 //                    positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName);
@@ -804,7 +883,7 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
     let direction = null;
     var axis = null;
     var wallSize = 1.1;
-    var insideSpace = 30;
+    var insideSpace = nodeRadius+10;
 
 
     if (orientation === 'horizontal') {
