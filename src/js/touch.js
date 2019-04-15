@@ -707,109 +707,92 @@ function addToolEvents(tool, type) {
                     }
 
                 } else if (type === 'position') {
-                    console.log("Positioning elements");
                     var direction = attributeGraphics.direction;
 
                     if ($(attributeGraphics.node).hasClass('proxy')) {
 
-//                        console.log("proxy");
                         var labelsGraphics = attributeGraphics.values;
                         var attributeTypeName = attributeGraphics.attr("value");
 
                         if (attributeGraphics.discrete){
-                            
                             for (var index in labelsGraphics) {
-    //                            console.log(attributeGraphics.values[index]);
                                 var labelGraphic = labelsGraphics[index];
                                 var attributeValue = labelGraphic.node.textContent;
-                                console.log(labelGraphic, attributeValue, attributeTypeName);
-                                positionElementsByAttribute(labelGraphic, attributeValue, attributeTypeName, direction);
 
+                                var currentNodes = getActiveLayer().data[attributeTypeName].values[attributeValue];
+
+                                if (direction === "horizontal"){   
+                                    var newPos = labelGraphic.rbox().cx - $("#accordionSidebar").width();
+                                    currentNodes.forEach(function(element){
+                                       var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                       elementPos(element,newPos,oldPos,direction);
+                                    })                                    
+                                }
+                                else if  (direction === "vertical"){
+                                    var newPos = labelGraphic.rbox().cy-70;
+                                    currentNodes.forEach(function(element){
+                                       var oldPos = element.rbox().cy -70-element.childDY;
+                                       elementPos(element,newPos,oldPos,direction);
+                                    })
+                                }
                             }
                         }
                         else{
-                            console.log("CONTINUOUS:");
-                            console.log(attributeGraphics.discrete);
-                            console.log("SCALING DATA...");
                             var scaleData = attributeGraphics.values;
-                            console.log(scaleData);
-
-//                            for (var index in nodes){
-//                                nodes[index].node.nodeData.authorInfo
-//                                
-//                            }
-                            
-//                            interpolate(value, originalMin, originalMax, newMin, newMax)
-                            
-//                            console.log(attributeGraphics.values);
                             var uniqueAttributeValues =  Object.keys(getActiveLayer().data[attributeTypeName].values);
-//                            var minAttributeValue = Math.min(uniqueAttributeValues);
-//                            var maxAttributeValue = Math.max(uniqueAttributeValues);
-                            
-                            
-                            console.log("data to position");
-                            console.log(uniqueAttributeValues);
-//                            console.log(minAttributeValue,maxAttributeValue);
-                            
 
-
-                            console.log("INTERPOLATING...");
-
-                            
                             for (var index in uniqueAttributeValues){
-                                
-                                console.log("Positioning...");
-                                
-                                
-                                var attributeValue = uniqueAttributeValues[index];
-                                
-                                console.log(attributeValue);
-                                console.log("VALUES FOR INTERPOLATION...");
-                                console.log(attributeValue,scaleData.min,scaleData.max,scaleData.minPos, scaleData.maxPos);
+
+                                var attributeValue = uniqueAttributeValues[index];                                
                                 var newPos = interpolate(attributeValue,scaleData.min,scaleData.max,scaleData.minPos, scaleData.maxPos);
                                 
                                 var currentNodes = getActiveLayer().data[attributeTypeName].values[attributeValue];
-                                console.log(currentNodes);
-                                console.log(currentNodes);
-                                console.log("Number of Nodes to position...");
-                                console.log(currentNodes.length);
-                                if (direction === "horizontal"){
-                                    
-                                    
-                                    
+                                
+                                if (direction === "horizontal"){            
                                     currentNodes.forEach(function(element){
-//                                       var element =  currentNodes[0];
-                                       var oldPos = element.rbox().cx -$("#accordionSidebar").width();
+                                       var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
                                        elementPos(element,newPos,oldPos,direction);
-                                    })
-                                    
-//                                    for (var elIndex in currentNodes){
-////                                        let element = currentNodes[elIndex];
-//
-//
-//                                    }   
+                                    })                                    
                                 }
                                 else if  (direction === "vertical"){
                                     currentNodes.forEach(function(element){
-//                                       var element =  currentNodes[0];
-                                       var oldPos = element.rbox().cy -70;
+                                       var oldPos = element.rbox().cy -70-element.childDY;
                                        elementPos(element,newPos,oldPos,direction);
                                     })
                                 }
-                            
-                            
                             }
                         }
                             
-                            console.log("_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_");
                            
-                        }
+                    }
 //                        addBuilderWallsEvents(attributeGraphics,attributeGraphics.parent());
-                     else {
+                    else {
 
                         var attributeTypeName = attributeGraphics.attr("attrType");
-                        positionElementsByAttribute(attributeGraphics, attributeGraphics.node.textContent, attributeTypeName, direction);
-``
+                        var attributeValue = attributeGraphics.node.textContent;
+                        var currentNodes = getActiveLayer().data[attributeTypeName].values[attributeValue];
+
+                        console.log(attributeGraphics.discrete);
+                        if (attributeGraphics.attr('attrDiscrete')){
+
+                            if (direction === "horizontal"){   
+                                var newPos = attributeGraphics.rbox().cx - $("#accordionSidebar").width();
+                                currentNodes.forEach(function(element){
+                                   var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                   elementPos(element,newPos,oldPos,direction);
+                                })                                    
+                            }
+                            else if  (direction === "vertical"){
+                                var newPos = attributeGraphics.rbox().cy-70;
+                                currentNodes.forEach(function(element){
+                                   var oldPos = element.rbox().cy -70-element.childDY;
+                                   elementPos(element,newPos,oldPos,direction);
+                                })
+                            }
+                        }
+                        else{
+                            // for defining
+                        }
                     }
 
 //                    positionElementsByAttribute(attributeGraphics,attributeValue,attributeTypeName);
