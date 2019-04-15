@@ -10,10 +10,11 @@ var selectionFlag = false;
 //var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/usa_airports.json";
 //var datafile = "./data/sample15papers2016.json";
+var datafile = "./data/americanAuthorsVIS.json.json";
 
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
-var datafile = "./data/authors_relations_Sheelagh.json";
+//var datafile = "./data/authors_relations_Sheelagh.json";
 
 //var datafile2 = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_19nodes_sample2016.json";
 
@@ -597,9 +598,8 @@ function addElementToWorld(world, element) {
             var bbox = element.rbox();
             
             console.log(bbox);
-            var lineBlock = Bodies.rectangle(bbox.x,bbox.y, 1004, 300, {isStatic: true});
-      //      console.log("MATTER");
-        //    console.log(lineBlock.setStatic());
+            var lineBlock = Bodies.rectangle((generalWidth/2),bbox.y-70+5, generalWidth, 10, {isStatic: true});
+            Matter.Body.setStatic(lineBlock,true);
             lineBlock.svg = element;
             element.matter = lineBlock;
             World.add(world, lineBlock);
@@ -853,8 +853,8 @@ function drawGraph(layer_name, g) {
         var radius = nodeRadius;
 
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
-        var y = getRandomBetween(30, 600);
-        var x = getRandomBetween(30, 1200);
+        var y = getRandomBetween(nodeRadius, generalHeight-80);
+        var x = getRandomBetween(nodeRadius, generalWidth-100);
 
         //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
         var labelName = nodeData.authorInfo.name;
@@ -2319,7 +2319,6 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
 
 //            let parts = direction === "horizontal" ? value.match(/.{1,11}/g) : value.match(/.{1,13}/g);
             let parts = direction === "horizontal" ? value.match(/.{1,11}/g) : value.match(/.{1,9}/g);
-
             if (direction === "horizontal") {
                 finalX = x + (gap * index);
                 finalY = y;
@@ -2331,9 +2330,9 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
             let label = drawer.text(function (add) {
                 parts.forEach(function (part) {
                     if (direction === "vertical") {
-                        add.tspan(part.trim()).dy(15).attr('x', finalX + 47);
+                        add.tspan(part).dy(15).attr('x', finalX + 47);
                     } else {
-                        add.tspan(part.trim()).dy(15).attr('x', finalX);
+                        add.tspan(part).dy(15).attr('x', finalX);
                     }
                 });
             });
@@ -2841,8 +2840,8 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
         if (!graphicObject.walls) {
             if (direction === "horizontal") {
                 console.log("drawing horizontal");
-                let originXleft = originPosition[0] - insideSpace;
-                let originXright = originPosition[0] + insideSpace - width;
+                let originXleft = originPosition[0] - nodeRadius;
+                let originXright = originPosition[0] + nodeRadius - width;
                 let originY = originPosition[1];
 
                 let wall1 = getActiveLayer().layer.rect(width, 1).move(originXleft, originY).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
@@ -2865,8 +2864,8 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 graphicObject.walls = [wall1, wall2];
             } else if (direction === 'vertical') {
 
-                let originYtop = originPosition[1] - insideSpace;
-                let originYbottom = originPosition[1] + insideSpace - height;
+                let originYtop = originPosition[1] - nodeRadius;
+                let originYbottom = originPosition[1] + nodeRadius - height;
                 let originX = originPosition[0];
 
                 let wall1 = getActiveLayer().layer.rect(width, height).move(originX, originYtop).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
