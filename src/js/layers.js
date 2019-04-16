@@ -2249,7 +2249,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
 
 
             } else {
-                removeWithAnimation(group);
+//                removeWithAnimation(group);
                 activeLayer.bottom.rect.animate(250).attr({opacity: 0});
                 activeLayer.left.rect.animate(250).attr({opacity: 0});
             }
