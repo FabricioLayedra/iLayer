@@ -1,0 +1,931 @@
+{
+    "nodes": [
+        {
+            "id": "James Helman",
+            "Affiliation": "Stanford Univ., CA, USA",
+            "Affiliations": "Stanford Univ., CA, USA",
+            "Papers": 1,
+            "Papers Published": "d6ea219a-de6f-45be-890e-bee9e8058389",
+            "Citations": 102,
+            "lat": 37.43131385,
+            "lon": -122.169365354983
+        },
+        {
+            "id": "Lambertus Hesselink",
+            "Affiliation": "Stanford Univ., CA, USA",
+            "Affiliations": "Stanford Univ., CA, USA",
+            "Papers": 1,
+            "Papers Published": "d6ea219a-de6f-45be-890e-bee9e8058389",
+            "Citations": 102,
+            "lat": 37.43131385,
+            "lon": -122.169365354983
+        },
+        {
+            "id": "Gordon V. Bancroft",
+            "Affiliation": "Sterling Federal Syst. Inc., Palo Alto, CA, USA",
+            "Affiliations": "Sterling Federal Syst. Inc., Palo Alto, CA, USA",
+            "Papers": 1,
+            "Papers Published": "2bb4693b-b068-4f21-bb08-ee83b113a364",
+            "Citations": 31,
+            "lat": 37.4443293,
+            "lon": -122.1598465
+        },
+        {
+            "id": "Fergus Merritt",
+            "Affiliation": "Sterling Federal Syst. Inc., Palo Alto, CA, USA",
+            "Affiliations": "Sterling Federal Syst. Inc., Palo Alto, CA, USA",
+            "Papers": 1,
+            "Papers Published": "2bb4693b-b068-4f21-bb08-ee83b113a364",
+            "Citations": 31,
+            "lat": 37.4443293,
+            "lon": -122.1598465
+        },
+        {
+            "id": "Todd Plessel",
+            "Affiliation": "Sterling Federal Syst. Inc., Palo Alto, CA, USA",
+            "Affiliations": "Sterling Federal Syst. Inc., Palo Alto, CA, USA",
+            "Papers": 1,
+            "Papers Published": "2bb4693b-b068-4f21-bb08-ee83b113a364",
+            "Citations": 31,
+            "lat": 37.4443293,
+            "lon": -122.1598465
+        },
+        {
+            "id": "Paul G. Kelaita",
+            "Affiliation": "Sterling Federal Syst. Inc., Palo Alto, CA, USA",
+            "Affiliations": "Sterling Federal Syst. Inc., Palo Alto, CA, USA",
+            "Papers": 1,
+            "Papers Published": "2bb4693b-b068-4f21-bb08-ee83b113a364",
+            "Citations": 31,
+            "lat": 37.4443293,
+            "lon": -122.1598465
+        },
+        {
+            "id": "R. Kevin McCabe",
+            "Affiliation": "Sterling Federal Syst. Inc., Palo Alto, CA, USA",
+            "Affiliations": "Sterling Federal Syst. Inc., Palo Alto, CA, USA",
+            "Papers": 1,
+            "Papers Published": "2bb4693b-b068-4f21-bb08-ee83b113a364",
+            "Citations": 31,
+            "lat": 37.4443293,
+            "lon": -122.1598465
+        },
+        {
+            "id": "Al Globus",
+            "Affiliation": "Sterling Federal Syst. Inc., Palo Alto, CA, USA",
+            "Affiliations": "Sterling Federal Syst. Inc., Palo Alto, CA, USA",
+            "Papers": 1,
+            "Papers Published": "2bb4693b-b068-4f21-bb08-ee83b113a364",
+            "Citations": 31,
+            "lat": 37.4443293,
+            "lon": -122.1598465
+        },
+        {
+            "id": "Gregory M. Nielson",
+            "Affiliation": "Dept. of Comput. Sci., Arizona State Univ., Tempe, AZ, USA",
+            "Affiliations": "Dept. of Comput. Sci., Arizona State Univ., Tempe, AZ, USA",
+            "Papers": 1,
+            "Papers Published": "6584e41f-fbe3-44be-851a-077a0b1b50c6",
+            "Citations": 32,
+            "lat": 33.4206602,
+            "lon": -111.932634924965
+        },
+        {
+            "id": "Bernd Hamann",
+            "Affiliation": "Dept. of Comput. Sci., Arizona State Univ., Tempe, AZ, USA",
+            "Affiliations": "Dept. of Comput. Sci., Arizona State Univ., Tempe, AZ, USA",
+            "Papers": 1,
+            "Papers Published": "6584e41f-fbe3-44be-851a-077a0b1b50c6",
+            "Citations": 32,
+            "lat": 33.4206602,
+            "lon": -111.932634924965
+        },
+        {
+            "id": "Yaser Yacoob",
+            "Affiliation": "Dept. of Comput. Sci., Maryland Univ., College Park, MD, USA",
+            "Affiliations": "Dept. of Comput. Sci., Maryland Univ., College Park, MD, USA",
+            "Papers": 1,
+            "Papers Published": "1ffaa88d-7647-439c-9299-255fc229d74e",
+            "Citations": 50,
+            "lat": 38.9784587,
+            "lon": -76.9282678
+        },
+        {
+            "id": "Ping-Kang Hsiung",
+            "Affiliation": "Carnegie Mellon Univ., Pittsburgh, PA, USA",
+            "Affiliations": "Carnegie Mellon Univ., Pittsburgh, PA, USA",
+            "Papers": 1,
+            "Papers Published": "6c95ff0f-0df4-4055-b464-fcfeeee15718",
+            "Citations": 50,
+            "lat": 40.4441619,
+            "lon": -79.942728259225
+        },
+        {
+            "id": "Robert H. Thibadeau",
+            "Affiliation": "Carnegie Mellon Univ., Pittsburgh, PA, USA",
+            "Affiliations": "Carnegie Mellon Univ., Pittsburgh, PA, USA",
+            "Papers": 1,
+            "Papers Published": "6c95ff0f-0df4-4055-b464-fcfeeee15718",
+            "Citations": 50,
+            "lat": 40.4441619,
+            "lon": -79.942728259225
+        },
+        {
+            "id": "Christopher B. Cox",
+            "Affiliation": "Carnegie Mellon Univ., Pittsburgh, PA, USA",
+            "Affiliations": "Carnegie Mellon Univ., Pittsburgh, PA, USA",
+            "Papers": 1,
+            "Papers Published": "6c95ff0f-0df4-4055-b464-fcfeeee15718",
+            "Citations": 50,
+            "lat": 40.4441619,
+            "lon": -79.942728259225
+        },
+        {
+            "id": "Robert H. P. Dunn",
+            "Affiliation": "Carnegie Mellon Univ., Pittsburgh, PA, USA",
+            "Affiliations": "Carnegie Mellon Univ., Pittsburgh, PA, USA",
+            "Papers": 1,
+            "Papers Published": "6c95ff0f-0df4-4055-b464-fcfeeee15718",
+            "Citations": 50,
+            "lat": 40.4441619,
+            "lon": -79.942728259225
+        },
+        {
+            "id": "Michael Wu",
+            "Affiliation": "Carnegie Mellon Univ., Pittsburgh, PA, USA",
+            "Affiliations": "Carnegie Mellon Univ., Pittsburgh, PA, USA",
+            "Papers": 1,
+            "Papers Published": "6c95ff0f-0df4-4055-b464-fcfeeee15718",
+            "Citations": 50,
+            "lat": 40.4441619,
+            "lon": -79.942728259225
+        },
+        {
+            "id": "Paul Andrew Olbrich",
+            "Affiliation": "Carnegie Mellon Univ., Pittsburgh, PA, USA",
+            "Affiliations": "Carnegie Mellon Univ., Pittsburgh, PA, USA",
+            "Papers": 1,
+            "Papers Published": "6c95ff0f-0df4-4055-b464-fcfeeee15718",
+            "Citations": 50,
+            "lat": 40.4441619,
+            "lon": -79.942728259225
+        },
+        {
+            "id": "Richard A. Becker",
+            "Affiliation": "AT&T Bell Lab., Murray Hill, NJ, USA",
+            "Affiliations": "AT&T Bell Lab., Murray Hill, NJ, USA",
+            "Papers": 1,
+            "Papers Published": "ed0dd4eb-aadc-4b9b-b0a9-e4b919fada4f",
+            "Citations": 13,
+            "lat": 40.6953793,
+            "lon": -74.4009849
+        },
+        {
+            "id": "Stephen G. Eick",
+            "Affiliation": "AT&T Bell Lab., Murray Hill, NJ, USA",
+            "Affiliations": "AT&T Bell Lab., Murray Hill, NJ, USA",
+            "Papers": 1,
+            "Papers Published": "ed0dd4eb-aadc-4b9b-b0a9-e4b919fada4f",
+            "Citations": 13,
+            "lat": 40.6953793,
+            "lon": -74.4009849
+        },
+        {
+            "id": "Eileen O. Miller",
+            "Affiliation": "AT&T Bell Lab., Murray Hill, NJ, USA",
+            "Affiliations": "AT&T Bell Lab., Murray Hill, NJ, USA",
+            "Papers": 1,
+            "Papers Published": "ed0dd4eb-aadc-4b9b-b0a9-e4b919fada4f",
+            "Citations": 13,
+            "lat": 40.6953793,
+            "lon": -74.4009849
+        },
+        {
+            "id": "Allan R. Wilks",
+            "Affiliation": "AT&T Bell Lab., Murray Hill, NJ, USA",
+            "Affiliations": "AT&T Bell Lab., Murray Hill, NJ, USA",
+            "Papers": 1,
+            "Papers Published": "ed0dd4eb-aadc-4b9b-b0a9-e4b919fada4f",
+            "Citations": 13,
+            "lat": 40.6953793,
+            "lon": -74.4009849
+        },
+        {
+            "id": "Bowen Alpern",
+            "Affiliation": "IBM Thomas J. Watson Res. Center, Yorktown Heights, NY, USA",
+            "Affiliations": "IBM Thomas J. Watson Res. Center, Yorktown Heights, NY, USA",
+            "Papers": 1,
+            "Papers Published": "bac47d12-7064-426e-885d-3c3c467670d3",
+            "Citations": 50,
+            "lat": 41.2709274,
+            "lon": -73.7776336
+        },
+        {
+            "id": "Larry Carter",
+            "Affiliation": "IBM Thomas J. Watson Res. Center, Yorktown Heights, NY, USA",
+            "Affiliations": "IBM Thomas J. Watson Res. Center, Yorktown Heights, NY, USA",
+            "Papers": 1,
+            "Papers Published": "bac47d12-7064-426e-885d-3c3c467670d3",
+            "Citations": 50,
+            "lat": 41.2709274,
+            "lon": -73.7776336
+        },
+        {
+            "id": "Ted Selker",
+            "Affiliation": "IBM Thomas J. Watson Res. Center, Yorktown Heights, NY, USA",
+            "Affiliations": "IBM Thomas J. Watson Res. Center, Yorktown Heights, NY, USA",
+            "Papers": 1,
+            "Papers Published": "bac47d12-7064-426e-885d-3c3c467670d3",
+            "Citations": 50,
+            "lat": 41.2709274,
+            "lon": -73.7776336
+        },
+        {
+            "id": "G. David Kerlick",
+            "Affiliation": "Tektronix Labs., Beaverton, OR, USA",
+            "Affiliations": "Tektronix Labs., Beaverton, OR, USA",
+            "Papers": 1,
+            "Papers Published": "86c5983d-834b-4fd4-a9ca-91f7cae76771",
+            "Citations": 47,
+            "lat": 45.4871723,
+            "lon": -122.8037804
+        },
+        {
+            "id": "Gerald L. Lohse",
+            "Affiliation": "Cognitive Sci. & Machine Intelligence Lab., Michigan Univ., Ann Arbor, MI, USA",
+            "Affiliations": "Cognitive Sci. & Machine Intelligence Lab., Michigan Univ., Ann Arbor, MI, USA",
+            "Papers": 1,
+            "Papers Published": "9b4317b2-0920-4b5b-82c4-b3e2b09db0f0",
+            "Citations": 33,
+            "lat": 42.2942142,
+            "lon": -83.710038935096
+        },
+        {
+            "id": "Henry H. Rueter",
+            "Affiliation": "Cognitive Sci. & Machine Intelligence Lab., Michigan Univ., Ann Arbor, MI, USA",
+            "Affiliations": "Cognitive Sci. & Machine Intelligence Lab., Michigan Univ., Ann Arbor, MI, USA",
+            "Papers": 1,
+            "Papers Published": "9b4317b2-0920-4b5b-82c4-b3e2b09db0f0",
+            "Citations": 33,
+            "lat": 42.2942142,
+            "lon": -83.710038935096
+        },
+        {
+            "id": "Kevin Biolsi",
+            "Affiliation": "Cognitive Sci. & Machine Intelligence Lab., Michigan Univ., Ann Arbor, MI, USA",
+            "Affiliations": "Cognitive Sci. & Machine Intelligence Lab., Michigan Univ., Ann Arbor, MI, USA",
+            "Papers": 1,
+            "Papers Published": "9b4317b2-0920-4b5b-82c4-b3e2b09db0f0",
+            "Citations": 33,
+            "lat": 42.2942142,
+            "lon": -83.710038935096
+        },
+        {
+            "id": "Neff Walker",
+            "Affiliation": "Cognitive Sci. & Machine Intelligence Lab., Michigan Univ., Ann Arbor, MI, USA",
+            "Affiliations": "Cognitive Sci. & Machine Intelligence Lab., Michigan Univ., Ann Arbor, MI, USA",
+            "Papers": 1,
+            "Papers Published": "9b4317b2-0920-4b5b-82c4-b3e2b09db0f0",
+            "Citations": 33,
+            "lat": 42.2942142,
+            "lon": -83.710038935096
+        },
+        {
+            "id": "Stephen Wehrend",
+            "Affiliation": "Colorado Univ., Boulder, CO, USA",
+            "Affiliations": "Colorado Univ., Boulder, CO, USA",
+            "Papers": 1,
+            "Papers Published": "fc7ba7c9-66e7-491f-a2a9-4bc78f9885c7",
+            "Citations": 353,
+            "lat": 40.00687815,
+            "lon": -105.272776039396
+        },
+        {
+            "id": "Clayton Lewis",
+            "Affiliation": "Colorado Univ., Boulder, CO, USA",
+            "Affiliations": "Colorado Univ., Boulder, CO, USA",
+            "Papers": 1,
+            "Papers Published": "fc7ba7c9-66e7-491f-a2a9-4bc78f9885c7",
+            "Citations": 353,
+            "lat": 40.00687815,
+            "lon": -105.272776039396
+        },
+        {
+            "id": "Kalpathi R. Subramanian",
+            "Affiliation": "Center for High Performance Comput., Texas Univ., Austin, TX, USA",
+            "Affiliations": "Center for High Performance Comput., Texas Univ., Austin, TX, USA",
+            "Papers": 1,
+            "Papers Published": "3a5d7275-6f43-4770-b124-897ff5529567",
+            "Citations": 108,
+            "lat": 30.284151,
+            "lon": -97.7319559808022
+        },
+        {
+            "id": "Donald S. Fussell",
+            "Affiliation": "Center for High Performance Comput., Texas Univ., Austin, TX, USA",
+            "Affiliations": "Center for High Performance Comput., Texas Univ., Austin, TX, USA",
+            "Papers": 1,
+            "Papers Published": "3a5d7275-6f43-4770-b124-897ff5529567",
+            "Citations": 108,
+            "lat": 30.284151,
+            "lon": -97.7319559808022
+        },
+        {
+            "id": "Chieh-Cheng Yen",
+            "Affiliation": "Dept. of Civil Eng., Ohio State Univ., OH, USA",
+            "Affiliations": "Dept. of Civil Eng., Ohio State Univ., OH, USA",
+            "Papers": 1,
+            "Papers Published": "10b454a5-5d6c-4387-a936-8c49307f39e4",
+            "Citations": 50,
+            "lat": 40.00570905,
+            "lon": -83.0286625976912
+        },
+        {
+            "id": "Keith W. Bedford",
+            "Affiliation": "Dept. of Civil Eng., Ohio State Univ., OH, USA",
+            "Affiliations": "Dept. of Civil Eng., Ohio State Univ., OH, USA",
+            "Papers": 1,
+            "Papers Published": "10b454a5-5d6c-4387-a936-8c49307f39e4",
+            "Citations": 50,
+            "lat": 40.00570905,
+            "lon": -83.0286625976912
+        },
+        {
+            "id": "Jeffrey LeBlanc",
+            "Affiliation": "Worcester Polytech. Inst., MA, USA",
+            "Affiliations": "Worcester Polytech. Inst., MA, USA",
+            "Papers": 1,
+            "Papers Published": "e05a1db1-900a-4fc9-96e8-900ada672589",
+            "Citations": 347,
+            "lat": 42.3788774,
+            "lon": -72.032366
+        },
+        {
+            "id": "Matthew O. Ward",
+            "Affiliation": "Worcester Polytech. Inst., MA, USA",
+            "Affiliations": "Worcester Polytech. Inst., MA, USA",
+            "Papers": 1,
+            "Papers Published": "e05a1db1-900a-4fc9-96e8-900ada672589",
+            "Citations": 347,
+            "lat": 42.3788774,
+            "lon": -72.032366
+        },
+        {
+            "id": "Norman Wittels",
+            "Affiliation": "Worcester Polytech. Inst., MA, USA",
+            "Affiliations": "Worcester Polytech. Inst., MA, USA",
+            "Papers": 1,
+            "Papers Published": "e05a1db1-900a-4fc9-96e8-900ada672589",
+            "Citations": 347,
+            "lat": 42.3788774,
+            "lon": -72.032366
+        },
+        {
+            "id": "Thomas A. Foley",
+            "Affiliation": "Dept. of Comput. Sci., Arizona State Univ., Tempe, AZ, USA",
+            "Affiliations": "Dept. of Comput. Sci., Arizona State Univ., Tempe, AZ, USA",
+            "Papers": 1,
+            "Papers Published": "9e9ec0b4-b027-4acf-a30f-b5851d01c71d",
+            "Citations": 50,
+            "lat": 33.4206602,
+            "lon": -111.932634924965
+        },
+        {
+            "id": "David A. Lane",
+            "Affiliation": "Dept. of Comput. Sci., Arizona State Univ., Tempe, AZ, USA",
+            "Affiliations": "Dept. of Comput. Sci., Arizona State Univ., Tempe, AZ, USA",
+            "Papers": 1,
+            "Papers Published": "9e9ec0b4-b027-4acf-a30f-b5851d01c71d",
+            "Citations": 50,
+            "lat": 33.4206602,
+            "lon": -111.932634924965
+        },
+        {
+            "id": "Ted Mihalisin",
+            "Affiliation": "Dept. of Phys., Temple Univ., Philadelphia, PA, USA",
+            "Affiliations": "Dept. of Phys., Temple Univ., Philadelphia, PA, USA",
+            "Papers": 1,
+            "Papers Published": "e95e1c3d-ad6c-492c-9eb9-03ee821d45f5",
+            "Citations": 50,
+            "lat": 39.95472495,
+            "lon": -75.1534690525548
+        },
+        {
+            "id": "E. Grawlinksi",
+            "Affiliation": "Dept. of Phys., Temple Univ., Philadelphia, PA, USA",
+            "Affiliations": "Dept. of Phys., Temple Univ., Philadelphia, PA, USA",
+            "Papers": 1,
+            "Papers Published": "e95e1c3d-ad6c-492c-9eb9-03ee821d45f5",
+            "Citations": 50,
+            "lat": 39.95472495,
+            "lon": -75.1534690525548
+        },
+        {
+            "id": "John Timlin",
+            "Affiliation": "Dept. of Phys., Temple Univ., Philadelphia, PA, USA",
+            "Affiliations": "Dept. of Phys., Temple Univ., Philadelphia, PA, USA",
+            "Papers": 1,
+            "Papers Published": "e95e1c3d-ad6c-492c-9eb9-03ee821d45f5",
+            "Citations": 50,
+            "lat": 39.95472495,
+            "lon": -75.1534690525548
+        },
+        {
+            "id": "John Schwegler",
+            "Affiliation": "Dept. of Phys., Temple Univ., Philadelphia, PA, USA",
+            "Affiliations": "Dept. of Phys., Temple Univ., Philadelphia, PA, USA",
+            "Papers": 1,
+            "Papers Published": "e95e1c3d-ad6c-492c-9eb9-03ee821d45f5",
+            "Citations": 50,
+            "lat": 39.95472495,
+            "lon": -75.1534690525548
+        },
+        {
+            "id": "Ray J. Meyers",
+            "Affiliation": "Sandia Nat. Lab., Albuquerque, NM, USA",
+            "Affiliations": "Sandia Nat. Lab., Albuquerque, NM, USA",
+            "Papers": 1,
+            "Papers Published": "f46073de-2f65-4dee-950c-e5445545f309",
+            "Citations": 3,
+            "lat": 35.0841034,
+            "lon": -106.6509851
+        },
+        {
+            "id": "David P. Dobkin",
+            "Affiliation": "Dept. of Comput. Sci., Princeton Univ., NJ, USA",
+            "Affiliations": "Dept. of Comput. Sci., Princeton Univ., NJ, USA",
+            "Papers": 1,
+            "Papers Published": "82a83b92-1963-4607-907b-d49a26cf1940",
+            "Citations": 0,
+            "lat": 40.34829285,
+            "lon": -74.66308325
+        },
+        {
+            "id": "Philip C. Hsu",
+            "Affiliation": "Dept. of Electr. Eng., Florida Univ., Gainesville, FL, USA",
+            "Affiliations": "Dept. of Electr. Eng., Florida Univ., Gainesville, FL, USA",
+            "Papers": 1,
+            "Papers Published": "6448a275-27b1-4784-8ba1-9817f0aeb640",
+            "Citations": 3,
+            "lat": 29.6328784,
+            "lon": -82.3490133048243
+        },
+        {
+            "id": "John Staudhammer",
+            "Affiliation": "Dept. of Electr. Eng., Florida Univ., Gainesville, FL, USA",
+            "Affiliations": "Dept. of Electr. Eng., Florida Univ., Gainesville, FL, USA",
+            "Papers": 1,
+            "Papers Published": "6448a275-27b1-4784-8ba1-9817f0aeb640",
+            "Citations": 3,
+            "lat": 29.6328784,
+            "lon": -82.3490133048243
+        },
+        {
+            "id": "Debra Dooley",
+            "Affiliation": "Dept. of Comput. Sci., Utah Univ., Salt Lake City, UT, USA",
+            "Affiliations": "Dept. of Comput. Sci., Utah Univ., Salt Lake City, UT, USA",
+            "Papers": 1,
+            "Papers Published": "c7999318-1dca-460d-8d54-e2691250d344",
+            "Citations": 53,
+            "lat": 40.77155405,
+            "lon": -111.836564950602
+        },
+        {
+            "id": "Michael F. Cohen",
+            "Affiliation": "Dept. of Comput. Sci., Utah Univ., Salt Lake City, UT, USA",
+            "Affiliations": "Dept. of Comput. Sci., Utah Univ., Salt Lake City, UT, USA",
+            "Papers": 1,
+            "Papers Published": "c7999318-1dca-460d-8d54-e2691250d344",
+            "Citations": 53,
+            "lat": 40.77155405,
+            "lon": -111.836564950602
+        },
+        {
+            "id": "Keith Voegele",
+            "Affiliation": "Dept. of Comput. Sci., Arizona State Univ., Tempe, AZ, USA",
+            "Affiliations": "Dept. of Comput. Sci., Arizona State Univ., Tempe, AZ, USA",
+            "Papers": 1,
+            "Papers Published": "d995c7e0-cfa6-4f9a-94de-b3bc2aac9feb",
+            "Citations": 0,
+            "lat": 33.4206602,
+            "lon": -111.932634924965
+        },
+        {
+            "id": "Elizabeth M. Wenzel",
+            "Affiliation": "NASA Ames Res. Center, Moffett Field, CA, USA",
+            "Affiliations": "NASA Ames Res. Center, Moffett Field, CA, USA",
+            "Papers": 1,
+            "Papers Published": "f06914f9-89d4-4745-b5a5-d9e30e95263b",
+            "Citations": 56,
+            "lat": 37.41129325,
+            "lon": -122.054169803106
+        },
+        {
+            "id": "Scott S. Fisher",
+            "Affiliation": "NASA Ames Res. Center, Moffett Field, CA, USA",
+            "Affiliations": "NASA Ames Res. Center, Moffett Field, CA, USA",
+            "Papers": 1,
+            "Papers Published": "f06914f9-89d4-4745-b5a5-d9e30e95263b",
+            "Citations": 56,
+            "lat": 37.41129325,
+            "lon": -122.054169803106
+        },
+        {
+            "id": "Richard L. Phillips",
+            "Affiliation": "Los Alamos Nat. Lab., NM, USA",
+            "Affiliations": "Los Alamos Nat. Lab., NM, USA",
+            "Papers": 2,
+            "Papers Published": "baa447aa-882a-4c54-a808-77e3bdca7ad5;b80f443a-538e-42f6-807d-a09f86486165",
+            "Citations": 72,
+            "lat": 34.5708167,
+            "lon": -105.993007
+        },
+        {
+            "id": "Michael J. Laszlo",
+            "Affiliation": "Dept. of Electr. Eng. & Comput. Sci., Illinois Univ., Chicago, IL, USA",
+            "Affiliations": "Dept. of Electr. Eng. & Comput. Sci., Illinois Univ., Chicago, IL, USA",
+            "Papers": 1,
+            "Papers Published": "9dcd5897-2b2d-43a7-82e9-552905eb091b",
+            "Citations": 4,
+            "lat": 41.86898915,
+            "lon": -87.6485625597018
+        },
+        {
+            "id": "Alyn P. Rockwood",
+            "Affiliation": "Silicon Graphics Comput. Syst., Mountain View, CA, USA",
+            "Affiliations": "Silicon Graphics Comput. Syst., Mountain View, CA, USA",
+            "Papers": 1,
+            "Papers Published": "758a9248-8e77-44e7-b9ca-81a8b2529184",
+            "Citations": 14,
+            "lat": 37.3893889,
+            "lon": -122.0832101
+        },
+        {
+            "id": "Alfred Inselberg",
+            "Affiliation": "IBM Sci. Center, Los Angeles, CA, USA",
+            "Affiliations": "IBM Sci. Center, Los Angeles, CA, USA",
+            "Papers": 1,
+            "Papers Published": "89fda40c-c129-4e96-affe-1f77e6119cac",
+            "Citations": 920,
+            "lat": 34.0536834,
+            "lon": -118.2427669
+        },
+        {
+            "id": "Bernard Dimsdale",
+            "Affiliation": "IBM Sci. Center, Los Angeles, CA, USA",
+            "Affiliations": "IBM Sci. Center, Los Angeles, CA, USA",
+            "Papers": 1,
+            "Papers Published": "89fda40c-c129-4e96-affe-1f77e6119cac",
+            "Citations": 920,
+            "lat": 34.0536834,
+            "lon": -118.2427669
+        },
+        {
+            "id": "Brian K. Christensen",
+            "Affiliation": "Sandia Nat. Lab., Albuquerque, NM, USA",
+            "Affiliations": "Sandia Nat. Lab., Albuquerque, NM, USA",
+            "Papers": 1,
+            "Papers Published": "1099ea76-8c53-4dd1-8a62-abf3b6e682d6",
+            "Citations": 50,
+            "lat": 35.0841034,
+            "lon": -106.6509851
+        },
+        {
+            "id": "Lisa M. Desjarlais",
+            "Affiliation": "Sandia Nat. Lab., Albuquerque, NM, USA",
+            "Affiliations": "Sandia Nat. Lab., Albuquerque, NM, USA",
+            "Papers": 1,
+            "Papers Published": "1099ea76-8c53-4dd1-8a62-abf3b6e682d6",
+            "Citations": 50,
+            "lat": 35.0841034,
+            "lon": -106.6509851
+        }
+    ],
+    "links": [
+        {
+            "source": "James Helman",
+            "target": "Lambertus Hesselink",
+            "id": 1
+        },
+        {
+            "source": "Gordon V. Bancroft",
+            "target": "Todd Plessel",
+            "id": 2
+        },
+        {
+            "source": "Gordon V. Bancroft",
+            "target": "Fergus Merritt",
+            "id": 3
+        },
+        {
+            "source": "Gordon V. Bancroft",
+            "target": "Al Globus",
+            "id": 4
+        },
+        {
+            "source": "Fergus Merritt",
+            "target": "Paul G. Kelaita",
+            "id": 5
+        },
+        {
+            "source": "Fergus Merritt",
+            "target": "R. Kevin McCabe",
+            "id": 6
+        },
+        {
+            "source": "Fergus Merritt",
+            "target": "Al Globus",
+            "id": 7
+        },
+        {
+            "source": "Todd Plessel",
+            "target": "Paul G. Kelaita",
+            "id": 8
+        },
+        {
+            "source": "Gordon V. Bancroft",
+            "target": "Paul G. Kelaita",
+            "id": 9
+        },
+        {
+            "source": "Fergus Merritt",
+            "target": "Todd Plessel",
+            "id": 10
+        },
+        {
+            "source": "Paul G. Kelaita",
+            "target": "R. Kevin McCabe",
+            "id": 11
+        },
+        {
+            "source": "Paul G. Kelaita",
+            "target": "Al Globus",
+            "id": 12
+        },
+        {
+            "source": "Todd Plessel",
+            "target": "Al Globus",
+            "id": 13
+        },
+        {
+            "source": "R. Kevin McCabe",
+            "target": "Al Globus",
+            "id": 14
+        },
+        {
+            "source": "Gordon V. Bancroft",
+            "target": "R. Kevin McCabe",
+            "id": 15
+        },
+        {
+            "source": "Todd Plessel",
+            "target": "R. Kevin McCabe",
+            "id": 16
+        },
+        {
+            "source": "Gregory M. Nielson",
+            "target": "Bernd Hamann",
+            "id": 17
+        },
+        {
+            "source": "Christopher B. Cox",
+            "target": "Michael Wu",
+            "id": 22
+        },
+        {
+            "source": "Robert H. Thibadeau",
+            "target": "Paul Andrew Olbrich",
+            "id": 23
+        },
+        {
+            "source": "Michael Wu",
+            "target": "Paul Andrew Olbrich",
+            "id": 24
+        },
+        {
+            "source": "Robert H. Thibadeau",
+            "target": "Robert H. P. Dunn",
+            "id": 25
+        },
+        {
+            "source": "Ping-Kang Hsiung",
+            "target": "Robert H. Thibadeau",
+            "id": 26
+        },
+        {
+            "source": "Ping-Kang Hsiung",
+            "target": "Robert H. P. Dunn",
+            "id": 27
+        },
+        {
+            "source": "Robert H. Thibadeau",
+            "target": "Michael Wu",
+            "id": 28
+        },
+        {
+            "source": "Christopher B. Cox",
+            "target": "Paul Andrew Olbrich",
+            "id": 29
+        },
+        {
+            "source": "Robert H. Thibadeau",
+            "target": "Christopher B. Cox",
+            "id": 30
+        },
+        {
+            "source": "Ping-Kang Hsiung",
+            "target": "Paul Andrew Olbrich",
+            "id": 31
+        },
+        {
+            "source": "Christopher B. Cox",
+            "target": "Robert H. P. Dunn",
+            "id": 32
+        },
+        {
+            "source": "Ping-Kang Hsiung",
+            "target": "Christopher B. Cox",
+            "id": 33
+        },
+        {
+            "source": "Ping-Kang Hsiung",
+            "target": "Michael Wu",
+            "id": 34
+        },
+        {
+            "source": "Robert H. P. Dunn",
+            "target": "Michael Wu",
+            "id": 35
+        },
+        {
+            "source": "Robert H. P. Dunn",
+            "target": "Paul Andrew Olbrich",
+            "id": 36
+        },
+        {
+            "source": "Stephen G. Eick",
+            "target": "Eileen O. Miller",
+            "id": 37
+        },
+        {
+            "source": "Richard A. Becker",
+            "target": "Stephen G. Eick",
+            "id": 38
+        },
+        {
+            "source": "Richard A. Becker",
+            "target": "Eileen O. Miller",
+            "id": 39
+        },
+        {
+            "source": "Stephen G. Eick",
+            "target": "Allan R. Wilks",
+            "id": 40
+        },
+        {
+            "source": "Eileen O. Miller",
+            "target": "Allan R. Wilks",
+            "id": 41
+        },
+        {
+            "source": "Richard A. Becker",
+            "target": "Allan R. Wilks",
+            "id": 42
+        },
+        {
+            "source": "Bowen Alpern",
+            "target": "Ted Selker",
+            "id": 43
+        },
+        {
+            "source": "Larry Carter",
+            "target": "Ted Selker",
+            "id": 44
+        },
+        {
+            "source": "Bowen Alpern",
+            "target": "Larry Carter",
+            "id": 45
+        },
+        {
+            "source": "Henry H. Rueter",
+            "target": "Kevin Biolsi",
+            "id": 46
+        },
+        {
+            "source": "Kevin Biolsi",
+            "target": "Neff Walker",
+            "id": 47
+        },
+        {
+            "source": "Gerald L. Lohse",
+            "target": "Kevin Biolsi",
+            "id": 48
+        },
+        {
+            "source": "Gerald L. Lohse",
+            "target": "Henry H. Rueter",
+            "id": 49
+        },
+        {
+            "source": "Gerald L. Lohse",
+            "target": "Neff Walker",
+            "id": 50
+        },
+        {
+            "source": "Henry H. Rueter",
+            "target": "Neff Walker",
+            "id": 51
+        },
+        {
+            "source": "Stephen Wehrend",
+            "target": "Clayton Lewis",
+            "id": 52
+        },
+        {
+            "source": "Kalpathi R. Subramanian",
+            "target": "Donald S. Fussell",
+            "id": 53
+        },
+        {
+            "source": "Chieh-Cheng Yen",
+            "target": "Keith W. Bedford",
+            "id": 66
+        },
+        {
+            "source": "Matthew O. Ward",
+            "target": "Norman Wittels",
+            "id": 70
+        },
+        {
+            "source": "Jeffrey LeBlanc",
+            "target": "Norman Wittels",
+            "id": 71
+        },
+        {
+            "source": "Jeffrey LeBlanc",
+            "target": "Matthew O. Ward",
+            "id": 72
+        },
+        {
+            "source": "Thomas A. Foley",
+            "target": "David A. Lane",
+            "id": 73
+        },
+        {
+            "source": "E. Grawlinksi",
+            "target": "John Timlin",
+            "id": 74
+        },
+        {
+            "source": "Ted Mihalisin",
+            "target": "John Timlin",
+            "id": 75
+        },
+        {
+            "source": "E. Grawlinksi",
+            "target": "John Schwegler",
+            "id": 76
+        },
+        {
+            "source": "Ted Mihalisin",
+            "target": "E. Grawlinksi",
+            "id": 77
+        },
+        {
+            "source": "Ted Mihalisin",
+            "target": "John Schwegler",
+            "id": 78
+        },
+        {
+            "source": "John Timlin",
+            "target": "John Schwegler",
+            "id": 79
+        },
+        {
+            "source": "Philip C. Hsu",
+            "target": "John Staudhammer",
+            "id": 85
+        },
+        {
+            "source": "Debra Dooley",
+            "target": "Michael F. Cohen",
+            "id": 86
+        },
+        {
+            "source": "Elizabeth M. Wenzel",
+            "target": "Scott S. Fisher",
+            "id": 91
+        },
+        {
+            "source": "Alfred Inselberg",
+            "target": "Bernard Dimsdale",
+            "id": 93
+        },
+        {
+            "source": "Brian K. Christensen",
+            "target": "Lisa M. Desjarlais",
+            "id": 104
+        }
+    ]
+}

@@ -10,8 +10,8 @@ var selectionFlag = false;
 //var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/usa_airports.json";
 //var datafile = "./data/sample15papers2016.json";
-var datafile = "./data/americanAuthorsVIS.json.json";
-
+//var datafile = "./data/americanAuthorsVIS.json.json";
+var datafile = "./data/authors_2015.json.json";
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
 //var datafile = "./data/authors_relations_Sheelagh.json";
@@ -903,7 +903,7 @@ function drawGraph(layer_name, g) {
         dataKeys = arrayRemove(dataKeys, 'Name');
         dataKeys = arrayRemove(dataKeys, 'Number of Papers');
         dataKeys = arrayRemove(dataKeys, 'Papers Published');
-
+        dataKeys = arrayRemove(dataKeys, 'Affiliations');
 //        dataKeys = arrayRemove(dataKeys, 'number of papers');
 
     });
