@@ -4,49 +4,49 @@
             "group": 1, 
             "id": "Alice Thudt",
             "affiliation": "UOC",
-            "number of papers": 3,
+            "papers": 3,
             "citations": 15
         }, 
         {
             "group": 1, 
             "id": "Mona Hosseinkhani Loorak",
             "affiliation": "UOC",
-            "number of papers": 4,
+            "papers": 4,
             "citations": 5
         }, 
         {
             "group": 1, 
             "id": "Sheelagh Carpendale",
             "affiliation": "SFU",
-            "number of papers": 33,
+            "papers": 33,
             "citations": 45
         }, 
         {
             "group": 1, 
             "id": "Charles Perin",
             "affiliation": "UofT",
-            "number of papers": 8,
+            "papers": 8,
             "citations": 11
         }, 
         {
             "group": 1, 
             "id": "Dominikus Baur",
             "affiliation": "UBC",
-            "number of papers": 2,
+            "papers": 2,
             "citations": 15
         }, 
         {
             "group": 1, 
             "id": "Christopher Collins",
             "affiliation": "UOIT",
-            "number of papers": 12,
+            "papers": 12,
             "citations": 15
         }, 
         {
             "group": 1, 
             "id": "Samuel Huron",
             "affiliation": "INRIA",
-            "number of papers": 2,
+            "papers": 2,
             "citations": 1
         }, 
         {
@@ -54,14 +54,14 @@
             "id": "Michael Hill",
             
             "affiliation": "INRIA",
-            "number of papers": 2,
+            "papers": 2,
             "citations": 1
         }, 
         {
             "group": 1, 
             "id": "Noreen Kamal",
             "affiliation": "INRIA",
-            "number of papers": 2,
+            "papers": 2,
             "citations": 1
         }
     ], 
