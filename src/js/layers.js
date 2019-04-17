@@ -2,21 +2,21 @@
 /*--------------------------------CONSTANTS-------------------------------------*/
 var count = 0;
 
-var nodeRadius = 20;
+var nodeRadius = 30;
 var distLabelGroup = 0;
 
 var selectionFlag = false;
 
-//var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
+var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/usa_airports.json";
 //var datafile = "./data/sample15papers2016.json";
 //var datafile = "./data/americanAuthorsVIS.json.json";
 //var datafile = "./data/authors_2015.json.json";
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
-var datafile = "./data/authors_relations_Sheelagh.json";
+//var datafile = "./data/authors_relations_Sheelagh.json";
 
-//var datafile2 = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_19nodes_sample2016.json";
+//var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_19nodes_sample2016.json";
 
 
 var LAYERS = {};
@@ -199,6 +199,10 @@ function addEvents(id) {
 
     $("#hidderEdges").on('pointerdown', function () {
         showHideEdges();
+    });
+    
+    $("#hidderLabels").on('pointerdown', function () {
+        showHideLabels();
     });
 }
 
@@ -898,7 +902,7 @@ function drawGraph(layer_name, g) {
         dataKeys = Object.keys(nodeData.authorInfo);
         //removing the keys I do not want
 //        dataKeys = arrayRemove(dataKeys, 'id');
-//        dataKeys = arrayRemove(dataKeys, 'group');
+        dataKeys = arrayRemove(dataKeys, 'group');
         dataKeys = arrayRemove(dataKeys, 'name');
         dataKeys = arrayRemove(dataKeys, 'Name');
         dataKeys = arrayRemove(dataKeys, 'Number of Papers');
@@ -3070,10 +3074,9 @@ function positionElementsByAttribute(attributeGraphics, attributeValue, attribut
 
 function highlightNodesByAttributeValue(attributeValue, attributeName, show) {
 
-    var groups = getActiveLayer().data[attributeName][attributeValue];
+    var groups = getActiveLayer().data[attributeName].values[attributeValue];
     for (var index in groups) {
-        let circle = getElementFromGroup(groups[index], 'circle');
-
+        let circle = getElementFromGroupByPropertyValue(groups[index],'type','circle');
         if (show) {
             blink(groups[index]);
             circle.highlight.show();
