@@ -664,7 +664,7 @@ function addToolEvents(tool, type) {
             ghost.previousX = ghostFather.cx();
             ghost.previousY = ghostFather.cy();
 
-            if (type === 'wall' || type === 'position' || type === 'attractor') {
+            if (type === 'wall' || type === 'position' || type === 'attractor' || type === 'axis') {
                 attributeLand = isClassedGraphics(getActiveLayer().layer.node, x, y, 'toolable');
             }
 
@@ -822,6 +822,28 @@ function addToolEvents(tool, type) {
                     }
 
 
+                } else if(type === 'axis'){
+                    console.log("ADDING LINE");
+                    console.log(attributeGraphics);
+                    var attributeName = attributeGraphics.attr("value");
+                    console.log(getActiveLayer().data[attributeGraphics.attr("value")]);
+                    console.log(getAttributeValues(attributeGraphics.attr("value")));
+                    console.log(getActiveLayer().left.line.rbox().y-70);
+                    console.log(attributeGraphics.parent().rbox().y-70);
+                    var w = 70;
+                    var h = 55;
+                    var drawer = getActiveLayer().layer;
+                    let lineAttributes = {stroke: 'black', 'stroke-width': 2, fill: '#efefef', opacity: 1, linecap: 'round'};
+                    attributeGraphics.parent().animate(250).dy(getActiveLayer().left.line.rbox().y-70-(attributeGraphics.parent().rbox().cy-70)-20);
+                    var axis = drawer.line(0, h, 0, drawer.height() - 40).move(attributeGraphics.parent().rbox().cx-$("#accordionSidebar").width(), 40).attr(lineAttributes);
+                    axis.animate(250).height(drawer.height() - 40);
+
+                    var x = attributeGraphics.parent().rbox().cx-$("#accordionSidebar").width();
+                    var y = axis.y();
+                    var space = axis.rbox().h;
+                    console.log(getAttributeValues(attributeName));
+                    addAttributeValues(attributeName, attributeGraphics, x, y, space, drawer, "vertical", attributeGraphics,axis);
+
                 }
 
                 ghostFather.remove();
@@ -829,8 +851,8 @@ function addToolEvents(tool, type) {
                 blink(attributeGraphics);
 
             } else {
-                if (type === 'wall' || type === 'position' || type === 'attractor') {
-                    ghostFather.remove();
+                if (type === 'wall' || type === 'position' || type === 'attractor' || type === 'axis') {
+                    removeWithAnimation(ghostFather);
                 }
             }
 
