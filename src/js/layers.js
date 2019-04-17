@@ -9,9 +9,9 @@ var selectionFlag = false;
 
 //var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/usa_airports.json";
-//var datafile = "./data/sample15papers2016.json";
+var datafile = "./data/sample15papers2016.json";
 //var datafile = "./data/americanAuthorsVIS.json.json";
-var datafile = "./data/authors_2015.json.json";
+//var datafile = "./data/authors_2015.json.json";
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
 //var datafile = "./data/authors_relations_Sheelagh.json";
@@ -2188,6 +2188,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
                     let x = null;
                     let y = null;
                     let space = null;
+                    let line = null;
                     rect.direction = direction;
                     rect.discrete = getActiveLayer().data[attributeName].discrete;
 
@@ -2195,13 +2196,15 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
                         x = activeLayer.bottom.line.x();
                         y = theDroppingZone.rect.cy() - 25;
                         space = activeLayer.bottom.line.width();
+                        line = activeLayer.bottom.line;
                     } else {
                         x = activeLayer.left.rect.cx();
                         y = activeLayer.left.line.y();
                         space = activeLayer.left.line.rbox().h;
+                        line = activeLayer.left.line;
                     }
 
-                    addAttributeValues(attributeName, theDroppingZone, x, y, space, drawer, direction, rect);
+                    addAttributeValues(attributeName, theDroppingZone, x, y, space, drawer, direction, rect,line);
 
                 } else {
                     setVisibilityOfAttributeValues(theDroppingZone, 0.5);
@@ -2277,7 +2280,7 @@ function setVisibilityOfAttributeValues(droppingZone, opacity, progressive) {
     }
 }
 
-function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, direction, proxy) {
+function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, direction, proxy,line) {
 
     let values = getAttributeValues(attributeName);
 //    let values = {min: -102, max: 785};
@@ -2358,7 +2361,7 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
             x += nodeRadius;
             minLabel.move(x, y + 10);
         } else {
-            minLabel.move(activeLayer.left.line.x() - 15, activeLayer.bottom.line.y() - minLabel.rbox().h / 2 - nodeRadius);
+            minLabel.move(line.x() - 15, activeLayer.bottom.line.y() - minLabel.rbox().h / 2 - nodeRadius);
         }
 
         let majorTicksAttributes = {stroke: 'black', 'stroke-width': 1.5};
@@ -2373,16 +2376,16 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
             maxTick = drawer.line(finalX, y - 2, finalX, y + 10).attr(majorTicksAttributes);
             proxy.values.maxPos = finalX;
         } else {
-            finalX = activeLayer.left.line.x() - 15, y + 10;
+            finalX = line.x() - 15, y + 10;
             finalY = activeLayer.left.line.y() + nodeRadius;
-            minTick = drawer.line(activeLayer.left.line.x(), minLabel.cy(), activeLayer.left.line.x() - 10, minLabel.cy()).attr(majorTicksAttributes);
+            minTick = drawer.line(line.x(), minLabel.cy(), line.x() - 10, minLabel.cy()).attr(majorTicksAttributes);
             proxy.values.minPos = minLabel.cy();
         }
         maxLabel.move(finalX, finalY);
 
         // this has to be done after the maxLabel has been moved
         if (direction === "vertical") {
-            maxTick = drawer.line(activeLayer.left.line.x(), maxLabel.cy(), activeLayer.left.line.x() - 10, maxLabel.cy()).attr(majorTicksAttributes);
+            maxTick = drawer.line(line.x(), maxLabel.cy(), line.x() - 10, maxLabel.cy()).attr(majorTicksAttributes);
             proxy.values.maxPos = maxLabel.cy();
         }
 
@@ -2419,8 +2422,8 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
                     majorTick = drawer.line(pos, activeLayer.bottom.line.y(), pos, activeLayer.bottom.line.y() + 10).attr(majorTicksAttributes);
                     majorLabel.move(pos, y + 10);
                 } else {
-                    majorTick = drawer.line(activeLayer.left.line.x(), pos, activeLayer.left.line.x() - 10, pos).attr(majorTicksAttributes);
-                    majorLabel.move(activeLayer.left.line.x() - 15, pos - majorLabel.rbox().h / 2);
+                    majorTick = drawer.line(line.x(), pos, line.x() - 10, pos).attr(majorTicksAttributes);
+                    majorLabel.move(line.x() - 15, pos - majorLabel.rbox().h / 2);
                 }
                 droppingZone.valueLabels.push(majorTick);
                 droppingZone.valueLabels.push(majorLabel);
@@ -2434,7 +2437,7 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
                     if (direction === "horizontal") {
                         minorTick = drawer.line(i, activeLayer.bottom.line.y(), i, activeLayer.bottom.line.y() + 7).attr(minorTicksAttributes);
                     } else {
-                        minorTick = drawer.line(activeLayer.left.line.x(), i, activeLayer.left.line.x() - 7, i).attr(minorTicksAttributes);
+                        minorTick = drawer.line(line.x(), i, line.x() - 7, i).attr(minorTicksAttributes);
                     }
                     droppingZone.valueLabels.push(minorTick);
                 }
