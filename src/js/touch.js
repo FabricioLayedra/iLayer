@@ -707,14 +707,16 @@ function addToolEvents(tool, type) {
                     }
 
                 } else if (type === 'position') {
+                    
                     var direction = attributeGraphics.direction;
 
                     if ($(attributeGraphics.node).hasClass('proxy')) {
-
-                        var labelsGraphics = attributeGraphics.values;
+                        
                         var attributeTypeName = attributeGraphics.attr("value");
 
                         if (attributeGraphics.discrete){
+                            var labelsGraphics = attributeGraphics.values;
+
                             for (var index in labelsGraphics) {
                                 var labelGraphic = labelsGraphics[index];
                                 var attributeValue = labelGraphic.node.textContent;
@@ -734,6 +736,13 @@ function addToolEvents(tool, type) {
                                        var oldPos = element.rbox().cy -70-element.childDY;
                                        elementPos(element,newPos,oldPos,direction);
                                     })
+                                    if(attributeGraphics.isAxis){
+                                        var newPos = attributeGraphics.rbox().cx -$("#accordionSidebar").width();
+                                        currentNodes.forEach(function(element){
+                                            var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                            elementPos(element,newPos,oldPos,"horizontal");
+                                        })
+                                    }
                                 }
                             }
                         }
@@ -759,6 +768,13 @@ function addToolEvents(tool, type) {
                                        var oldPos = element.rbox().cy -70-element.childDY;
                                        elementPos(element,newPos,oldPos,direction);
                                     })
+                                    if(attributeGraphics.isAxis){
+                                        var newPos = attributeGraphics.rbox().cx -$("#accordionSidebar").width()
+                                        currentNodes.forEach(function(element){
+                                            var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                            elementPos(element,newPos,oldPos,"horizontal");
+                                        })
+                                    }
                                 }
                             }
                         }
@@ -830,6 +846,10 @@ function addToolEvents(tool, type) {
                     console.log(getAttributeValues(attributeGraphics.attr("value")));
                     console.log(getActiveLayer().left.line.rbox().y-70);
                     console.log(attributeGraphics.parent().rbox().y-70);
+                    attributeGraphics.direction = "vertical";
+                    attributeGraphics.discrete = getActiveLayer().data[attributeGraphics.attr("value")].discrete;
+
+                    attributeGraphics.isAxis = true;
                     var w = 70;
                     var h = 55;
                     var drawer = getActiveLayer().layer;

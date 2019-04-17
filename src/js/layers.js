@@ -9,12 +9,12 @@ var selectionFlag = false;
 
 //var datafile = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/usa_airports.json";
-var datafile = "./data/sample15papers2016.json";
+//var datafile = "./data/sample15papers2016.json";
 //var datafile = "./data/americanAuthorsVIS.json.json";
 //var datafile = "./data/authors_2015.json.json";
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
-//var datafile = "./data/authors_relations_Sheelagh.json";
+var datafile = "./data/authors_relations_Sheelagh.json";
 
 //var datafile2 = "https://raw.githubusercontent.com/FabricioLayedra/CiverseData/master/authors_relations_19nodes_sample2016.json";
 
@@ -897,7 +897,7 @@ function drawGraph(layer_name, g) {
 
         dataKeys = Object.keys(nodeData.authorInfo);
         //removing the keys I do not want
-        dataKeys = arrayRemove(dataKeys, 'id');
+//        dataKeys = arrayRemove(dataKeys, 'id');
 //        dataKeys = arrayRemove(dataKeys, 'group');
         dataKeys = arrayRemove(dataKeys, 'name');
         dataKeys = arrayRemove(dataKeys, 'Name');
