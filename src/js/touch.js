@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 
+var clonationMode = false;
+
 function beginSliding(e) {
     this.node.allowed = true;
     this.node.dx = event.pageX - this.cx();
@@ -204,7 +206,7 @@ function addLayerEvents(layer, drawer) {
 //        console.log(layer);
 //        console.log(list);
 // this needs to be upgraded too something more efficient.            
-            SVG.select('g').members.forEach(
+            getActiveLayer().layer.select('g').members.forEach(
                     function (n) {
                         let children = n.node.children;
                         for (var k = 0; k < children.length; k++) {
@@ -599,7 +601,8 @@ function applyWallStyle(object) {
     let drawer = getActiveLayer().layer;
 
     if (object.type === 'text') {
-        object.attr({"stroke-dasharray": 4, stroke: 'green', 'stroke-width': 3});
+//        object.attr({"stroke-dasharray": 4, stroke: 'green', 'stroke-width': 3});
+        object.attr({"text-decoration":"underline"});
     } else if (object.type === 'rect') {
         object.attr({stroke: '#f4bf42', 'stroke-width': 2.5});
     }
@@ -731,17 +734,58 @@ function addToolEvents(tool, type) {
                                     })                                    
                                 }
                                 else if  (direction === "vertical"){
-                                    var newPos = labelGraphic.rbox().cy-70;
-                                    currentNodes.forEach(function(element){
-                                       var oldPos = element.rbox().cy -70-element.childDY;
-                                       elementPos(element,newPos,oldPos,direction);
-                                    })
+
                                     if(attributeGraphics.isAxis){
-                                        var newPos = attributeGraphics.rbox().cx -$("#accordionSidebar").width();
+                                        
+                                        if (clonationMode){                                                                                                                               
+                                            var newPosY = labelGraphic.rbox().cy-70;                                            
+                                            var newPosX = attributeGraphics.rbox().cx -$("#accordionSidebar").width();
+
+                                            currentNodes.forEach(function(element){
+                                               if (!element.cloned){
+                                                var clone =element.clone();
+                                                var oldPosY = element.rbox().cy -70-element.childDY;
+                                                var oldPosX = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                                elementPosDrawingLine(clone,newPosX,oldPosX,newPosY,oldPosY,element);
+                                                clone.childDX = element.childDX;
+                                                clone.childDY = element.childDY;
+                                                element.cloned = clone; 
+                                               }else{
+                                                    var clone =element.cloned.clone();
+                                                    var oldPosY = element.cloned.rbox().cy -70-element.cloned.childDY;
+                                                    var oldPosX = element.cloned.rbox().cx -$("#accordionSidebar").width()-element.cloned.childDX;
+                                                    elementPosDrawingLine(clone,newPosX,oldPosX,newPosY,oldPosY,element.cloned);
+                                                    clone.childDX = element.childDX;
+                                                    clone.childDY = element.childDY;
+                                                    element.cloned = clone; 
+                                                    element.cloned = clone; 
+                                               }
+                                               
+                                            });
+                                            
+                                        }else{
+                                            var newPos = labelGraphic.rbox().cy-70;
+                                            currentNodes.forEach(function(element){
+//                                               var clone =element.clone();
+                                               var oldPos = element.rbox().cy -70-element.childDY;
+                                               elementPos(element,newPos,oldPos,direction);
+                                            });
+
+                                            var newPos = attributeGraphics.rbox().cx -$("#accordionSidebar").width();
+                                            currentNodes.forEach(function(element){
+//                                                var clone =element.clone();
+
+                                                var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                                elementPos(element,newPos,oldPos,"horizontal");
+                                            });
+                                        }
+                                    }
+                                    else{
+                                        var newPos = labelGraphic.rbox().cy-70;
                                         currentNodes.forEach(function(element){
-                                            var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
-                                            elementPos(element,newPos,oldPos,"horizontal");
-                                        })
+                                            var oldPos = element.rbox().cy -70-element.childDY;
+                                            elementPos(element,newPos,oldPos,direction);
+                                        });
                                     }
                                 }
                             }
@@ -764,15 +808,56 @@ function addToolEvents(tool, type) {
                                     })                                    
                                 }
                                 else if  (direction === "vertical"){
-                                    currentNodes.forEach(function(element){
-                                       var oldPos = element.rbox().cy -70-element.childDY;
-                                       elementPos(element,newPos,oldPos,direction);
-                                    })
+
                                     if(attributeGraphics.isAxis){
-                                        var newPos = attributeGraphics.rbox().cx -$("#accordionSidebar").width()
+                                        if (clonationMode){
+                                            var newPosY = newPos;                                            
+                                            var newPosX = attributeGraphics.rbox().cx -$("#accordionSidebar").width()
+
+
+                                            currentNodes.forEach(function(element){
+                                               if (!element.cloned){
+                                                var clone =element.clone();
+
+                                                var oldPosY = element.rbox().cy -70-element.childDY;
+//                                               elementPos(clone,newPosY,oldPosY,direction);
+                                                var oldPosX = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                                elementPosDrawingLine(clone,newPosX,oldPosX,newPosY,oldPosY,element);
+                                                clone.childDX = element.childDX;
+                                                clone.childDY = element.childDY;
+                                                element.cloned = clone; 
+                                               }else{
+                                                    var clone =element.cloned.clone();
+                                                    var oldPosY = element.cloned.rbox().cy -70-element.cloned.childDY;
+//                                               elementPos(clone,newPosY,oldPosY,direction);
+                                                    var oldPosX = element.cloned.rbox().cx -$("#accordionSidebar").width()-element.cloned.childDX;
+                                                    elementPosDrawingLine(clone,newPosX,oldPosX,newPosY,oldPosY,element.cloned);
+                                                    clone.childDX = element.childDX;
+                                                    clone.childDY = element.childDY;
+                                                    element.cloned = clone; 
+                                                    element.cloned = clone; 
+                                               }
+                                               
+                                            });
+                                            
+                                        }
+                                        else{
+                                            currentNodes.forEach(function(element){
+                                                var oldPos = element.rbox().cy -70-element.childDY;
+                                                elementPos(element,newPos,oldPos,direction);
+                                             });
+
+                                            var newPos = attributeGraphics.rbox().cx -$("#accordionSidebar").width()
+                                            currentNodes.forEach(function(element){
+                                                var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                                elementPos(element,newPos,oldPos,"horizontal");
+                                            });
+                                        }
+
+                                    }else{
                                         currentNodes.forEach(function(element){
-                                            var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
-                                            elementPos(element,newPos,oldPos,"horizontal");
+                                            var oldPos = element.rbox().cy -70-element.childDY;
+                                            elementPos(element,newPos,oldPos,direction);
                                         })
                                     }
                                 }
@@ -839,13 +924,13 @@ function addToolEvents(tool, type) {
 
 
                 } else if(type === 'axis'){
-                    console.log("ADDING LINE");
-                    console.log(attributeGraphics);
+//                    console.log("ADDING LINE");
+//                    console.log(attributeGraphics);
                     var attributeName = attributeGraphics.attr("value");
-                    console.log(getActiveLayer().data[attributeGraphics.attr("value")]);
-                    console.log(getAttributeValues(attributeGraphics.attr("value")));
-                    console.log(getActiveLayer().left.line.rbox().y-70);
-                    console.log(attributeGraphics.parent().rbox().y-70);
+//                    console.log(getActiveLayer().data[attributeGraphics.attr("value")]);
+//                    console.log(getAttributeValues(attributeGraphics.attr("value")));
+//                    console.log(getActiveLayer().left.line.rbox().y-70);
+//                    console.log(attributeGraphics.parent().rbox().y-70);
                     attributeGraphics.direction = "vertical";
                     attributeGraphics.discrete = getActiveLayer().data[attributeGraphics.attr("value")].discrete;
 
@@ -861,7 +946,7 @@ function addToolEvents(tool, type) {
                     var x = attributeGraphics.parent().rbox().cx-$("#accordionSidebar").width();
                     var y = axis.y();
                     var space = axis.rbox().h;
-                    console.log(getAttributeValues(attributeName));
+//                    console.log(getAttributeValues(attributeName));
                     addAttributeValues(attributeName, attributeGraphics, x, y, space, drawer, "vertical", attributeGraphics,axis);
 
                 }
@@ -873,6 +958,8 @@ function addToolEvents(tool, type) {
             } else {
                 if (type === 'wall' || type === 'position' || type === 'attractor' || type === 'axis') {
                     removeWithAnimation(ghostFather);
+                }else if(type === 'clonator'){
+                    clonationMode = true;
                 }
             }
 
@@ -1011,6 +1098,8 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
 
 function addAttributeValuesEvents(nodeGraphics, attributeName) {
     nodeGraphics.on('pointerdown', function () {
+        console.log("showing");
+        console.log(nodeGraphics.node.textContent);
         highlightNodesByAttributeValue(nodeGraphics.node.textContent, attributeName, true);
     });
 

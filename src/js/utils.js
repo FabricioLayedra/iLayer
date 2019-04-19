@@ -294,3 +294,61 @@ function elementPos(element,newPos,oldPos,orientation){
         });
     }
 }
+
+function elementPosDrawingLine(element,newPosX,oldPosX,newPosY,oldPosY,previous){
+    
+        let pointX = newPosX - oldPosX;
+        let pointY = newPosY - oldPosY;
+
+//                                        console.log(getElementFromGroupByPropertyValue(element,'type','circle').node.id);
+//    if (orientation === "horizontal"){
+    //    console.log(pointX);
+        
+        let drawer = getActiveLayer().layer;
+        let previousCircle = {x:previous.cx()-previous.childDX,y:previous.cy()-previous.childDY};
+        let lineAttributes = {stroke:getActiveLayer().color,"stroke-width":3.5};
+//            ,opacity:0.8};
+            
+        let line = drawer.line(previousCircle.x,previousCircle.y,previousCircle.x,previousCircle.y).attr(lineAttributes);
+//        console.log(line);
+        
+//        element.attr("opacity":0.8)
+        
+        element.animate(500).dmove(pointX,pointY).during(function (pos, morph, eased, situation) {
+//            console.log(pos);
+            let currentX = interpolate(pos, 0, 1, oldPosX,newPosX);
+            let currentY = interpolate(pos, 0, 1, oldPosY,newPosY);
+//            console.log(currentX,currentY);
+            line.attr("x2", currentX);
+            line.attr("y2", currentY);
+
+//            console.log(line);
+    //        console.log("Updating edges...");
+    //       
+//            updateEdgesEnds(getElementFromGroupByPropertyValue(element,'type','circle'), currentX);
+        });
+//    }else{
+    //    console.log(pointX);
+
+//        element.animate(500).dy(point).during(function (pos, morph, eased, situation) {
+
+//            let currentY = interpolate(pos, 0, 1, oldPos,newPos);
+
+    //        console.log("Updating edges...");
+//            updateEdgesEnds(getElementFromGroupByPropertyValue(element,'type','circle'),null, currentY);
+//        });
+//    }
+}
+
+
+var labelsHidden = false;
+
+function showHideLabels(){
+    if (!labelsHidden){
+        getActiveLayer().layer.select('text.node-label').attr({"opacity":0});
+        labelsHidden = true;
+    }else{
+        getActiveLayer().layer.select('text.node-label').attr({"opacity":1});
+        labelsHidden = false;
+    }
+}

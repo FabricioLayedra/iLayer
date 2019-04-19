@@ -9,9 +9,18 @@ var selectionFlag = false;
 
 var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/usa_airports.json";
+
+//Map
+//var datafile = "./data/canada_airports.json";
+
 //var datafile = "./data/sample15papers2016.json";
 //var datafile = "./data/americanAuthorsVIS.json.json";
+
+//Scatter plot
 //var datafile = "./data/authors_2015.json.json";
+
+
+//var datafile = "./data/authors_1990.json";
 //var datafile = "./data/authors_relations_63nodes_sample2016.json";
 //var datafile = "./data/authors_relations_2015.json";
 //var datafile = "./data/authors_relations_Sheelagh.json";
@@ -864,7 +873,7 @@ function drawGraph(layer_name, g) {
         var labelName = nodeData.authorInfo.name;
 
         //CREATION OF THE GROUP
-        var group = draw.group().attr({id: "group-" + nodeKey, class: "node"});
+        var group = draw.group().attr({id: "group-" + nodeKey, class: "node current"});
         group.layerName = layer_name;
         group.firstTime = true;
 
@@ -1504,7 +1513,7 @@ function includeSelection(layerName) {
 //    $("#container-item-"+layerName).animate({height: '+=10px',width: '+=10px'});
 //    $("#container-item-"+layerName).animate({height: '-=10px',width: '-=10px'});
     //Todo has to be changed!
-    var nodes = SVG.select('g.node').members;
+    var nodes = getActiveLayer().layer.select('g.node').members;
 
 //    console.log(nodes);
 
