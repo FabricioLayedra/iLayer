@@ -1,0 +1,1248 @@
+{
+    "nodes": [
+        {
+            "AirportId": 2818,
+            "id": "Acarigua",
+            "City": "Acarigua",
+            "Country": "Venezuela",
+            "IATA": "AGV",
+            "ICAO": "SVAC",
+            "Latitude": 9.553375244140623,
+            "Longitude": -69.23786926269531,
+            "Altitude": 640,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2819,
+            "id": "Anaco",
+            "City": "Anaco",
+            "Country": "Venezuela",
+            "IATA": "AAO",
+            "ICAO": "SVAN",
+            "Latitude": 9.430225372314453,
+            "Longitude": -64.47072601318361,
+            "Altitude": 721,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2820,
+            "id": "San Fernando Deatabapo",
+            "City": "San Fernando Deatabapo",
+            "Country": "Venezuela",
+            "IATA": "None",
+            "ICAO": "SVAT",
+            "Latitude": 4.0510401725800005,
+            "Longitude": -67.69969940189999,
+            "Altitude": 301,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2821,
+            "id": "Barcelona",
+            "City": "Barcelona",
+            "Country": "Venezuela",
+            "IATA": "BLA",
+            "ICAO": "SVBC",
+            "Latitude": 10.111111,
+            "Longitude": -64.692222,
+            "Altitude": 30,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2822,
+            "id": "Barinas",
+            "City": "Barinas",
+            "Country": "Venezuela",
+            "IATA": "BNS",
+            "ICAO": "SVBI",
+            "Latitude": 8.615,
+            "Longitude": -70.21416667,
+            "Altitude": 615,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2823,
+            "id": "Maracaibo",
+            "City": "Maracaibo",
+            "Country": "Venezuela",
+            "IATA": "None",
+            "ICAO": "SVBL",
+            "Latitude": 10.1833753586,
+            "Longitude": -67.55731964110001,
+            "Altitude": 1450,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2824,
+            "id": "Barquisimeto",
+            "City": "Barquisimeto",
+            "Country": "Venezuela",
+            "IATA": "BRM",
+            "ICAO": "SVBM",
+            "Latitude": 10.042746543884276,
+            "Longitude": -69.35861968994139,
+            "Altitude": 2042,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2826,
+            "id": "Ciudad Bolivar",
+            "City": "Ciudad Bolivar",
+            "Country": "Venezuela",
+            "IATA": "CBL",
+            "ICAO": "SVCB",
+            "Latitude": 8.12216091156,
+            "Longitude": -63.5369567871,
+            "Altitude": 197,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2827,
+            "id": "Caicara De Orinoco",
+            "City": "Caicara De Orinoco",
+            "Country": "Venezuela",
+            "IATA": "CXA",
+            "ICAO": "SVCD",
+            "Latitude": 7.625510215759277,
+            "Longitude": -66.16280364990234,
+            "Altitude": 141,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2828,
+            "id": "San Carlos",
+            "City": "San Carlos",
+            "Country": "Venezuela",
+            "IATA": "None",
+            "ICAO": "SVCJ",
+            "Latitude": 9.647720336914062,
+            "Longitude": -68.57469940185547,
+            "Altitude": 512,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2829,
+            "id": "Calabozo",
+            "City": "Calabozo",
+            "Country": "Venezuela",
+            "IATA": "CLZ",
+            "ICAO": "SVCL",
+            "Latitude": 8.92465591430664,
+            "Longitude": -67.41709136962889,
+            "Altitude": 328,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2830,
+            "id": "Canaima",
+            "City": "Canaima",
+            "Country": "Venezuela",
+            "IATA": "CAJ",
+            "ICAO": "SVCN",
+            "Latitude": 6.2319889068603525,
+            "Longitude": -62.85443115234375,
+            "Altitude": 1450,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2831,
+            "id": "Carora",
+            "City": "Carora",
+            "Country": "Venezuela",
+            "IATA": "VCR",
+            "ICAO": "SVCO",
+            "Latitude": 10.175602912902832,
+            "Longitude": -70.06521606445311,
+            "Altitude": 1437,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2832,
+            "id": "Carupano",
+            "City": "Carupano",
+            "Country": "Venezuela",
+            "IATA": "CUP",
+            "ICAO": "SVCP",
+            "Latitude": 10.660014152526855,
+            "Longitude": -63.261680603027344,
+            "Altitude": 33,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2833,
+            "id": "Coro",
+            "City": "Coro",
+            "Country": "Venezuela",
+            "IATA": "CZE",
+            "ICAO": "SVCR",
+            "Latitude": 11.41494369506836,
+            "Longitude": -69.68090057373047,
+            "Altitude": 52,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2834,
+            "id": "Caracas",
+            "City": "Caracas",
+            "Country": "Venezuela",
+            "IATA": "None",
+            "ICAO": "SVCS",
+            "Latitude": 10.286110877990724,
+            "Longitude": -66.81610870361328,
+            "Altitude": 2145,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2835,
+            "id": "Cumana",
+            "City": "Cumana",
+            "Country": "Venezuela",
+            "IATA": "CUM",
+            "ICAO": "SVCU",
+            "Latitude": 10.450332641601562,
+            "Longitude": -64.13047027587889,
+            "Altitude": 14,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2836,
+            "id": "Carrizal",
+            "City": "Carrizal",
+            "Country": "Venezuela",
+            "IATA": "None",
+            "ICAO": "SVCZ",
+            "Latitude": 9.372650146484377,
+            "Longitude": -66.92279815673828,
+            "Altitude": 595,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2837,
+            "id": "El Dorado",
+            "City": "El Dorado",
+            "Country": "Venezuela",
+            "IATA": "EOR",
+            "ICAO": "SVED",
+            "Latitude": 6.733333110809326,
+            "Longitude": -61.58333206176758,
+            "Altitude": 318,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2838,
+            "id": "Elorza",
+            "City": "Elorza",
+            "Country": "Venezuela",
+            "IATA": "EOZ",
+            "ICAO": "SVEZ",
+            "Latitude": 7.083333015441895,
+            "Longitude": -69.53333282470703,
+            "Altitude": 295,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2839,
+            "id": "Guasdualito",
+            "City": "Guasdualito",
+            "Country": "Venezuela",
+            "IATA": "GDO",
+            "ICAO": "SVGD",
+            "Latitude": 7.233333110809326,
+            "Longitude": -70.80000305175781,
+            "Altitude": 426,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2840,
+            "id": "Guiria",
+            "City": "Guiria",
+            "Country": "Venezuela",
+            "IATA": "GUI",
+            "ICAO": "SVGI",
+            "Latitude": 10.5740776062,
+            "Longitude": -62.3126678467,
+            "Altitude": 42,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2841,
+            "id": "Guanare",
+            "City": "Guanare",
+            "Country": "Venezuela",
+            "IATA": "GUQ",
+            "ICAO": "SVGU",
+            "Latitude": 9.026944160461426,
+            "Longitude": -69.75514984130861,
+            "Altitude": 606,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2842,
+            "id": "Higuerote",
+            "City": "Higuerote",
+            "Country": "Venezuela",
+            "IATA": "HGE",
+            "ICAO": "SVHG",
+            "Latitude": 10.462474,
+            "Longitude": -66.09277900000001,
+            "Altitude": 12,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2843,
+            "id": "Isla De Coche",
+            "City": "Isla De Coche",
+            "Country": "Venezuela",
+            "IATA": "ICC",
+            "ICAO": "SVIE",
+            "Latitude": 10.794432,
+            "Longitude": -63.981590000000004,
+            "Altitude": 10,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2844,
+            "id": "Paraguana",
+            "City": "Paraguana",
+            "Country": "Venezuela",
+            "IATA": "LSP",
+            "ICAO": "SVJC",
+            "Latitude": 11.78077507019043,
+            "Longitude": -70.15149688720703,
+            "Altitude": 75,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2845,
+            "id": "San Juan De Los Morros",
+            "City": "San Juan De Los Morros",
+            "Country": "Venezuela",
+            "IATA": "None",
+            "ICAO": "SVJM",
+            "Latitude": 9.906952857971193,
+            "Longitude": -67.379638671875,
+            "Altitude": 1404,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2846,
+            "id": "La Fria",
+            "City": "La Fria",
+            "Country": "Venezuela",
+            "IATA": "LFR",
+            "ICAO": "SVLF",
+            "Latitude": 8.239167213439941,
+            "Longitude": -72.27102661132812,
+            "Altitude": 305,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2847,
+            "id": "La Orchila",
+            "City": "La Orchila",
+            "Country": "Venezuela",
+            "IATA": "None",
+            "ICAO": "SVLO",
+            "Latitude": 11.80720043182373,
+            "Longitude": -66.17960357666016,
+            "Altitude": 5,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2848,
+            "id": "Maracaibo",
+            "City": "Maracaibo",
+            "Country": "Venezuela",
+            "IATA": "MAR",
+            "ICAO": "SVMC",
+            "Latitude": 10.5582084656,
+            "Longitude": -71.7278594971,
+            "Altitude": 239,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2849,
+            "id": "Merida",
+            "City": "Merida",
+            "Country": "Venezuela",
+            "IATA": "MRD",
+            "ICAO": "SVMD",
+            "Latitude": 8.582078,
+            "Longitude": -71.161041,
+            "Altitude": 5007,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2850,
+            "id": "Porlamar",
+            "City": "Porlamar",
+            "Country": "Venezuela",
+            "IATA": "PMV",
+            "ICAO": "SVMG",
+            "Latitude": 10.912603378295898,
+            "Longitude": -63.96659851074219,
+            "Altitude": 74,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2851,
+            "id": "Caracas",
+            "City": "Caracas",
+            "Country": "Venezuela",
+            "IATA": "CCS",
+            "ICAO": "SVMI",
+            "Latitude": 10.601194,
+            "Longitude": -66.991222,
+            "Altitude": 234,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2852,
+            "id": "Maturin",
+            "City": "Maturin",
+            "Country": "Venezuela",
+            "IATA": "MUN",
+            "ICAO": "SVMT",
+            "Latitude": 9.75452995300293,
+            "Longitude": -63.14739990234375,
+            "Altitude": 224,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2853,
+            "id": "Puerto Ayacucho",
+            "City": "Puerto Ayacucho",
+            "Country": "Venezuela",
+            "IATA": "PYH",
+            "ICAO": "SVPA",
+            "Latitude": 5.619989871978801,
+            "Longitude": -67.606101989746,
+            "Altitude": 245,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2854,
+            "id": "Puerto Cabello",
+            "City": "Puerto Cabello",
+            "Country": "Venezuela",
+            "IATA": "PBL",
+            "ICAO": "SVPC",
+            "Latitude": 10.48050022125244,
+            "Longitude": -68.072998046875,
+            "Altitude": 32,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2855,
+            "id": "San Cristobal",
+            "City": "San Cristobal",
+            "Country": "Venezuela",
+            "IATA": "SCI",
+            "ICAO": "SVPM",
+            "Latitude": 7.8013200759887695,
+            "Longitude": -72.2029037475586,
+            "Altitude": 3314,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2856,
+            "id": "Guayana",
+            "City": "Guayana",
+            "Country": "Venezuela",
+            "IATA": "PZO",
+            "ICAO": "SVPR",
+            "Latitude": 8.288530349731445,
+            "Longitude": -62.7603988647461,
+            "Altitude": 472,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2857,
+            "id": "Palmarito",
+            "City": "Palmarito",
+            "Country": "Venezuela",
+            "IATA": "PTM",
+            "ICAO": "SVPT",
+            "Latitude": 7.566669940948486,
+            "Longitude": -70.18329620361328,
+            "Altitude": 347,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2858,
+            "id": "San Antonio",
+            "City": "San Antonio",
+            "Country": "Venezuela",
+            "IATA": "SVZ",
+            "ICAO": "SVSA",
+            "Latitude": 7.840829849243164,
+            "Longitude": -72.439697265625,
+            "Altitude": 1312,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2859,
+            "id": "Santa Barbara",
+            "City": "Santa Barbara",
+            "Country": "Venezuela",
+            "IATA": "SBB",
+            "ICAO": "SVSB",
+            "Latitude": 7.803514003753662,
+            "Longitude": -71.16571807861328,
+            "Altitude": 590,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2860,
+            "id": "Santa Ana De Uairen",
+            "City": "Santa Ana De Uairen",
+            "Country": "Venezuela",
+            "IATA": "SNV",
+            "ICAO": "SVSE",
+            "Latitude": 4.554999828338623,
+            "Longitude": -61.1500015258789,
+            "Altitude": 2938,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2861,
+            "id": "Santo Domingo",
+            "City": "Santo Domingo",
+            "Country": "Venezuela",
+            "IATA": "STD",
+            "ICAO": "SVSO",
+            "Latitude": 7.56538,
+            "Longitude": -72.035103,
+            "Altitude": 1083,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2862,
+            "id": "San Felipe",
+            "City": "San Felipe",
+            "Country": "Venezuela",
+            "IATA": "SNF",
+            "ICAO": "SVSP",
+            "Latitude": 10.2787,
+            "Longitude": -68.75520300000001,
+            "Altitude": 761,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2863,
+            "id": "San Fernando De Apure",
+            "City": "San Fernando De Apure",
+            "Country": "Venezuela",
+            "IATA": "SFD",
+            "ICAO": "SVSR",
+            "Latitude": 7.883319854736327,
+            "Longitude": -67.44400024414061,
+            "Altitude": 154,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2864,
+            "id": "San Tome",
+            "City": "San Tome",
+            "Country": "Venezuela",
+            "IATA": "SOM",
+            "ICAO": "SVST",
+            "Latitude": 8.9451465606689,
+            "Longitude": -64.151084899902,
+            "Altitude": 861,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2865,
+            "id": "Santa Barbara",
+            "City": "Santa Barbara",
+            "Country": "Venezuela",
+            "IATA": "STB",
+            "ICAO": "SVSZ",
+            "Latitude": 8.974550247192383,
+            "Longitude": -71.94325256347656,
+            "Altitude": 32,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2866,
+            "id": "Tucupita",
+            "City": "Tucupita",
+            "Country": "Venezuela",
+            "IATA": "TUV",
+            "ICAO": "SVTC",
+            "Latitude": 9.088994026184082,
+            "Longitude": -62.09417343139648,
+            "Altitude": 16,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2867,
+            "id": "Tumeremo",
+            "City": "Tumeremo",
+            "Country": "Venezuela",
+            "IATA": "TMO",
+            "ICAO": "SVTM",
+            "Latitude": 7.24938,
+            "Longitude": -61.52893,
+            "Altitude": 345,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2868,
+            "id": "Valencia",
+            "City": "Valencia",
+            "Country": "Venezuela",
+            "IATA": "VLN",
+            "ICAO": "SVVA",
+            "Latitude": 10.14973258972168,
+            "Longitude": -67.92839813232422,
+            "Altitude": 1411,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2870,
+            "id": "Valera",
+            "City": "Valera",
+            "Country": "Venezuela",
+            "IATA": "VLV",
+            "ICAO": "SVVL",
+            "Latitude": 9.34047794342041,
+            "Longitude": -70.58406066894531,
+            "Altitude": 2060,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 2871,
+            "id": "Valle De La Pascua",
+            "City": "Valle De La Pascua",
+            "Country": "Venezuela",
+            "IATA": "VDP",
+            "ICAO": "SVVP",
+            "Latitude": 9.22202777863,
+            "Longitude": -65.9935836792,
+            "Altitude": 410,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 6071,
+            "id": "Maracay",
+            "City": "Maracay",
+            "Country": "Venezuela",
+            "IATA": "MYC",
+            "ICAO": "SVBS",
+            "Latitude": 10.249978065490724,
+            "Longitude": -67.64942169189453,
+            "Altitude": 1338,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 6072,
+            "id": "El Vig\u00eda",
+            "City": "El Vig\u00eda",
+            "Country": "Venezuela",
+            "IATA": "VIG",
+            "ICAO": "SVVG",
+            "Latitude": 8.624139,
+            "Longitude": -71.672668,
+            "Altitude": 250,
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 6420,
+            "id": "Los Roques",
+            "City": "Los Roques",
+            "Country": "Venezuela",
+            "IATA": "LRV",
+            "ICAO": "SVRS",
+            "Latitude": 11.949999809300001,
+            "Longitude": -66.66999816890001,
+            "Altitude": 17,
+            "TimeZone": "-4",
+            "DST": "S",
+            "TZTime": "America/Caracas",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 11293,
+            "id": "Caracas",
+            "City": "Caracas",
+            "Country": "Venezuela",
+            "IATA": "None",
+            "ICAO": "SVFM",
+            "Latitude": 10.485033035299999,
+            "Longitude": -66.8435134888,
+            "Altitude": 2739,
+            "TimeZone": "-4",
+            "DST": "S",
+            "TZTime": "None",
+            "Type": "airport",
+            "Source": "OurAirports"
+        },
+        {
+            "AirportId": 11947,
+            "id": "NaN",
+            "City": "NaN",
+            "Country": "Venezuela",
+            "IATA": "None",
+            "ICAO": "SVMP",
+            "Latitude": 10.133169174194336,
+            "Longitude": -66.78782653808594,
+            "Altitude": 574,
+            "TimeZone": "None",
+            "DST": "None",
+            "TZTime": "None",
+            "Type": "airport",
+            "Source": "OurAirports"
+        }
+    ],
+    "links": [
+        {
+            "source": "Barcelona",
+            "target": "Caracas",
+            "id": 1
+        },
+        {
+            "source": "Barcelona",
+            "target": "Porlamar",
+            "id": 2
+        },
+        {
+            "source": "Barcelona",
+            "target": "Guayana",
+            "id": 3
+        },
+        {
+            "source": "Barcelona",
+            "target": "Valencia",
+            "id": 4
+        },
+        {
+            "source": "Barinas",
+            "target": "Caracas",
+            "id": 5
+        },
+        {
+            "source": "Caracas",
+            "target": "Barcelona",
+            "id": 6
+        },
+        {
+            "source": "Caracas",
+            "target": "Barinas",
+            "id": 7
+        },
+        {
+            "source": "Caracas",
+            "target": "Maracaibo",
+            "id": 8
+        },
+        {
+            "source": "Caracas",
+            "target": "Merida",
+            "id": 9
+        },
+        {
+            "source": "Caracas",
+            "target": "Guayana",
+            "id": 10
+        },
+        {
+            "source": "Caracas",
+            "target": "Valera",
+            "id": 11
+        },
+        {
+            "source": "Maracaibo",
+            "target": "Caracas",
+            "id": 12
+        },
+        {
+            "source": "Maracaibo",
+            "target": "Valencia",
+            "id": 13
+        },
+        {
+            "source": "Merida",
+            "target": "Caracas",
+            "id": 14
+        },
+        {
+            "source": "Porlamar",
+            "target": "Barcelona",
+            "id": 15
+        },
+        {
+            "source": "Porlamar",
+            "target": "Caracas",
+            "id": 16
+        },
+        {
+            "source": "Guayana",
+            "target": "Barcelona",
+            "id": 17
+        },
+        {
+            "source": "Guayana",
+            "target": "Caracas",
+            "id": 18
+        },
+        {
+            "source": "Valencia",
+            "target": "Barcelona",
+            "id": 19
+        },
+        {
+            "source": "Valencia",
+            "target": "Maracaibo",
+            "id": 20
+        },
+        {
+            "source": "Valera",
+            "target": "Caracas",
+            "id": 21
+        },
+        {
+            "source": "Caracas",
+            "target": "Porlamar",
+            "id": 22
+        },
+        {
+            "source": "Caracas",
+            "target": "Santo Domingo",
+            "id": 23
+        },
+        {
+            "source": "Caracas",
+            "target": "El Vig\u00eda",
+            "id": 24
+        },
+        {
+            "source": "Porlamar",
+            "target": "Valencia",
+            "id": 25
+        },
+        {
+            "source": "Santo Domingo",
+            "target": "Caracas",
+            "id": 26
+        },
+        {
+            "source": "El Vig\u00eda",
+            "target": "Caracas",
+            "id": 27
+        },
+        {
+            "source": "Valencia",
+            "target": "Porlamar",
+            "id": 28
+        },
+        {
+            "source": "Barquisimeto",
+            "target": "Caracas",
+            "id": 29
+        },
+        {
+            "source": "Caracas",
+            "target": "Barquisimeto",
+            "id": 30
+        },
+        {
+            "source": "Caracas",
+            "target": "Paraguana",
+            "id": 31
+        },
+        {
+            "source": "Caracas",
+            "target": "Maturin",
+            "id": 32
+        },
+        {
+            "source": "Paraguana",
+            "target": "Caracas",
+            "id": 33
+        },
+        {
+            "source": "Maturin",
+            "target": "Caracas",
+            "id": 34
+        },
+        {
+            "source": "Porlamar",
+            "target": "Guayana",
+            "id": 35
+        },
+        {
+            "source": "Guayana",
+            "target": "Porlamar",
+            "id": 36
+        },
+        {
+            "source": "Barquisimeto",
+            "target": "Porlamar",
+            "id": 37
+        },
+        {
+            "source": "Canaima",
+            "target": "Guayana",
+            "id": 38
+        },
+        {
+            "source": "Caracas",
+            "target": "Cumana",
+            "id": 39
+        },
+        {
+            "source": "Caracas",
+            "target": "Coro",
+            "id": 40
+        },
+        {
+            "source": "Caracas",
+            "target": "La Fria",
+            "id": 41
+        },
+        {
+            "source": "Caracas",
+            "target": "Puerto Ayacucho",
+            "id": 42
+        },
+        {
+            "source": "Caracas",
+            "target": "San Tome",
+            "id": 43
+        },
+        {
+            "source": "Caracas",
+            "target": "San Antonio",
+            "id": 44
+        },
+        {
+            "source": "Cumana",
+            "target": "Caracas",
+            "id": 45
+        },
+        {
+            "source": "Coro",
+            "target": "Caracas",
+            "id": 46
+        },
+        {
+            "source": "La Fria",
+            "target": "Caracas",
+            "id": 47
+        },
+        {
+            "source": "Maracaibo",
+            "target": "Puerto Cabello",
+            "id": 48
+        },
+        {
+            "source": "Maracaibo",
+            "target": "Porlamar",
+            "id": 49
+        },
+        {
+            "source": "Maturin",
+            "target": "Porlamar",
+            "id": 50
+        },
+        {
+            "source": "Puerto Cabello",
+            "target": "Maracaibo",
+            "id": 51
+        },
+        {
+            "source": "Puerto Cabello",
+            "target": "Porlamar",
+            "id": 52
+        },
+        {
+            "source": "Porlamar",
+            "target": "Barquisimeto",
+            "id": 53
+        },
+        {
+            "source": "Porlamar",
+            "target": "Maracaibo",
+            "id": 54
+        },
+        {
+            "source": "Porlamar",
+            "target": "Maturin",
+            "id": 55
+        },
+        {
+            "source": "Porlamar",
+            "target": "Puerto Cabello",
+            "id": 56
+        },
+        {
+            "source": "Porlamar",
+            "target": "Santo Domingo",
+            "id": 57
+        },
+        {
+            "source": "Porlamar",
+            "target": "El Vig\u00eda",
+            "id": 58
+        },
+        {
+            "source": "Puerto Ayacucho",
+            "target": "Caracas",
+            "id": 59
+        },
+        {
+            "source": "Guayana",
+            "target": "Canaima",
+            "id": 60
+        },
+        {
+            "source": "Guayana",
+            "target": "Santa Ana De Uairen",
+            "id": 61
+        },
+        {
+            "source": "Santa Ana De Uairen",
+            "target": "Guayana",
+            "id": 62
+        },
+        {
+            "source": "San Tome",
+            "target": "Caracas",
+            "id": 63
+        },
+        {
+            "source": "Santo Domingo",
+            "target": "Porlamar",
+            "id": 64
+        },
+        {
+            "source": "San Antonio",
+            "target": "Caracas",
+            "id": 65
+        },
+        {
+            "source": "El Vig\u00eda",
+            "target": "Porlamar",
+            "id": 66
+        }
+    ]
+}
