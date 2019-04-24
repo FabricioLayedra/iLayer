@@ -13,6 +13,8 @@ var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 //Map
 //var datafile = "./data/canada_airports.json";
 
+//var datafile = "./data/venezuela_airports.json";
+
 //var datafile = "./data/sample15papers2016.json";
 //var datafile = "./data/americanAuthorsVIS.json.json";
 
@@ -2850,44 +2852,47 @@ var crossedPoint = false;
 function buildWall(graphicObject, width, height, originPosition, mode, insideSpace, orientation, isProxy, animated) {
     var world = getPhysicsEngine(getActiveLayerName()).world;
     var direction = graphicObject.direction;
-    console.log(direction);
+//    console.log(direction);
 
     if (mode === 'both') {
         if (!graphicObject.walls) {
             if (direction === "horizontal") {
-                console.log("drawing horizontal");
-                let originXleft = originPosition[0] - nodeRadius;
-                let originXright = originPosition[0] + nodeRadius - width;
+//                console.log("drawing horizontal");
+                let originXleft = originPosition[0] - nodeRadius/1.5;
+                let originXright = originPosition[0] + nodeRadius/1.5 - width;
                 let originY = originPosition[1];
 
-                let wall1 = getActiveLayer().layer.rect(width, 1).move(originXleft, originY).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
+                let wall1 = getActiveLayer().layer.rect(width, height).move(originXleft, originY).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
                 wall1.position = "left"
-
                 wall1.direction = direction;
                 wall1.wall = true;
+                wall1.previousIncrement = 0;
                 addAttractorToWorld(world, wall1);
                 addDragEvents(new Hammer(wall1.node), wall1, wall1, isProxy, graphicObject);
 
-
-                let wall2 = getActiveLayer().layer.rect(width, 1).move(originXright, originY).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
-
+                let wall2 = getActiveLayer().layer.rect(width, height).move(originXright, originY).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
                 addAttractorToWorld(world, wall2);
                 addDragEvents(new Hammer(wall2.node), wall2, wall2, isProxy, graphicObject);
                 wall2.position = "right"
                 wall2.direction = direction;
                 wall2.wall = true;
-
+                wall2.previousIncrement = 0;
+                wall1.y(wall1.y()-height);
+                wall2.y(wall2.y()-height);
+                
                 graphicObject.walls = [wall1, wall2];
+                
             } else if (direction === 'vertical') {
 
-                let originYtop = originPosition[1] - nodeRadius;
-                let originYbottom = originPosition[1] + nodeRadius - height;
+                let originYtop = originPosition[1] - nodeRadius/1.5;
+                let originYbottom = originPosition[1] + nodeRadius/1.5 - height;
                 let originX = originPosition[0];
 
                 let wall1 = getActiveLayer().layer.rect(width, height).move(originX, originYtop).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
                 wall1.direction = direction;
                 wall1.position = "top"
                 wall1.wall = true;
+                wall1.previousIncrement = 0;
 
                 addAttractorToWorld(world, wall1);
                 addDragEvents(new Hammer(wall1.node), wall1, wall1, isProxy, graphicObject);
@@ -2901,13 +2906,28 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 wall2.position = "bottom";
                 wall2.direction = direction;
                 wall2.wall = true;
+                wall2.previousIncrement = 0;
 
                 graphicObject.walls = [wall1, wall2];
             }
 
         } else {
             if (direction === "horizontal") {
-
+                
+                console.log("HEIGHT");
+                console.log(graphicObject.walls[0].height());
+                
+                if (orientation==="up"){
+                    var increment = height-graphicObject.walls[0].previousIncrement;
+                    graphicObject.walls[0].previousIncrement = height;
+                    height = graphicObject.walls[0].height() + increment;
+                }else{
+                    var increment = graphicObject.walls[0].previousIncrement-height;
+                    graphicObject.walls[0].previousIncrement = height;
+                    height = graphicObject.walls[0].height() - increment;
+                }
+                
+                
                 var scale = height / graphicObject.walls[0].height();
 
 
@@ -2916,6 +2936,8 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 var wall2 = graphicObject.walls[1];
 
                 wall1.height(height);
+                wall2.height(height);
+
                 //            console.log("height: "+height);
                 //            console.log("step: "+step);
                 //            if(step<0&&height===0){
@@ -2927,7 +2949,6 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 wall2.y(wall2.y() - step);
                 //            }
 
-                wall2.height(height);
 
 
                 Matter.Body.scale(wall1.matter, 1, scale);
@@ -2937,6 +2958,22 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
 
                 Matter.Body.setPosition(wall2.matter, {x: wall2.cx(), y: wall2.cy()});
             } else if (direction === "vertical") {
+//                console.log("BUILDING WALL");
+//                console.log(width);
+//                console.log(graphicObject.walls[0].width()!=width);
+//                if (graphicObject.walls[0].width()>width){
+                    
+                    if (orientation==="right"){
+                        var increment = width-graphicObject.walls[0].previousIncrement;
+                        graphicObject.walls[0].previousIncrement = width;
+                        width = graphicObject.walls[0].width() + increment;
+                    }else{
+                        var increment = graphicObject.walls[0].previousIncrement-width;
+                        graphicObject.walls[0].previousIncrement = width;
+                        width = graphicObject.walls[0].width() - increment;
+                    }
+//                }
+//                if ()
                 var scale = width / graphicObject.walls[0].width();
 
 
@@ -2959,6 +2996,7 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 //            
 
                 wall2.width(width);
+
 
 
 
@@ -3040,47 +3078,6 @@ function sortByAttribute(distance, chosen, orientation) {
     }
 }
 
-function positionElementsByAttribute(attributeGraphics, attributeValue, attributeTypeName, orientation, isDiscrete) {
-    var elements = getActiveLayer().layer.select('g.node').members;
-//        console.log("Position element");
-//    console.log(elements);
-    for (var elIndex in elements) {
-//        console.log("position "+ elements[elIndex]);
-        var data = getElementFromGroupByPropertyValue(elements[elIndex],'type','circle').nodeData.authorInfo;
-//        console.log(data);
-        let element = elements[elIndex];
-
-            if (data[attributeTypeName].toString() === attributeValue) {
-                let pointX = null;
-                let pointY = null;
-                if (attributeGraphics.type === 'rect') {
-                    if (orientation === "horizontal") {
-//                        newPos = getRectMiddle(attributeGraphics)[0];
-//                        oldPos = element.cx();
-//                        console.log(" For " + attributeValue);
-//                        elementPos()
-
-                    } else {
-                        pointY = getRectMiddle(attributeGraphics)[1] - element.cy();
-                        console.log(" For " + attributeValue);
-                        console.log(pointY);
-                        elements[elIndex].animate(500).dy(pointY).during(function () {
-                            updateEdgesEnds(getElementFromGroup(element, 'circle'), element.cx() - element.childDX, element.cy() - element.childDY);
-                        });
-                    }
-                } else if (attributeGraphics.type === 'text') {
-                   
-
-                }
-
-//            }
-        }
-        else{
-            
-        }
-    }
-}
-
 function highlightNodesByAttributeValue(attributeValue, attributeName, show) {
 
     var groups = getActiveLayer().data[attributeName].values[attributeValue];
@@ -3130,3 +3127,52 @@ function addAttributeValueAsAttractor(attributeGraphics, attributeValue, attribu
     }
 
 }
+
+function initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis){
+    
+    if (orientation === "horizontal") {
+
+            var y = axis.line.cy();
+//            console.log("changing");
+//            console.log(y);
+
+            if ($(attributeGraphics.node).hasClass('proxy')) {
+                attributeGraphics.axis = axis;
+
+//                the proxy thing
+//                change line 797 after demo 
+                var xProxy = attributeGraphics.rbox().cx - $("#accordionSidebar").width();
+                buildWall(attributeGraphics, wallSize, 5, [xProxy, y], 'both', insideSpace, direction, true);
+
+                for (var index in axis.valueLabels) {
+
+                    var x = axis.valueLabels[index].cx();
+
+                    //BOLD THE TEXT
+//                    boldText(axis.valueLabels[index]);
+
+                    buildWall(axis.valueLabels[index], wallSize, 5, [x, y], 'both', insideSpace, direction);
+                }
+            } else {
+                buildWall(attributeGraphics, wallSize, 5, [attributeGraphics.cx(), y], 'both', insideSpace, direction);
+            }
+        } else if (orientation === "vertical") {
+            let x = axis.line.cx();
+            var yProxy = attributeGraphics.rbox().cy - 70;
+            buildWall(attributeGraphics, 5, wallSize, [x, yProxy], 'both', insideSpace, direction, true);
+
+            if ($(attributeGraphics.node).hasClass('proxy')) {
+                attributeGraphics.axis = axis;
+
+                //the proxy thing
+                for (var index in axis.valueLabels) {
+                    var y = axis.valueLabels[index].cy();
+                    //BOLD THE TEXT
+//                    boldText(axis.valueLabels[index]);
+                    buildWall(axis.valueLabels[index], 5, wallSize, [x, y], 'both', insideSpace, direction);
+                }
+            } else {
+                buildWall(attributeGraphics, 5, wallSize, [x, attributeGraphics.cy()], 'both', insideSpace, direction);
+            }
+        }
+    }
