@@ -1003,25 +1003,25 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
 
         hammer.on("panup", function (event) {
             direction = 'up'
-            console.log("Going to the top");
+//            console.log("Going to the top");
 
         });
 
         hammer.on("pandown", function (event) {
             direction = 'down'
-            console.log("Going to the down");
+//            console.log("Going to the down");
         });
     } else if (orientation === 'vertical') {
         axis = getActiveLayer().left;
 
         hammer.on('panleft', function (event) {
             direction = 'left';
-            console.log("Going to the left");
+//            console.log("Going to the left");
         });
 
         hammer.on("panright", function (event) {
             direction = 'right';
-            console.log("Going to the right");
+//            console.log("Going to the right");
         });
     }
 
@@ -1031,8 +1031,8 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
 
     hammer.on("panmove", function (ev) {
         currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-        height = Math.abs(currentPoint.y - startingPoint.y);
-        width = Math.abs(currentPoint.x - startingPoint.x);
+        height = -( currentPoint.y - startingPoint.y);
+        width = currentPoint.x - startingPoint.x;
 
         if (orientation === "horizontal") {
 
@@ -1063,10 +1063,10 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
         } else if (orientation === "vertical") {
             let x = axis.line.cx();
             var yProxy = attributeGraphics.rbox().cy - 70;
-            buildWall(attributeGraphics, width, wallSize, [x, yProxy], 'both', insideSpace, direction, true);
 
             if ($(attributeGraphics.node).hasClass('proxy')) {
                 attributeGraphics.axis = axis;
+                buildWall(attributeGraphics, width, wallSize, [x, yProxy], 'both', insideSpace, direction, true);
 
                 //the proxy thing
                 for (var index in axis.valueLabels) {
@@ -1083,17 +1083,24 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
 
 
     hammer.on("panend", function (ev) {
+        
         if ($(attributeGraphics.node).hasClass('proxy')) {
+            attributeGraphics.walls[0].previousIncrement = 0;
+
             for (var index in axis.valueLabels) {
                 unBoldText(axis.valueLabels[index]);
+                axis.valueLabels[index].walls[0].previousIncrement = 0;
             }
         } else {
             let attributeName = attributeGraphics.attr("attrType");
             let attributeValue = attributeGraphics.node.textContent;
             highlightNodesByAttributeValue(attributeValue, attributeName, false);
+            attributeGraphics.walls[0].previousIncrement = 0;
+     
         }
     });
 
+    initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis);
 }
 
 function addAttributeValuesEvents(nodeGraphics, attributeName) {
