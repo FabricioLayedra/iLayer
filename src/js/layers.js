@@ -247,15 +247,10 @@ function showHideLayer(layerName) {
     if ($(layer).css("display") === 'none') {
         $(layer).css("display", "block");
     } else if ($(layer).css("display") === 'block') {
-        console.log("fs");
         $(layer).css("display", "none");
     } else {
-        console.log("YRS");
     }
-//    if (checkbox.checked) {
-//        $(layer).css("display", "block");
-//    } else {
-//    }
+
 }
 
 function getPhysicsEngine(layerName) {
@@ -1496,7 +1491,8 @@ function sendEdgesToLayer(source, nodesNames, edges, destination) {
 
             SVG.get(edges[index].node.id).attr({"stroke": LAYERS[layerName].color});
             SVG.get(destination).put(SVG.get(edges[index].node.id).remove()).back();
-            console.log("Included");
+            
+            
         }
     }
 }
@@ -1558,6 +1554,7 @@ function includeSelection(layerName) {
         addTouchEvents(object);
         addSelectionEvents(object);
     }
+    LAYERS[getSvgId(layerName).split("-")[1]].data = getValuesByAttributeDict(SELECTION, dataKeys);
     SELECTION = [];
     selectionFlag = false;
 }
@@ -2344,8 +2341,14 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
                 finalX = x - 15;
                 finalY = y + (gap * index) + nodeRadius;
             }
+            
+            let label = null;
 
-            let label = drawer.text(function (add) {
+            
+            if (proxy.isAxis){
+                label = drawer.text(value);
+            }else{
+                label = drawer.text(function (add) {
                 parts.forEach(function (part) {
                     if (direction === "vertical") {
                         add.tspan(part).dy(15).attr('x', finalX + 47);
@@ -2354,6 +2357,7 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
                     }
                 });
             });
+            }
 
             label.attr(labelAttributes);
 
