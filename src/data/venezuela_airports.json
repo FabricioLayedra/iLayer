@@ -34,8 +34,8 @@
         },
         {
             "AirportId": 2820,
-            "id": "San Fernando Deatabapo",
-            "City": "San Fernando Deatabapo",
+            "id": "San Fernando de Atabapo",
+            "City": "San Fernando de Atabapo",
             "Country": "Venezuela",
             "IATA": "None",
             "ICAO": "SVAT",
@@ -130,8 +130,8 @@
         },
         {
             "AirportId": 2827,
-            "id": "Caicara De Orinoco",
-            "City": "Caicara De Orinoco",
+            "id": "Caicara de Orinoco",
+            "City": "Caicara de Orinoco",
             "Country": "Venezuela",
             "IATA": "CXA",
             "ICAO": "SVCD",
@@ -386,8 +386,8 @@
         },
         {
             "AirportId": 2843,
-            "id": "Isla De Coche",
-            "City": "Isla De Coche",
+            "id": "Isla de Coche",
+            "City": "Isla de Coche",
             "Country": "Venezuela",
             "IATA": "ICC",
             "ICAO": "SVIE",
@@ -418,8 +418,8 @@
         },
         {
             "AirportId": 2845,
-            "id": "San Juan De Los Morros",
-            "City": "San Juan De Los Morros",
+            "id": "San Juan de Los Morros",
+            "City": "San Juan de Los Morros",
             "Country": "Venezuela",
             "IATA": "None",
             "ICAO": "SVJM",
@@ -658,8 +658,8 @@
         },
         {
             "AirportId": 2860,
-            "id": "Santa Ana De Uairen",
-            "City": "Santa Ana De Uairen",
+            "id": "Santa Elena de Uairen",
+            "City": "Santa Elena de Uairen",
             "Country": "Venezuela",
             "IATA": "SNV",
             "ICAO": "SVSE",
@@ -706,8 +706,8 @@
         },
         {
             "AirportId": 2863,
-            "id": "San Fernando De Apure",
-            "City": "San Fernando De Apure",
+            "id": "San Fernando de Apure",
+            "City": "San Fernando de Apure",
             "Country": "Venezuela",
             "IATA": "SFD",
             "ICAO": "SVSR",
@@ -818,8 +818,8 @@
         },
         {
             "AirportId": 2871,
-            "id": "Valle De La Pascua",
-            "City": "Valle De La Pascua",
+            "id": "Valle de La Pascua",
+            "City": "Valle de La Pascua",
             "Country": "Venezuela",
             "IATA": "VDP",
             "ICAO": "SVVP",
@@ -898,17 +898,17 @@
         },
         {
             "AirportId": 11947,
-            "id": "NaN",
-            "City": "NaN",
+            "id": "Ocumare del Tuy",
+            "City": "Ocumare del Tuy",
             "Country": "Venezuela",
             "IATA": "None",
             "ICAO": "SVMP",
             "Latitude": 10.133169174194336,
             "Longitude": -66.78782653808594,
             "Altitude": 574,
-            "TimeZone": "None",
-            "DST": "None",
-            "TZTime": "None",
+            "TimeZone": "-4",
+            "DST": "U",
+            "TZTime": "America/Caracas",
             "Type": "airport",
             "Source": "OurAirports"
         }
@@ -1216,11 +1216,11 @@
         },
         {
             "source": "Guayana",
-            "target": "Santa Ana De Uairen",
+            "target": "Santa Elena de Uairen",
             "id": 61
         },
         {
-            "source": "Santa Ana De Uairen",
+            "source": "Santa Elena de Uairen",
             "target": "Guayana",
             "id": 62
         },

@@ -56,6 +56,11 @@ body {
 
 }
 
+.button-color.active{
+    background-color: #717172
+
+}
+
 .font-title{
     font-size: 1rem !important;
 }

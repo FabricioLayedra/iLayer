@@ -5,7 +5,9 @@ var count = 0;
 var nodeRadius = 30;
 var distLabelGroup = 0;
 
+//selection should be global, whereas visibility should be for a single layer
 var selectionFlag = false;
+var selectionCount = 0;
 
 var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/usa_airports.json";
@@ -48,6 +50,7 @@ var setCanvases = $("#content");
 
 var generalWidth = setCanvases.width();
 var generalHeight = $(document).height() - 70;
+//var generalHeight = $('#mobile-indicator').innerHeight()-70;
 console.log(generalWidth, generalHeight);
 
 
@@ -88,10 +91,14 @@ function addNewLayer(layerName) {
     sortLayers($("#layers-table"));
 }
 
+
+
 function createLayer(layerName, color) {
 //    var canvas = document.createElement("div");
     var container = document.getElementById("set-canvases");
     var canvas = createSVG(container, layerName, generalWidth, generalHeight, color);
+
+    
 
     canvas.setAttribute("id", "layer-" + layerName);
     canvas.setAttribute("style", "position: absolute;");
@@ -102,6 +109,8 @@ function createLayer(layerName, color) {
     } else {
         var id = layerName;
     }
+    layer.labelsAreHidden = false;
+    layer.edgesAreHidden = false;
     changeLayerNames(layer, id);
 
     addDroppingZones(layerName);
@@ -164,6 +173,36 @@ function addColorsAndBorders(layerName, color) {
     $("#container-item-" + layerName).attr("style", "background-color: #eee; border:  solid 1.5px " + color);
 }
 
+//do this for the global events
+function addMenuEvents(){
+
+    $("#selector").on('pointerdown', function (e) {
+        //a really garbage hack to see if this was the result of a button press or not
+        //true to false --> because of a button press
+        if (selectionFlag){
+            selectionMode(!selectionFlag, true);
+        }
+        else{
+            selectionMode(!selectionFlag, false);
+        }
+        console.log(selectionFlag + " selector")
+        $(this).toggleClass('active');
+    });
+
+    $("#hidderEdges").on('pointerdown', function (e) {
+        showHideEdges();
+       // e.srcEvent.stopPropogation();
+
+        $(this).toggleClass('active');
+    });
+    
+    $("#hidderLabels").on('pointerdown', function () {
+        showHideLabels();
+       $(this).toggleClass('active');
+    });
+
+}
+//this is triggered for each layer every time something takes place, which is not helpful in individual cases
 function addEvents(id) {
 
 //    //checkbox opacity
@@ -199,22 +238,57 @@ function addEvents(id) {
 //        console.log(this);
         if (selectionFlag) {
             includeSelection(id);
+            selectionFlag = false;
+            selectionMode(selectionFlag);
+            $("#selector").removeClass('active');
         }
         activateLayer(id);
+
+        //console.log(id)
     });
 
-    $("#visibility-" + id).on('pointerdown', function () {
-        console.log("Touching");
-        showHideLayer(id);
-    });
+    // ///SELECTOR -- remove this so it does not keep repeating for each element. selector should be global, same as 
 
-    $("#hidderEdges").on('pointerdown', function () {
-        showHideEdges();
-    });
+    //COMMENTED BELOW
+
+
+    // $("#selector").on('pointerdown', function (e) {
+    //     /*if(e.type == 'touchend'){
+    //         $(this).off('click');
+    //     }*/
+
+    //     //selectionFlag = !selectionFlag;
+    //     selectionMode(!selectionFlag);
+    //     console.log(selectionFlag + " selector")
+    //     //console.log("Selection turned to " + selectionFlag + " state");
+    //     $(this).toggleClass('active');
+    // });
+
+    // ///
+
+   
+
+    // //$("#selector").off('pan');
+    // //this is fine because its only triggering 
+    // $("#visibility-" + id).on('pointerdown', function () {
+    //     //console.log("Touching");
+    //     showHideLayer(id);
+
+    // });
+
+    // $("#hidderEdges").on('click', function (e) {
+    //     selectionCount++;
+    //     console.log(selectionCount)
+    //     showHideEdges(id);
+    //    // e.srcEvent.stopPropogation();
+
+    //     //$(this).toggleClass('active');
+    // });
     
-    $("#hidderLabels").on('pointerdown', function () {
-        showHideLabels();
-    });
+    // $("#hidderLabels").on('pointerdown', function () {
+    //     showHideLabels(id);
+    //    //$(this).toggleClass('active');
+    // });
 }
 
 function activateLayer(layerName) {
@@ -1482,6 +1556,7 @@ function getNodesNames(nodes) {
 function sendEdgesToLayer(source, nodesNames, edges, destination) {
     var layerName = destination.split("-")[1];
 //    console.log("neighbour");
+    console.log(edges);
     for (var index in edges) {
 //        console.log(edges[index]);
 //        console.log(edges[index].node.id);
@@ -1495,6 +1570,8 @@ function sendEdgesToLayer(source, nodesNames, edges, destination) {
             
         }
     }
+    console.log(edges)
+    
 }
 
 function includeSelection(layerName) {
@@ -1535,10 +1612,12 @@ function includeSelection(layerName) {
             dataKeys = arrayRemove(dataKeys, 'group');
             dataKeys = arrayRemove(dataKeys, 'name');
             dataKeys = arrayRemove(dataKeys, 'number of papers')
-            console.log(dataKeys);
+            //console.log(dataKeys);
             LAYERS[layerName].attributes = dataKeys;
 //            addAttributesAsTools(dataKeys);
             circle.fill(LAYERS[layerName].color);
+            var s = circle.nodeData;
+            console.log(circle.nodeData);
             sendEdgesToLayer(circle, names, circle.nodeData.inEdges, svgDestination);
 //            isNeighbour(circle,names,circle.nodeData.outEdges);
 
@@ -1553,6 +1632,10 @@ function includeSelection(layerName) {
         object.off("pointerdown");
         addTouchEvents(object);
         addSelectionEvents(object);
+
+
+        //addSelectorEvents
+
     }
     LAYERS[getSvgId(layerName).split("-")[1]].data = getValuesByAttributeDict(SELECTION, dataKeys);
     SELECTION = [];
@@ -1601,14 +1684,18 @@ function sendAdjacentsToLayer(selector, destination) {
     var spanning_tree = getSpanningTree(selector, 1);
     var source = spanning_tree[0];
     var targets = spanning_tree[1];
+    console.log(spanning_tree);
     //send the center
     sendElementToLayer(source, destination);
     //send the target nodes and edges
     for (var i = 0; i < targets.length; i++) {
         // target nodes
         sendElementToLayer(targets[i], destination);
+        console.log(source);
+        console.log(targets[i]);
         try {
             sendElementToLayer(source + targets[i], destination);
+            
 
         } catch (error) {
             try {
@@ -1899,8 +1986,12 @@ function main() {
     var tools = document.getElementsByClassName("tool");
     for (var i = 0; i < tools.length; i++) {
         var type = $(tools[i]).attr("id");
+        console.log(type);
         addToolEvents(tools[i], type);
     }
+    addMenuEvents();
+    //addEvents();
+    //addNonToolEvents();
 
 
 
@@ -1947,13 +2038,13 @@ function main() {
 }
 
 main();
-
+/*
 $(function () {
     $(this).bind("contextmenu", function (e) {
         e.preventDefault();
     });
 });
-
+*/
 
 /*---------------------------------GARBAGE--------------------------------------*/
 ///* FILLING DOWN THE NAME OF THE LAYER */

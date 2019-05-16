@@ -286,7 +286,16 @@ function addNodeToSelection(group) {
     }
 }
 
-function selectionMode(mode) {
+//removes a nodes from selection
+function removeNodeFromSelection(group){
+    
+    getElementFromGroup(group, 'path').remove();
+    SELECTION = arrayRemove(SELECTION, group);
+}
+
+//slight bug with selection if you try and disable the button while there are actives, but whatever. leave it for now.
+function selectionMode(mode, buttonPressed) {
+
     if (mode) {
         var groups = getActiveLayer().layer.select('g.node').members;
         for (var index in groups) {
@@ -296,34 +305,67 @@ function selectionMode(mode) {
             group.on('pointerdown', function () {
 //                console.log(group.node.id);
                 console.log(group);
+                //check if node is in selection
                 addNodeToSelection(group);
             });
         }
         selectionFlag = mode;
     } else {
+
         var groups = getActiveLayer().layer.select('g.node').members;
-        for (var index in groups) {
-            let group = groups[index];
-            group.off('pointerdown');
+        /*if (groups.length == 0){
+            $("#selector").fadeIn(150).fadeOut(150).fadeIn(150).fadeOut(150).fadeIn(150);
+            selectionFlag = false;
         }
-        selectionFlag = mode;
+        else{*/
+            //console.log(groups);
+            //remaining nodes in oriignal layer
+            for (var index in groups) {
+                let group = groups[index];
+                group.off('pointerdown');
+                addTouchEvents(group);
+                //removeNodeFromSelection(group);
+                //getElementFromGroup(group, 'path').remove();  
+            }
+
+            //this will remove the ability to add to another layer, so be wary
+            //an inelegant hack which checks if the flag switch is due to a button press -- if so, then remove selection
+            if (buttonPressed){
+                while (SELECTION.length != 0){
+                   removeNodeFromSelection(SELECTION[0]);
+                }
+            }
+            //SELECTION = [];
+            selectionFlag = mode;
+        
     }
+    console.log(selectionFlag);
 }
 
+//make this so that it is triggered by button press only
 function addSelectionEvents(nodeParent) {
     var mc = new Hammer(nodeParent.node);
+    //selectionFlag = true
 
     nodeParent.node.hammer = mc;
+/////////////////////////////////////////////////////////////////////////////////////////////////
+    //mc.get('press').set({time: 300});
 
-    mc.get('press').set({time: 300});
 
-    mc.on('press', function (event) {
-        selectionMode(true);
-    });
+    if (selectionFlag){
+        mc.on('press', function (event) {
+            selectionMode(true);
+        });
 
-    mc.on('pressup', function (event) {
-        addNodeToSelection(nodeParent);
-    });
+        mc.on('pressup', function (event) {
+            addNodeToSelection(nodeParent);
+        });
+    }
+
+    else{
+        mc.off('press');
+        mc.off('pressup');
+    }
 }
 function addPressEvents(mc, toolGraphics, drawer, type, child) {
     if (type === 'gravity') {
@@ -438,6 +480,9 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
     } else if (type === 'position') {
 
     }
+
+
+
 }
 
 function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
@@ -608,7 +653,19 @@ function applyWallStyle(object) {
     }
 }
 
+function addSelectorEvents(){
+     $("#selector").on('pointerdown', function (e) {
+        /*if(e.type == 'touchend'){
+            $(this).off('click');
+        }*/
 
+        //selectionFlag = !selectionFlag;
+        selectionMode(!selectionFlag);
+        console.log(selectionFlag + " selector")
+        //console.log("Selection turned to " + selectionFlag + " state");
+        $(this).toggleClass('active');
+    });
+}
 
 function addToolEvents(tool, type) {
 

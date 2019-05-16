@@ -32,11 +32,13 @@
 
     <link rel="stylesheet" href="css/jquery.contextMenu.min.css">
 
-    <title>iLayer</title>
+    <title>iLayer-tiff</title>
 
     </head>
 
     <body id="page-top">
+      <!--slight hack to emulate @media(height)/width in jquery-->
+      <div id="mobile-indicator"></div>
 
 
       <!-- Templates -->
@@ -263,6 +265,33 @@
               <i class="fa fa-bars"></i>
             </button>-->
 
+            
+            <!--Mode: Selection on/off-->
+            <div class="mr-2">
+                <button class="btn button-color" type="button" id="selector">
+                    <i class="fas fa-hand-pointer fa-sm"></i>
+                  </button>
+            </div>
+
+            <!--div class='col-divider ml-2 mr-3'></div-->
+
+            
+            <div class="mr-2">
+                <button class="btn button-color" type="button" id="hidderEdges" >
+                    <i class="fas fa-eye fa-sm"></i>
+                  </button>
+            </div>
+            
+            
+            
+            <div class="mr-2">
+                <button class="btn button-color" type="button" id="hidderLabels" >
+                    <i class="fab fa-autoprefixer fa-sm"></i>
+                  </button>
+            </div>
+
+            <div class='col-divider ml-2 mr-3'></div>
+
             <!-- Gravity related -->
             
             <div class="mr-2">
@@ -300,22 +329,7 @@
                   </button>
             </div>
             
-            <div class='col-divider ml-2 mr-3'></div>
-
             
-            <div class="mr-2">
-                <button class="btn button-color" type="button" id="hidderEdges" >
-                    <i class="fas fa-eye fa-sm"></i>
-                  </button>
-            </div>
-            
-            
-            
-                        <div class="mr-2">
-                <button class="btn button-color" type="button" id="hidderLabels" >
-                    <i class="fab fa-autoprefixer fa-sm"></i>
-                  </button>
-            </div>
             
             
             <div class='col-divider ml-2 mr-3'></div>

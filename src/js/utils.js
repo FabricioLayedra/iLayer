@@ -239,17 +239,6 @@ function unBoldText(textGraphics){
     textGraphics.attr({'font-weight':'normal'});
 }
 
-var edgesHidden = false;
-
-function showHideEdges(){
-    if (!edgesHidden){
-        getActiveLayer().layer.select('g.edge').attr({"opacity":0});
-        edgesHidden = true;
-    }else{
-        getActiveLayer().layer.select('g.edge').attr({"opacity":1});
-        edgesHidden = false;
-    }
-}
 
 function getElementFromGroupByPropertyValue(group, property,value) {
 
@@ -341,14 +330,47 @@ function elementPosDrawingLine(element,newPosX,oldPosX,newPosY,oldPosY,previous)
 }
 
 
-var labelsHidden = false;
+
+var edgesHidden = false;
+
+function showHideEdges(){
+    console.log(edgesHidden)
+
+    //make this global because currently all edges are still registered as part of layer 1
+
+    /*
+    console.log(getActiveLayer().layer.node.id)
+    if (!edgesHidden){
+        getActiveLayer().layer.select('g.edge').attr({"opacity":0});
+        edgesHidden = true;
+    }else{
+        getActiveLayer().layer.select('g.edge').attr({"opacity":1});
+        edgesHidden = false;
+    }*/
+}
+
+var globalLabelsHidden = false;
 
 function showHideLabels(){
-    if (!labelsHidden){
+    if (!globalLabelsHidden){
         getActiveLayer().layer.select('text.node-label').attr({"opacity":0});
-        labelsHidden = true;
+        globalLabelsHidden = true;
     }else{
         getActiveLayer().layer.select('text.node-label').attr({"opacity":1});
-        labelsHidden = false;
+        globalLabelsHidden = false;
+    }
+}
+
+//to hide an individual layer's attributes
+//is totally bonked
+function showHideLabels(layerName){
+    var layer = "#layer-" + layerName;
+    console.log($(layer).labelIsHidden);
+    if (!labelIsHidden){
+        getActiveLayer().layer.select('text.node-label').attr({"opacity":0});
+        labelIsHidden = true;
+    }else{
+        getActiveLayer().layer.select('text.node-label').attr({"opacity":1});
+        labelIsHidden = false;
     }
 }
