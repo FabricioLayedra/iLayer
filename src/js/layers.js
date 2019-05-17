@@ -1530,12 +1530,15 @@ function newLayerItem(callback) {
 }
 
 function sendSelectionToLayer(destination) {
-
-    for (var i = 0; i < SELECTION.length; i++) {
+     for (var i = 0; i < SELECTION.length; i++) {
         let object = SELECTION[i];
         let svg_destination = getSvgId(destination);
+
+        console.log(object);
+        console.log(object.nodeData);
         SVG.get(svg_destination).put(object.remove());
         SVG.get(svg_destination).put(object.nodeData.label.remove());
+
         // this need revision, as the highlight might exist already, so it only has to change of color and be animated
         if (object.highlight) {
             object.highlight.remove();
@@ -1555,22 +1558,55 @@ function getNodesNames(nodes) {
 
 function sendEdgesToLayer(source, nodesNames, edges, destination) {
     var layerName = destination.split("-")[1];
-//    console.log("neighbour");
-    console.log(edges);
+//   //includes all edges sent
+    //console.log(edges);
+    var edgeArray = getActiveLayer().layer.select('g.edge').members;
+
+    //console.log(source + " " + "nodesNames" + nodesNames);
+    //console.log(destination);
     for (var index in edges) {
 //        console.log(edges[index]);
 //        console.log(edges[index].node.id);
 //        console.log(edges[index].node.id.split("#")[1]);
 //        console.log();
+//links that are shared are also going to be coloured, and should be sent to the new layer
         if (nodesNames.includes(edges[index].node.id.replace(source.node.id, ""))) {
 
+
+            console.log(edges[index].node);
+            console.log(SVG.get(edges[index].node))
+            
+            //output = initiializer with node: g#path-...
+            let edgeToPlace = edgeArray.find(function(e){
+                return e.node.id === 'path-' + edges[index].node.id})
+
             SVG.get(edges[index].node.id).attr({"stroke": LAYERS[layerName].color});
-            SVG.get(destination).put(SVG.get(edges[index].node.id).remove()).back();
-            
-            
+            //SVG.get(destination).put(SVG.get(edges[index].node.id).remove())//.back();
+            //SVG.get(destination).put(edges[index].node.remove())
+
+            //properly sends the edge group for edges between two nodes in the same layer, and removes it from the original
+            SVG.get(destination).put(edgeToPlace.remove());
+            //SVG.get(destination).put(SVG.get(edges[index].node).remove()).back();
+
+            console.log(SVG.get(edges[index]).node);
         }
     }
-    console.log(edges)
+    //console.log(edges)
+
+    /*
+    for (var i = 0; i < SELECTION.length; i++) {
+        let object = SELECTION[i];
+        let svg_destination = getSvgId(destination);
+        SVG.get(svg_destination).put(object.remove());
+        SVG.get(svg_destination).put(object.nodeData.label.remove());
+        // this need revision, as the highlight might exist already, so it only has to change of color and be animated
+        if (object.highlight) {
+            object.highlight.remove();
+            object.highlight = null;
+        }
+        createHighlight(object.parent(), true, true, LAYERS[destination].color);
+    }
+    */
     
 }
 
@@ -1589,14 +1625,16 @@ function includeSelection(layerName) {
 //    $("#container-item-"+layerName).animate({height: '-=10px',width: '-=10px'});
     //Todo has to be changed!
     var nodes = getActiveLayer().layer.select('g.node').members;
+    var edges = getActiveLayer().layer.select('g.edge').members;
 
 //    console.log(nodes);
 
     for (var i = 0; i < nodes.length; i++) {
-        let object = nodes[i];
+        let object = nodes[i];//type initializer
 //        console.log(SELECTION.includes(nodes[i]));
         if (SELECTION.includes(nodes[i])) {
             let svgDestination = getSvgId(layerName);
+            //places entire group id for the node
             object = SVG.get(svgDestination).put(object.remove());
             //            getElementFromGroup(object,'circle').highlight = null;
             var circle = getElementFromGroup(object, 'circle');
@@ -1617,14 +1655,22 @@ function includeSelection(layerName) {
 //            addAttributesAsTools(dataKeys);
             circle.fill(LAYERS[layerName].color);
             var s = circle.nodeData;
-            console.log(circle.nodeData);
+            // console.log("inEdges/outEdges ")
+            // console.log(circle.nodeData.inEdges);
+            // console.log(circle.nodeData.outEdges);
+
+            //does not send the connecting edge between two nodes
             sendEdgesToLayer(circle, names, circle.nodeData.inEdges, svgDestination);
 //            isNeighbour(circle,names,circle.nodeData.outEdges);
+        
 
+            //path is coloured
 
+            //this is only for the ringed circle around selected items
             getElementFromGroup(object, 'path').remove();
 
             getElementFromGroup(object, 'path').attr({fill: LAYERS[layerName].color, "stroke-fill": LAYERS[layerName].color});
+            //getElementFromGroup(object, 'path').attr({"fill": "green", "stroke-fill": "green"});
 
 
         }
@@ -1638,6 +1684,7 @@ function includeSelection(layerName) {
 
     }
     LAYERS[getSvgId(layerName).split("-")[1]].data = getValuesByAttributeDict(SELECTION, dataKeys);
+    console.log(LAYERS[getSvgId(layerName).split("-")[1]].data);
     SELECTION = [];
     selectionFlag = false;
 }
@@ -1668,6 +1715,7 @@ function sendElementToLayer(selector, destination) {
     let object = SVG.get(selector);
     createHighlight(object.parent(), true, true, LAYERS[destination].color);
 
+    console.log(object)
     let svg_destination = getSvgId(destination);
     SVG.get(svg_destination).put(object.remove());
     SVG.get(svg_destination).put(object.nodeData.label.remove());
