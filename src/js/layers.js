@@ -7,6 +7,9 @@ var distLabelGroup = 0;
 
 //selection should be global, whereas visibility should be for a single layer
 var selectionFlag = false;
+var edgesFlag = false;
+var labelsFlag = false;
+
 var selectionCount = 0;
 
 var datafile = "./data/authors_relations_SC_JD_sample2015.json";
@@ -185,18 +188,29 @@ function addMenuEvents(){
         else{
             selectionMode(!selectionFlag, false);
         }
-        console.log(selectionFlag + " selector")
+        //selectionMode(!selectionFlag);
+        //console.log(selectionFlag + " selector")
         $(this).toggleClass('active');
     });
 
-    $("#hidderEdges").on('pointerdown', function (e) {
+    $("#hideEdges").on('pointerdown', function (e) {
+        if (edgesFlag){
+            showHideEdges(!edgesFlag)//, true);
+        }
+
+        if (!edgesFlag){
+            showHideEdges(!edgesFlag)//, true);
+        }
+
+
+
         showHideEdges();
        // e.srcEvent.stopPropogation();
 
         $(this).toggleClass('active');
     });
     
-    $("#hidderLabels").on('pointerdown', function () {
+    $("#hideLabels").on('pointerdown', function () {
         showHideLabels();
        $(this).toggleClass('active');
     });
@@ -276,7 +290,7 @@ function addEvents(id) {
 
     // });
 
-    // $("#hidderEdges").on('click', function (e) {
+    // $("#hideEdges").on('click', function (e) {
     //     selectionCount++;
     //     console.log(selectionCount)
     //     showHideEdges(id);
@@ -285,7 +299,7 @@ function addEvents(id) {
     //     //$(this).toggleClass('active');
     // });
     
-    // $("#hidderLabels").on('pointerdown', function () {
+    // $("#hideLabels").on('pointerdown', function () {
     //     showHideLabels(id);
     //    //$(this).toggleClass('active');
     // });
@@ -1534,8 +1548,6 @@ function sendSelectionToLayer(destination) {
         let object = SELECTION[i];
         let svg_destination = getSvgId(destination);
 
-        console.log(object);
-        console.log(object.nodeData);
         SVG.get(svg_destination).put(object.remove());
         SVG.get(svg_destination).put(object.nodeData.label.remove());
 
@@ -1558,23 +1570,15 @@ function getNodesNames(nodes) {
 
 function sendEdgesToLayer(source, nodesNames, edges, destination) {
     var layerName = destination.split("-")[1];
-//   //includes all edges sent
-    //console.log(edges);
     var edgeArray = getActiveLayer().layer.select('g.edge').members;
+    var existingNodesInTarget = SVG.get(destination).select('g.node').members;
+    var existingNodeInTargetNames = getNodesNames(existingNodesInTarget);
 
-    //console.log(source + " " + "nodesNames" + nodesNames);
-    //console.log(destination);
     for (var index in edges) {
-//        console.log(edges[index]);
-//        console.log(edges[index].node.id);
-//        console.log(edges[index].node.id.split("#")[1]);
-//        console.log();
-//links that are shared are also going to be coloured, and should be sent to the new layer
-        if (nodesNames.includes(edges[index].node.id.replace(source.node.id, ""))) {
 
-
-            console.log(edges[index].node);
-            console.log(SVG.get(edges[index].node))
+        if (nodesNames.includes(edges[index].node.id.replace(source.node.id, "")) || existingNodeInTargetNames.includes(edges[index].node.id.replace(source.node.id, ""))) {
+           /* console.log(edges[index].node);
+            console.log(SVG.get(edges[index].node))*/
             
             //output = initiializer with node: g#path-...
             let edgeToPlace = edgeArray.find(function(e){
@@ -1582,16 +1586,22 @@ function sendEdgesToLayer(source, nodesNames, edges, destination) {
 
             SVG.get(edges[index].node.id).attr({"stroke": LAYERS[layerName].color});
             //SVG.get(destination).put(SVG.get(edges[index].node.id).remove())//.back();
-            //SVG.get(destination).put(edges[index].node.remove())
 
             //properly sends the edge group for edges between two nodes in the same layer, and removes it from the original
-            SVG.get(destination).put(edgeToPlace.remove());
-            //SVG.get(destination).put(SVG.get(edges[index].node).remove()).back();
-
-            console.log(SVG.get(edges[index]).node);
+            if (edgeToPlace !== undefined){
+                SVG.get(destination).put(edgeToPlace.remove());
+            }
+//            console.log(SVG.get(edges[index]).node);
         }
+
+
+        //check with target layer as well
+        /*if (nodesNames.include(edges[index].node.id.replace(source.node.))){
+
+
+        }*/
+
     }
-    //console.log(edges)
 
     /*
     for (var i = 0; i < SELECTION.length; i++) {
@@ -1659,8 +1669,9 @@ function includeSelection(layerName) {
             // console.log(circle.nodeData.inEdges);
             // console.log(circle.nodeData.outEdges);
 
-            //does not send the connecting edge between two nodes
-            sendEdgesToLayer(circle, names, circle.nodeData.inEdges, svgDestination);
+            //do this because even though its more tedious in most cases, it will cover cases where a node is added to a destination layer
+            sendEdgesToLayer(circle, names, circle.nodeData.inEdges.concat(circle.nodeData.outEdges), svgDestination);
+            //sendEdgesToLayer(circle, names, circle.nodeData.inEdges, svgDestination);
 //            isNeighbour(circle,names,circle.nodeData.outEdges);
         
 
