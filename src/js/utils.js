@@ -334,12 +334,9 @@ function elementPosDrawingLine(element,newPosX,oldPosX,newPosY,oldPosY,previous)
 var edgesHidden = false;
 
 function showHideEdges(){
-    //console.log(edgesHidden)
+    console.log(edgesHidden)
 
     //make this global because currently all edges are still registered as part of layer 1
-
-    
-    console.log(getActiveLayer().layer.node.id)
     if (!edgesHidden){
         getActiveLayer().layer.select('g.edge').attr({"opacity":0});
         edgesHidden = true;

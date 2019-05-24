@@ -24,6 +24,10 @@
     <!-- Custom styles for civerse-->
     <link href="css/table_style.css" rel="stylesheet">
 
+    <!--Style for the jQuery SVG plugin-->
+    <!--link rel="stylesheet" type="text/css" href="css/jquery.svg.css"--> 
+
+
     <!-- Custom styles for ui-->
     <link rel="stylesheet" href="css/lib/jquery-ui.css">
     <link rel="stylesheet" href="css/jquery.contextMenu.min.css">
@@ -178,7 +182,15 @@
           </div>
           <!--<div class='col-divider ml-2 mr-3' ></div>-->
 
+
+
       </template>
+      <!--defs>
+            <linearGradient id="linear" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#05a"/>
+              <stop offset="100%" stop-color="#0a5"/>
+            </linearGradient>
+          </defs-->
             
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -256,6 +268,8 @@
 
         <!-- Main Content -->
         <div id="content">
+          <!--Storing SVG gradient templates for the edges-->
+          <!--svg id = "gradientTemplates"></svg-->
 
           <!-- Topbar -->
           <nav class="navbar navbar-expand navbar-light bg-sidebar topbar static-top " style="border-bottom: black solid 1px;" id="set-tools">
@@ -278,7 +292,7 @@
             
             <div class="mr-2">
                 <button class="btn button-color" type="button" id="hideEdges" >
-                    <i class="fas fa-eye fa-sm"></i>
+                    <i class="fas fa-code-branch fa-sm"></i>
                   </button>
             </div>
             
@@ -413,6 +427,10 @@
           </nav>
           <!-- End of Topbar -->
 
+
+          <div id = 'gradients' width = '0px' height = '0px' padding = '0px' margin ='0px' style = 'z-index: -100; overflow:hidden'>
+
+          </div>
           <!-- Begin Page Content -->
           <div id="set-canvases" style ="position: relative">
               <!--GET THE RIGHT DIMENSIONS-->
@@ -481,7 +499,8 @@
     <script src="lib/matter_attractors/build/matter-attractors.js"></script>
     <script src="lib/hammer.min.js" charset="utf-8"></script> 
     <script src="lib/svg.path.min.js" charset="utf-8"></script>  
-    <script src="lib/svg.intersections.js" charset="utf-8"></script>   
+    <script src="lib/svg.intersections.js" charset="utf-8"></script>
+    <!--script src="lib/svg.js" charset="utf-8"></script-->   
     
     <script src="js/touch.js" charset="utf-8"></script> 
     <script src="js/layers.js" charset="utf-8"></script> 

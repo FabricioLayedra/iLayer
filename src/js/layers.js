@@ -11,6 +11,7 @@ var edgesFlag = false;
 var labelsFlag = false;
 
 var selectionCount = 0;
+var maxLayersAllowed = 10;
 
 var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/usa_airports.json";
@@ -40,6 +41,9 @@ var LAYERS = {};
 var GRAPHS = {};
 
 var SELECTION = [];
+
+//ids of edge gradients
+var EDGEGRADIENTS = {};
 
 var COLORS = ["#1F77B4", "#FF7F0E", "#2CA02C", "#D62728", "#9467BD", "#8C564B", "#E3775E", "#7F7F7F", "#BCBD22", "#17BECF"];
 
@@ -75,12 +79,118 @@ function getRandomColor() {
 }
 
 function getColor() {
-    if (Object.keys(LAYERS).length < 10) {
+    if (Object.keys(LAYERS).length < maxLayersAllowed) {
         return COLORS[Object.keys(LAYERS).length];
     } else {
         alert("No more available layers.")
     }
 }
+
+
+//this function has a gradient attached to every edge instead
+function addGradientsToEdges(sourceNode, targetNode){
+    let srcColor = LAYERS[sourceLayerId].color; //get layer of sourceNode
+    let tgtColor = LAYERS[targetLayerId].color;
+
+    var srcToTgtGradient = SVG.get('gradientTemplates').gradient('linear', function(stop) {
+          stop.at(0, srcColor)
+          stop.at(1.0, tgtColor)
+        }).id('gradient-'+sourceLayerId + '-' + targetLayerId).from(0,0).to(1,0);
+
+    var targetToSrcGradient = SVG.get('gradientTemplates').gradient('radial', function(stop) {
+          stop.at(0, tgtColor)
+          stop.at(1, srcColor)
+        }).id('gradient-'+targetLayerId + '-' + sourceLayerId);
+
+    //console.log(gradient.id());
+    EDGEGRADIENTS[sourceNodeId +'-' + targetNodeId] = {id: 'gradient-' + sourceLayerId + '-' + targetLayerId, sourceGradient: srcColor, targetGradient: tgtColor, sourceStop: 0, targetStop: 100};
+
+    EDGEGRADIENTS[targetLayerId +'-' + sourceLayerId] = {id: 'gradient-' + targetLayerId + '-' + sourceLayerId, sourceGradient: tgtColor, targetGradient: srcColor, sourceStop: 0, targetStop: 100};
+
+}
+
+//should be done on move, see if this is too slow 
+function updateGradientToEdges(edge, sourceNode, targetNode){
+    let srcColor = LAYERS[sourceNode.layerName].color;
+    let tgtColor = LAYERS[targetNode.layerName].color;
+
+    var srcToTgtGradient = SVG.get('gradientTemplates').gradient('linear', function(stop) {
+          stop.at(0, srcColor)
+          stop.at(1.0, tgtColor)
+        }).id('gradient-'+sourceNode. + '-' + targetLayerId).from(0,0).to(1,0);
+
+    var targetToSrcGradient = SVG.get('gradientTemplates').gradient('linear', function(stop) {
+          stop.at(0, tgtColor)
+          stop.at(1, srcColor)
+        }).id('gradient-'+targetLayerId + '-' + sourceLayerId);
+
+}
+
+
+//Adds the linear gradients and stores the IDs to a global array
+function addEdgeGradients(sourceLayerId, targetLayerId){
+    //let l = SVG.get('gradientTemplates');
+    //let l = $('gradientTemplates').svg('get');
+
+    //for layer
+    //let src = sourceLayerName.split('-')[1];
+    //let tgt = targetLayerName.split('-')[1];
+    let srcColor = LAYERS[sourceLayerId].color;
+    let tgtColor = LAYERS[targetLayerId].color;
+    //9C2 = 36 combinations total
+    //
+    var srcToTgtGradient = SVG.get('gradientTemplates').gradient('linear', function(stop) {
+          stop.at(0, srcColor)
+          stop.at(1.0, tgtColor)
+        }).id('gradient-'+sourceLayerId + '-' + targetLayerId).from(0,0).to(1,0);
+
+    var targetToSrcGradient = SVG.get('gradientTemplates').gradient('linear', function(stop) {
+          stop.at(0, tgtColor)
+          stop.at(1, srcColor)
+        }).id('gradient-'+targetLayerId + '-' + sourceLayerId);
+
+    //console.log(gradient.id());
+    EDGEGRADIENTS[sourceLayerId +'-' + targetLayerId] = {id: 'gradient-' + sourceLayerId + '-' + targetLayerId, sourceGradient: srcColor, targetGradient: tgtColor, sourceStop: 0, targetStop: 100};
+
+   EDGEGRADIENTS[targetLayerId +'-' + sourceLayerId] = {id: 'gradient-' + targetLayerId + '-' + sourceLayerId, sourceGradient: tgtColor, targetGradient: srcColor, sourceStop: 0, targetStop: 100};
+
+    /*svg.linearGradient(defs,
+        "gradient-" + sourceLayerId + "-" + targetLayerId,
+        [[0, srcColor], [1, tgtColor]]
+        );
+
+        */
+/*
+ <linearGradient id="linear" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#05a"/>
+      <stop offset="100%" stop-color="#0a5"/>
+    </linearGradient>
+  </defs>
+*/
+}
+
+function createEdgeGradients(){
+    
+    //var gradientTemplateArray = SVG('')
+    let numberOfLayers = Object.keys(LAYERS).length;
+
+    if ($('#gradientTemplates').length == 0){
+        var grad = SVG('gradients').id('gradientTemplates').size(0,0)
+    }
+    
+    if (numberOfLayers < 2){
+        return;
+    }
+
+    for (let i = 1; i < numberOfLayers; i++){
+        addEdgeGradients(i, numberOfLayers);
+        //src and target
+    }
+
+
+}
+
+
 
 /*----------------------------CREATION OF LAYERS--------------------------------*/
 
@@ -92,6 +202,7 @@ function addNewLayer(layerName) {
     addColorsAndBorders(layerName, color);
     addEvents(layerName);
     sortLayers($("#layers-table"));
+
 }
 
 
@@ -117,6 +228,18 @@ function createLayer(layerName, color) {
     changeLayerNames(layer, id);
 
     addDroppingZones(layerName);
+
+    //if (LAYERS.members)
+    if (Object.keys(LAYERS).length > 1)
+        createEdgeGradients();
+    //addEdgeGradients(layerName);
+
+    /*canvas.appendChild(<defs>
+            <linearGradient id="linear" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#05a"/>
+              <stop offset="100%" stop-color="#0a5"/>
+            </linearGradient>
+          </defs>)*/
 
     return layer;
 }
@@ -194,17 +317,18 @@ function addMenuEvents(){
     });
 
     $("#hideEdges").on('pointerdown', function (e) {
-        if (edgesFlag){
+        /*if (edgesFlag){
             showHideEdges(!edgesFlag)//, true);
         }
 
         if (!edgesFlag){
             showHideEdges(!edgesFlag)//, true);
         }
-
+        */
 
 
         showHideEdges();
+
        // e.srcEvent.stopPropogation();
 
         $(this).toggleClass('active');
@@ -216,6 +340,11 @@ function addMenuEvents(){
     });
 
 }
+
+
+
+
+
 //this is triggered for each layer every time something takes place, which is not helpful in individual cases
 function addEvents(id) {
 
@@ -312,6 +441,10 @@ function activateLayer(layerName) {
     }
     active = $("#container-item-" + layerName);
     activeLayer = LAYERS[layerName];
+    //edgesHidden = false;
+
+    //reset all flags to false
+
 
     var layers = getLayersNames(LAYERS);
     for (var i = 0; i < layers.length; i++) {
@@ -1038,7 +1171,7 @@ function drawGraph(layer_name, g) {
         var edgePath = drawPathInLayer(draw, fromCenterX, fromCenterY,
                 controlX, controlY, toCenterX, toCenterY, id, graphId, layer_name);
 
-        var group = draw.group().attr({id: "path-" + id, class: 'edge'});
+        var group = draw.group().attr({id: "path-" + id, class: 'edge', opacity: '.8'});
         //    console.log(group);
         group.add(edgePath);
         group.layerName = layer_name;
@@ -1223,7 +1356,10 @@ function updateEdgesEnds(nodeGraphics, coordX, coordY, directed) {
 //        console.log(inEdge.getSegment(1));
 
         inEdge.highlight.replaceSegment(1, inEdge.getSegment(1))
+        //outEdge.node.id = AliceThudtDominikusBaur
 //        break;
+        //update gradient here
+
 
     });
     nodeGraphics.nodeData.outEdges.forEach(function (outEdge, i) {
@@ -1246,6 +1382,10 @@ function updateEdgesEnds(nodeGraphics, coordX, coordY, directed) {
         outEdge.highlight.replaceSegment(1, outEdge.getSegment(1))
 
     });
+
+    //also update gradient while colouring so it is between the x and y
+
+
 
 //    }else{
 //       nodeGraphics.nodeData.edges.forEach(function(edge){
@@ -1568,14 +1708,18 @@ function getNodesNames(nodes) {
     return names;
 }
 
-function sendEdgesToLayer(source, nodesNames, edges, destination) {
+function sendEdgesToLayer(source, nodesNames, inEdges, outEdges, destination) {
+    var edges = inEdges.concat(outEdges);
     var layerName = destination.split("-")[1];
     var edgeArray = getActiveLayer().layer.select('g.edge').members;
     var existingNodesInTarget = SVG.get(destination).select('g.node').members;
     var existingNodeInTargetNames = getNodesNames(existingNodesInTarget);
 
+
+    //if edge or target is not in layer 1, send to target layer
     for (var index in edges) {
 
+        SVG.get(edges[index].node.id).attr({"stroke": 'url(#gradient-' + getActiveLayer().layer.id().split('-')[1] + '-' + layerName, "opacity": ".8"})
         if (nodesNames.includes(edges[index].node.id.replace(source.node.id, "")) || existingNodeInTargetNames.includes(edges[index].node.id.replace(source.node.id, ""))) {
            /* console.log(edges[index].node);
             console.log(SVG.get(edges[index].node))*/
@@ -1583,17 +1727,19 @@ function sendEdgesToLayer(source, nodesNames, edges, destination) {
             //output = initiializer with node: g#path-...
             let edgeToPlace = edgeArray.find(function(e){
                 return e.node.id === 'path-' + edges[index].node.id})
-
-            SVG.get(edges[index].node.id).attr({"stroke": LAYERS[layerName].color});
-            //SVG.get(destination).put(SVG.get(edges[index].node.id).remove())//.back();
-
+            SVG.get(edges[index].node.id).attr({"stroke": LAYERS[layerName].color, "opacity": ".8"});
             //properly sends the edge group for edges between two nodes in the same layer, and removes it from the original
             if (edgeToPlace !== undefined){
                 SVG.get(destination).put(edgeToPlace.remove());
             }
-//            console.log(SVG.get(edges[index]).node);
+        }
+        else{
+            //put in gradient?
+            console.log(edges[index].node.id)
         }
 
+        //do some detection to figure out where source node and destination node are, layerwise
+        
 
         //check with target layer as well
         /*if (nodesNames.include(edges[index].node.id.replace(source.node.))){
@@ -1670,7 +1816,7 @@ function includeSelection(layerName) {
             // console.log(circle.nodeData.outEdges);
 
             //do this because even though its more tedious in most cases, it will cover cases where a node is added to a destination layer
-            sendEdgesToLayer(circle, names, circle.nodeData.inEdges.concat(circle.nodeData.outEdges), svgDestination);
+            sendEdgesToLayer(circle, names, circle.nodeData.inEdges, circle.nodeData.outEdges, svgDestination);
             //sendEdgesToLayer(circle, names, circle.nodeData.inEdges, svgDestination);
 //            isNeighbour(circle,names,circle.nodeData.outEdges);
         
@@ -1682,7 +1828,7 @@ function includeSelection(layerName) {
 
             getElementFromGroup(object, 'path').attr({fill: LAYERS[layerName].color, "stroke-fill": LAYERS[layerName].color});
             //getElementFromGroup(object, 'path').attr({"fill": "green", "stroke-fill": "green"});
-
+            object.layerName = layerName;
 
         }
 
@@ -1727,6 +1873,7 @@ function sendElementToLayer(selector, destination) {
     createHighlight(object.parent(), true, true, LAYERS[destination].color);
 
     console.log(object)
+    //object.id.split('-')[1]
     let svg_destination = getSvgId(destination);
     SVG.get(svg_destination).put(object.remove());
     SVG.get(svg_destination).put(object.nodeData.label.remove());
