@@ -1,0 +1,184 @@
+{
+    "nodes": [
+        {
+            "group": 1, 
+            "id": "Isabella",
+            "country": "Brazil",
+            "papers": 3,
+            "citations": 15
+        }, 
+        {
+            "group": 1, 
+            "id": "Geraldine",
+            "country": "Brazil",
+            "papers": 4,
+            "citations": 5
+        }, 
+        {
+            "group": 1, 
+            "id": "Elizabeth",
+            "country": "France",
+            "papers": 33,
+            "citations": 45
+        }, 
+        {
+            "group": 1, 
+            "id": "Charlie",
+            "country": "Japan",
+            "papers": 8,
+            "citations": 11
+        }, 
+        {
+            "group": 1, 
+            "id": "William",
+            "country": "Germany",
+            "papers": 2,
+            "citations": 15
+        }, 
+        {
+            "group": 1, 
+            "id": "Justin",
+            "country": "Egypt",
+            "papers": 12,
+            "citations": 15
+        }, 
+        {
+            "group": 1, 
+            "id": "Paul",
+            "country": "USA",
+            "papers": 2,
+            "citations": 1
+        }, 
+        {
+            "group": 1, 
+            "id": "Thomas",
+            
+            "country": "USA",
+            "papers": 2,
+            "citations": 1
+        }, 
+        {
+            "group": 1, 
+            "id": "Farah",
+            "country": "Egypt",
+            "papers": 2,
+            "citations": 1
+        }
+    ], 
+    "links": [
+        {
+            "source": "Isabella", 
+            "target": "William", 
+            "value": 1, 
+            "id": 1
+        }, 
+        {
+            "source": "Isabella", 
+            "target": "Paul", 
+            "value": 1, 
+            "id": 2
+        }, 
+        {
+            "source": "Isabella", 
+            "target": "Elizabeth", 
+            "value": 1, 
+            "id": 3
+        }, 
+        {
+            "source": "Charlie", 
+            "target": "Justin", 
+            "value": 1, 
+            "id": 4
+        }, 
+        {
+            "source": "Charlie", 
+            "target": "Thomas", 
+            "value": 1, 
+            "id": 5
+        }, 
+        {
+            "source": "Charlie", 
+            "target": "Farah", 
+            "value": 1, 
+            "id": 6
+        }, 
+        {
+            "source": "Charlie", 
+            "target": "Elizabeth", 
+            "value": 2, 
+            "id": 7
+        }, 
+        {
+            "source": "Justin", 
+            "target": "Elizabeth", 
+            "value": 1, 
+            "id": 8
+        }, 
+        {
+            "source": "William", 
+            "target": "Paul", 
+            "value": 1, 
+            "id": 9
+        }, 
+        {
+            "source": "William", 
+            "target": "Elizabeth", 
+            "value": 1, 
+            "id": 10
+        }, 
+        {
+            "source": "Thomas", 
+            "target": "Elizabeth", 
+            "value": 1, 
+            "id": 11
+        }, 
+        {
+            "source": "Geraldine", 
+            "target": "Charlie", 
+            "value": 2, 
+            "id": 12
+        }, 
+        {
+            "source": "Geraldine", 
+            "target": "Justin", 
+            "value": 1, 
+            "id": 13
+        }, 
+        {
+            "source": "Geraldine", 
+            "target": "Thomas", 
+            "value": 1, 
+            "id": 14
+        }, 
+        {
+            "source": "Geraldine", 
+            "target": "Farah", 
+            "value": 1, 
+            "id": 15
+        }, 
+        {
+            "source": "Geraldine", 
+            "target": "Elizabeth", 
+            "value": 2, 
+            "id": 16
+        }, 
+        {
+            "source": "Farah", 
+            "target": "Thomas", 
+            "value": 1, 
+            "id": 17
+        }, 
+        {
+            "source": "Farah", 
+            "target": "Elizabeth", 
+            "value": 1, 
+            "id": 18
+        }, 
+        {
+            "source": "Paul", 
+            "target": "Elizabeth", 
+            "value": 1, 
+            "id": 19
+        }
+    ]
+}

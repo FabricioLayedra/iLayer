@@ -13,7 +13,9 @@ var labelsFlag = false;
 var selectionCount = 0;
 var maxLayersAllowed = 10;
 
-var datafile = "./data/authors_relations_SC_JD_sample2015.json";
+var datafile = "./data/authors_relations_SC_JD_sample2015_anonymized.json";
+
+//var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/usa_airports.json";
 
 //Map
@@ -57,6 +59,11 @@ var setCanvases = $("#content");
 
 var generalWidth = setCanvases.width();
 var generalHeight = $(document).height() - 70;
+
+//var generalWidth = window.screen.width;
+//var generalHeight = Math.max(window.screen.availHeight - $('#set-tools').outerHeight() - 70, window.innerHeight || 0);
+//var generalHeight = window.screen.availHeight - $('#set-tools').outerHeight() - 70;
+
 //var generalHeight = $('#mobile-indicator').innerHeight()-70;
 console.log(generalWidth, generalHeight);
 
@@ -117,9 +124,9 @@ function updateGradientToEdges(edge, sourceNode, targetNode){
     var srcToTgtGradient = SVG.get('gradientTemplates').gradient('linear', function(stop) {
           stop.at(0, srcColor)
           stop.at(1.0, tgtColor)
-        }).id('gradient-'+sourceNode. + '-' + targetLayerId).from(0,0).to(1,0);
+        }).id('gradient-'+sourceLayerId + '-' + targetLayerId).from(0,0).to(1,0);
 
-    var targetToSrcGradient = SVG.get('gradientTemplates').gradient('linear', function(stop) {
+    var targetToSrcGradient = SVG.get('gradientTemplates').gradient('radial', function(stop) {
           stop.at(0, tgtColor)
           stop.at(1, srcColor)
         }).id('gradient-'+targetLayerId + '-' + sourceLayerId);
@@ -144,7 +151,7 @@ function addEdgeGradients(sourceLayerId, targetLayerId){
           stop.at(1.0, tgtColor)
         }).id('gradient-'+sourceLayerId + '-' + targetLayerId).from(0,0).to(1,0);
 
-    var targetToSrcGradient = SVG.get('gradientTemplates').gradient('linear', function(stop) {
+    var targetToSrcGradient = SVG.get('gradientTemplates').gradient('radial', function(stop) {
           stop.at(0, tgtColor)
           stop.at(1, srcColor)
         }).id('gradient-'+targetLayerId + '-' + sourceLayerId);
@@ -1873,7 +1880,6 @@ function sendElementToLayer(selector, destination) {
     createHighlight(object.parent(), true, true, LAYERS[destination].color);
 
     console.log(object)
-    //object.id.split('-')[1]
     let svg_destination = getSvgId(destination);
     SVG.get(svg_destination).put(object.remove());
     SVG.get(svg_destination).put(object.nodeData.label.remove());
