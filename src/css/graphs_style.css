@@ -1,5 +1,7 @@
 body {
   overflow: hidden;
+  position: absolute;
+  width: 100%;
 }
 
 
@@ -166,4 +168,8 @@ svg text {
     width: 0;
     z-index: -100;
 
+}
+
+#wrapper{
+    height: 100%;
 }

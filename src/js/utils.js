@@ -360,14 +360,14 @@ function showHideLabels(){
 
 //to hide an individual layer's attributes
 //is totally bonked
-function showHideLabels(layerName){
-    var layer = "#layer-" + layerName;
-    console.log($(layer).labelIsHidden);
-    if (!labelIsHidden){
-        getActiveLayer().layer.select('text.node-label').attr({"opacity":0});
-        labelIsHidden = true;
-    }else{
-        getActiveLayer().layer.select('text.node-label').attr({"opacity":1});
-        labelIsHidden = false;
-    }
-}
+// function showHideLabels(layerName){
+//     var layer = "#layer-" + layerName;
+//     console.log($(layer).labelIsHidden);
+//     if (!labelIsHidden){
+//         getActiveLayer().layer.select('text.node-label').attr({"opacity":0});
+//         labelIsHidden = true;
+//     }else{
+//         getActiveLayer().layer.select('text.node-label').attr({"opacity":1});
+//         labelIsHidden = false;
+//     }
+// }

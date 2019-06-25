@@ -195,15 +195,18 @@
     <!-- Page Wrapper -->
     <div id="wrapper">
 
+      <ul class="navbar-nav  bg-sidebar sidebar sidebar-dark accordion" id="accordionSidebar" style="border-right: black solid 1px; display: none">
+
+      </ul>
       <!-- Sidebar -->
-      <ul class="navbar-nav  bg-sidebar sidebar sidebar-dark accordion" id="accordionSidebar" style="border-right: black solid 1px">
+      <ul class="navbar-nav  bg-sidebar sidebar sidebar-dark accordion" id="accordionSidebar" style="border-right: black solid 1px; display: none">
 
         <!-- Sidebar - Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
           <div class="sidebar-brand-icon rotate-n-15 rule-text-color">
             <i class="fas fa-network-wired"></i>
           </div>
-          <div class="sidebar-brand-text mx-3 rule-text-color">iLayer</div>
+          <div class="sidebar-brand-text mx-3 rule-text-color">TabbyGraph</div>
         </a>
 
         <!-- Divider -->
@@ -220,10 +223,10 @@
         </li>-->
 
         <!-- Divider -->
-        <hr class="sidebar-divider rule-back-color" style="width: 100%">
+        <!--hr class="sidebar-divider rule-back-color" style="width: 100%"-->
 
         <!-- Heading -->
-        <div class="font-title sidebar-heading row">
+        <!-- <div class="font-title sidebar-heading row">
             <div class = "col-md-8">
                 <span class=" align-middle rule-text-color">LAYERS</span>
             </div>
@@ -231,8 +234,9 @@
                 <button type="button" class="btn btn-light px-2 py-0 " id = "new-layer" onpointerdown="event.preventDefault()">+</button>
             </div>
             
-        </div>
-         <li class="nav-item active">
+        </div> -->
+
+         <li class="nav-item active" style="display:none">
         <ul class="navbar-nav nav-link" id ="layers-table">
 
         </ul>
@@ -279,11 +283,26 @@
               <i class="fa fa-bars"></i>
             </button>-->
 
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+          <div class="sidebar-brand-icon rotate-n-15 rule-text-color">
+            <i class="fas fa-network-wired"></i>
+          </div>
+          <div class="sidebar-brand-text mx-3 rule-text-color">TabbyGraph</div>
+        </a>
+
+        <div class='col-divider ml-2 mr-3'></div>
+
             
             <!--Mode: Selection on/off-->
             <div class="mr-2">
                 <button class="btn button-color" type="button" id="selector">
                     <i class="fas fa-hand-pointer fa-sm"></i>
+                  </button>
+            </div>
+
+            <div class="mr-2">
+                <button class="btn button-color" type="button" id="trash">
+                    <i class="fas fa-trash"></i>
                   </button>
             </div>
 
@@ -433,7 +452,7 @@
 
           </div>
           <!-- Begin Page Content -->
-          <div id="set-canvases" style ="position: relative">
+          <div id="set-canvases" style ="position: relative; width: 100%;">
               <!--GET THE RIGHT DIMENSIONS-->
       <!--              <div id= "canvas-default" width="1200" height="800" style ="position: absolute">
                   </div>-->
@@ -511,7 +530,8 @@
     <script src="js/sb-admin-2.js"></script>
     <script src="lib/all.js"></script>
 
-
+    <!--A debug script cause I'm lazy-->
+    <script src="js/debug.js"></script>
 
     <!-- search plugin-->
 

@@ -13,7 +13,7 @@ var labelsFlag = false;
 var selectionCount = 0;
 var maxLayersAllowed = 10;
 
-var datafile = "./data/authors_relations_SC_JD_sample2015_anonymized.json";
+//var datafile = "./data/authors_relations_SC_JD_sample2015_anonymized.json";
 
 //var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/usa_airports.json";
@@ -23,11 +23,12 @@ var datafile = "./data/authors_relations_SC_JD_sample2015_anonymized.json";
 
 //var datafile = "./data/venezuela_airports.json";
 
-//var datafile = "./data/sample15papers2016.json";
+//var datafile = "./data/sample15papers2016.json";//47
+var datafile = "./data/sample15papers2016_paper_anon.json";
 //var datafile = "./data/americanAuthorsVIS.json.json";
 
 //Scatter plot
-//var datafile = "./data/authors_2015.json.json";
+//var datafile = "./data/authors_2015.json.json"; //a lot
 
 
 //var datafile = "./data/authors_1990.json";
@@ -44,6 +45,9 @@ var GRAPHS = {};
 
 var SELECTION = [];
 
+var ACTIVETOOLS = {};
+var ACTIVEATTRIBUTES = {};
+
 //ids of edge gradients
 var EDGEGRADIENTS = {};
 
@@ -58,7 +62,7 @@ var activeLayer = null;
 var setCanvases = $("#content");
 
 var generalWidth = setCanvases.width();
-var generalHeight = $(document).height() - 70;
+var generalHeight = $(document).height() - $('#set-tools').outerHeight();
 
 //var generalWidth = window.screen.width;
 //var generalHeight = Math.max(window.screen.availHeight - $('#set-tools').outerHeight() - 70, window.innerHeight || 0);
@@ -75,6 +79,21 @@ var sortable = new Sortable(el, {
         var list = document.getElementById("layers-table");
         sortLayers(list);
     }});
+
+function updateSize(e){
+    generalWidth = setCanvases.width();
+    generalHeight = $(document).height() - $('#set-tools').outerHeight();
+    console.log(e)
+
+    var layers = getLayersNames(LAYERS);
+    for (var i = 0; i < layers.length; i++) {
+        let layer = "#layer-" + layers[i];
+        SVG.get(layer).attr({
+            width: generalWidth, 
+            height: generalHeight
+        });
+    }
+}
 
 function getRandomColor() {
     var letters = '0123456789ABCDEF'.split('');
@@ -220,9 +239,11 @@ function createLayer(layerName, color) {
     var canvas = createSVG(container, layerName, generalWidth, generalHeight, color);
 
     
-
     canvas.setAttribute("id", "layer-" + layerName);
     canvas.setAttribute("style", "position: absolute;");
+    //is not being called or bound properly
+    //canvas.bind('resize', updateSize)
+    canvas.addEventListener('onresize', updateSize);
     container.appendChild(canvas);
     var layer = document.getElementById('li-element').content.cloneNode(true);
     if (typeof layerName === "undefined") {
@@ -239,6 +260,8 @@ function createLayer(layerName, color) {
     //if (LAYERS.members)
     if (Object.keys(LAYERS).length > 1)
         createEdgeGradients();
+    console.log(canvas)
+
     //addEdgeGradients(layerName);
 
     /*canvas.appendChild(<defs>
@@ -1057,8 +1080,12 @@ function addGraphAsLayer(g, layerName) {
 //    console.log(color);
     var darkenColor = lightenDarkenColor(color, -10);
 
-//    drawGr714aph(LAYERS[layer_name].layer, g);
+//    drawGraph(LAYERS[layer_name].layer, g);
     drawGraph(layerName, g);
+
+
+
+
 //    var svg_id = $("#" + layerName).children("svg").attr("id");
     var svg_id = "layer-" + layerName;
 
@@ -1088,11 +1115,13 @@ function drawGraph(layer_name, g) {
 //            nodeData.edges = new Array();
 //        }
 
+
         var radius = nodeRadius;
 
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
-        var y = getRandomBetween(nodeRadius, generalHeight-80);
-        var x = getRandomBetween(nodeRadius, generalWidth-100);
+        var y = getRandomBetween(nodeRadius, generalHeight-120);
+        var x = getRandomBetween(nodeRadius + 100, generalWidth-100);
+        //console.log(nodeRadius)
 
         //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
         var labelName = nodeData.authorInfo.name;
@@ -1104,6 +1133,15 @@ function drawGraph(layer_name, g) {
 
         // creation of the elements
         var circle = drawCircleInLayer(draw, radius, x, y, nodeKey, directed, graphId, color);
+        
+
+        nodeData.spawnX = circle.cx();
+        nodeData.spawnY = circle.cy();
+
+        //stored in GRAPHS.authors2016
+        //nodeData.spawnX = x;
+        //nodeData.spawnY = y;
+
         var label = drawLabel(draw, nodeKey, circle.cx(), circle.cy() + (radius / 2), graphId, labelName).attr({class:"node-label"});
         var r = circle.attr('r') + circle.attr('stroke-width') / 2;
 //        var ear = drawEarInCircle(draw, r, circle.cx(), circle.cy(), LAYERS[layer_name]["color"]);
@@ -1268,6 +1306,7 @@ function drawPathInLayer(drawer, fromCenterX, fromCenterY,
                 stroke: LAYERS[layerName].color,
                 fill: 'transparent',
                 'stroke-width': 3.5,
+                'stroke-opacity':'.5',
                 id: id,
                 'pointer-events': 'visibleStroke'
             }).off();
@@ -1344,7 +1383,7 @@ function updateHighlights(object) {
 function updateEdgesEnds(nodeGraphics, coordX, coordY, directed) {
 //    console.log("INSIDE THE METHOD");
 //    console.log(nodeGraphics);
-    var x = !coordX ? nodeGraphics.rbox().cx -$("#accordionSidebar").width() : coordX;
+    var x = !coordX ? nodeGraphics.rbox().cx /*-$("#accordionSidebar").width()*/ : coordX;
     var y = !coordY ? nodeGraphics.rbox().cy - 70 : coordY;
     var segment;
 
@@ -1389,6 +1428,8 @@ function updateEdgesEnds(nodeGraphics, coordX, coordY, directed) {
         outEdge.highlight.replaceSegment(1, outEdge.getSegment(1))
 
     });
+
+    //console.log(x);
 
     //also update gradient while colouring so it is between the x and y
 
@@ -2090,6 +2131,8 @@ function scaleLayout(g, pxs, pys) {
         let newY = scaleValue(oldMaxY, oldMinY, newMaxY, newMinY, nodeGraphics.cy());
         nodeGraphics.cx(newX);
         nodeGraphics.cy(newY);
+
+        //console.log(newX);
         updateEdgesEnds(nodeGraphics, false);
         updateLabelPosition(nodeGraphics);
     }
@@ -2144,6 +2187,8 @@ function main() {
 
                             let newX = currentBody.position.x;
                             let newY = currentBody.position.y;
+
+                            //console.log(newX + " " + newY);
 //                        nodeGraphics.cx(newX-nodeGraphics.initX);
 //                        nodeGraphics.cy(newY-nodeGraphics.initY);
 //                        nodeGraphics.center(,newY-nodeGraphics.initY);
@@ -2151,6 +2196,10 @@ function main() {
                             nodeGraphics.dmove(newX - nodeGraphics.initX, newY - nodeGraphics.initY);
                             nodeGraphics.initX = nodeGraphics.cx() - nodeGraphics.childDX;
                             nodeGraphics.initY = nodeGraphics.cy() - nodeGraphics.childDY;
+                            console.log(newX);
+                            //console.log(nodeGraphics.initX);
+
+
 //                        console.log(newX-nodeGraphics.initX,newY-nodeGraphics.initY);
 //                        console.log(LAYERS[layer].layer.circle(5).center(newX-nodeGraphics.initX,newY-nodeGraphics.initY));;
 
@@ -2443,7 +2492,10 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
     mc.on("panstart", function (ev) {
 
         drawer = getActiveLayer().layer;
-        startingPoint = {x: ev.srcEvent.pageX - $("#accordionSidebar").width(), y: ev.srcEvent.pageY - 70};
+        startingPoint = {x: ev.srcEvent.pageX /*- $("#
+
+
+        onSidebar").width()*/, y: ev.srcEvent.pageY - 70};
 
         label = drawer.text(attributeName).attr({
             fill: 'black',
@@ -2473,7 +2525,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
 
     mc.on("panmove", function (ev) {
 
-        currentPoint = {x: ev.srcEvent.pageX - $("#accordionSidebar").width(), y: ev.srcEvent.pageY - 70};
+        currentPoint = {x: ev.srcEvent.pageX /*- $("#accordionSidebar").width()*/, y: ev.srcEvent.pageY - 70};
         group.move(currentPoint.x - startingPoint.x, currentPoint.y - startingPoint.y);
 
         activeLayer = getActiveLayer();
@@ -3448,7 +3500,7 @@ function initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orient
 
 //                the proxy thing
 //                change line 797 after demo 
-                var xProxy = attributeGraphics.rbox().cx - $("#accordionSidebar").width();
+                var xProxy = attributeGraphics.rbox().cx;// - $("#accordionSidebar").width();
                 buildWall(attributeGraphics, wallSize, 5, [xProxy, y], 'both', insideSpace, direction, true);
 
                 for (var index in axis.valueLabels) {

@@ -38,6 +38,9 @@ function slide(event) {
 //            console.log(this.matter.position.x);
 //            this.matter.position.y += 5;
         }
+
+
+
     }
 }
 
@@ -368,8 +371,9 @@ function addSelectionEvents(nodeParent) {
     }
 }
 function addPressEvents(mc, toolGraphics, drawer, type, child) {
+    //for tool events
+
     if (type === 'gravity') {
-        console.log(type);
         mc.get('press').set({time: 300});
 
         mc.on('press', function (event) {
@@ -399,7 +403,7 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
             mc.on("panstart", function (ev) {
 
                 center = toolGraphics.rbox().addOffset();
-                startingPoint = {x: center.cx - $("#accordionSidebar").width(), y: center.cy - 65};
+                startingPoint = {x: center.cx /*- $("#accordionSidebar").width()*/, y: center.cy - 65};
 
                 line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y)
                         .attr({
@@ -492,7 +496,7 @@ function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
 //    console.log("Previous");
 //    console.log(x,y);
 
-    var x = currentPoint.x - $("#accordionSidebar").width() - child.previousX;
+    var x = currentPoint.x /*- $("#accordionSidebar").width()*/ - child.previousX;
     var y = currentPoint.y - 70 - child.previousY;
 
 
@@ -575,6 +579,7 @@ function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
     }
 
 
+
 //    console.log("DISTANCE");
 //    console.log(child.disToCenterX,child.disToCenterY);
 //    console.log(child.previousX,child.previousY);
@@ -593,6 +598,8 @@ function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
     if (nodeGraphics.matter) {
         Matter.Body.setPosition(nodeGraphics.matter, {x: child.cx(), y: child.cy()});
     }
+
+    console.log(nodeGraphics.cx())
 
 
 //    
@@ -615,7 +622,7 @@ function addDragEvents(hammer, ghostFather, ghost, isProxy, graphicProxy) {
     hammer.on("panstart", function (ev) {
 
         startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-        var initX = startingPoint.x - $("#accordionSidebar").width();
+        var initX = startingPoint.x ;//- $("#accordionSidebar").width();
         var initY = startingPoint.y - 70;
         ghost.previousX = initX;
         ghost.previousY = initY;
@@ -667,6 +674,7 @@ function addSelectorEvents(){
     });
 }
 
+//add accordionSidebar only when layers are reimplemented
 function addToolEvents(tool, type) {
 
     if (!$(tool).prop('disabled')) {
@@ -684,18 +692,55 @@ function addToolEvents(tool, type) {
 
         let attributeLand = null;
 
-        mc.on("panstart", function (ev) {
 
+        var initX;
+        var initY;
+
+        mc.on("panstart", function (ev) {
+            console.log(type)
             startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
 
-            var initX = startingPoint.x - $("#accordionSidebar").width();
-            var initY = startingPoint.y - 70;
+             initX = startingPoint.x;// - $("#accordionSidebar").width();
+             initY = startingPoint.y - 70;
 
             path = $($(tool).children()[0]).children()[0].getAttribute("d");
             ghostFather = getActiveLayer().layer.group();
 
-            console.log(initX, initY);
+            //console.log(initX, initY);
 
+            //only add ghost if it comes out of the drop zone
+
+            //if (ghost.x >= $('#set-tools').outerHeight();)
+
+
+            // ghost = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
+            // var relationAspect = ghost.width() / ghost.height();
+            // ghost.height(50);
+            // ghost.width(50 * relationAspect);
+
+            // ghostFather.add(ghost);
+            // ghostFather.add(getActiveLayer().layer
+            //         .text(type)
+            //         .center(ghost.cx(), ghost.cy() + ghost.height() * 0.6)
+            //         );
+
+            // ghost.previousX = initX;
+            // ghost.previousY = initY;
+
+            // //set the distance between the group and the tool
+            // ghostFather.childDX = ghostFather.cx() - getElementFromGroup(ghostFather, 'path').cx();
+            // ghostFather.childDY = ghostFather.cy() - getElementFromGroup(ghostFather, 'path').cy();
+        });
+
+        mc.on("panmove", function (event) {
+            currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
+
+            var x = currentPoint.x;// - $("#accordionSidebar").width();
+            var y = currentPoint.y - 70;
+
+
+
+            //////////newly added
             ghost = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
             var relationAspect = ghost.width() / ghost.height();
             ghost.height(50);
@@ -713,13 +758,9 @@ function addToolEvents(tool, type) {
             //set the distance between the group and the tool
             ghostFather.childDX = ghostFather.cx() - getElementFromGroup(ghostFather, 'path').cx();
             ghostFather.childDY = ghostFather.cy() - getElementFromGroup(ghostFather, 'path').cy();
-        });
+            ///////////////////
 
-        mc.on("panmove", function (event) {
-            currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
 
-            var x = currentPoint.x - $("#accordionSidebar").width();
-            var y = currentPoint.y - 70;
             ghostFather.dmove(x - ghost.previousX, y - ghost.previousY);
             ghost.previousX = ghostFather.cx();
             ghost.previousY = ghostFather.cy();
@@ -732,23 +773,18 @@ function addToolEvents(tool, type) {
 
         mc.on("panend", function (ev) {
             currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-            var x = currentPoint.x - $("#accordionSidebar").width();
+            var x = currentPoint.x;// - $("#accordionSidebar").width();
             var y = currentPoint.y - 70;
             ghost.front();
             let mc = new Hammer(ghost.node);
 
-
+            //console.log(attributeLand)
             if (attributeLand) {
                 var attributeGraphics = getCrossedClassedGraphicObject(getActiveLayer().layer.node, x, y, 'toolable');
 
                 if (type === 'wall') {
-
-
                     applyWallStyle(attributeGraphics);
-
                     if ($(attributeGraphics.node).hasClass('proxy')) {
-
-
                         var labelsGraphics = attributeGraphics.values;
                         for (var index in labelsGraphics) {
                             var labelGraphic = labelsGraphics[index];
@@ -784,9 +820,9 @@ function addToolEvents(tool, type) {
                                 var currentNodes = getActiveLayer().data[attributeTypeName].values[attributeValue];
 
                                 if (direction === "horizontal"){   
-                                    var newPos = labelGraphic.rbox().cx - $("#accordionSidebar").width();
+                                    var newPos = labelGraphic.rbox().cx;// - $("#accordionSidebar").width();
                                     currentNodes.forEach(function(element){
-                                       var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                       var oldPos = element.rbox().cx - element.childDX;;// -$("#accordionSidebar").width();
                                        elementPos(element,newPos,oldPos,direction);
                                     })                                    
                                 }
@@ -796,13 +832,13 @@ function addToolEvents(tool, type) {
                                         
                                         if (clonationMode){                                                                                                                               
                                             var newPosY = labelGraphic.rbox().cy-70;                                            
-                                            var newPosX = attributeGraphics.rbox().cx -$("#accordionSidebar").width();
+                                            var newPosX = attributeGraphics.rbox().cx;// -$("#accordionSidebar").width();
 
                                             currentNodes.forEach(function(element){
                                                if (!element.cloned){
                                                 var clone =element.clone();
                                                 var oldPosY = element.rbox().cy -70-element.childDY;
-                                                var oldPosX = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                                var oldPosX = element.rbox().cx - element.childDX;;//$("#accordionSidebar").width();
                                                 elementPosDrawingLine(clone,newPosX,oldPosX,newPosY,oldPosY,element);
                                                 clone.childDX = element.childDX;
                                                 clone.childDY = element.childDY;
@@ -810,7 +846,7 @@ function addToolEvents(tool, type) {
                                                }else{
                                                     var clone =element.cloned.clone();
                                                     var oldPosY = element.cloned.rbox().cy -70-element.cloned.childDY;
-                                                    var oldPosX = element.cloned.rbox().cx -$("#accordionSidebar").width()-element.cloned.childDX;
+                                                    var oldPosX = element.cloned.rbox().cx - element.cloned.childDX; //$("#accordionSidebar").width()
                                                     elementPosDrawingLine(clone,newPosX,oldPosX,newPosY,oldPosY,element.cloned);
                                                     clone.childDX = element.childDX;
                                                     clone.childDY = element.childDY;
@@ -828,11 +864,11 @@ function addToolEvents(tool, type) {
                                                elementPos(element,newPos,oldPos,direction);
                                             });
 
-                                            var newPos = attributeGraphics.rbox().cx -$("#accordionSidebar").width();
+                                            var newPos = attributeGraphics.rbox().cx;// -$("#accordionSidebar").width();
                                             currentNodes.forEach(function(element){
 //                                                var clone =element.clone();
 
-                                                var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                                var oldPos = element.rbox().cx - element.childDX;;//$("#accordionSidebar").width()-element.childDX;
                                                 elementPos(element,newPos,oldPos,"horizontal");
                                             });
                                         }
@@ -847,7 +883,10 @@ function addToolEvents(tool, type) {
                                 }
                             }
                         }
+                        
+
                         else{
+                            console.log('landed on attribute')
                             var scaleData = attributeGraphics.values;
                             var uniqueAttributeValues =  Object.keys(getActiveLayer().data[attributeTypeName].values);
 
@@ -860,7 +899,7 @@ function addToolEvents(tool, type) {
                                 
                                 if (direction === "horizontal"){            
                                     currentNodes.forEach(function(element){
-                                       var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                       var oldPos = element.rbox().cx - element.childDX;;//-$("#accordionSidebar").width();
                                        elementPos(element,newPos,oldPos,direction);
                                     })                                    
                                 }
@@ -869,7 +908,7 @@ function addToolEvents(tool, type) {
                                     if(attributeGraphics.isAxis){
                                         if (clonationMode){
                                             var newPosY = newPos;                                            
-                                            var newPosX = attributeGraphics.rbox().cx -$("#accordionSidebar").width()
+                                            var newPosX = attributeGraphics.rbox().cx;// -$("#accordionSidebar").width()
 
 
                                             currentNodes.forEach(function(element){
@@ -878,7 +917,7 @@ function addToolEvents(tool, type) {
 
                                                 var oldPosY = element.rbox().cy -70-element.childDY;
 //                                               elementPos(clone,newPosY,oldPosY,direction);
-                                                var oldPosX = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                                var oldPosX = element.rbox().cx - element.childDX;//$("#accordionSidebar").width()-element.childDX;
                                                 elementPosDrawingLine(clone,newPosX,oldPosX,newPosY,oldPosY,element);
                                                 clone.childDX = element.childDX;
                                                 clone.childDY = element.childDY;
@@ -887,7 +926,7 @@ function addToolEvents(tool, type) {
                                                     var clone =element.cloned.clone();
                                                     var oldPosY = element.cloned.rbox().cy -70-element.cloned.childDY;
 //                                               elementPos(clone,newPosY,oldPosY,direction);
-                                                    var oldPosX = element.cloned.rbox().cx -$("#accordionSidebar").width()-element.cloned.childDX;
+                                                    var oldPosX = element.cloned.rbox().cx - element.cloned.childDX;//$("#accordionSidebar").width()-element.cloned.childDX;
                                                     elementPosDrawingLine(clone,newPosX,oldPosX,newPosY,oldPosY,element.cloned);
                                                     clone.childDX = element.childDX;
                                                     clone.childDY = element.childDY;
@@ -904,9 +943,9 @@ function addToolEvents(tool, type) {
                                                 elementPos(element,newPos,oldPos,direction);
                                              });
 
-                                            var newPos = attributeGraphics.rbox().cx -$("#accordionSidebar").width()
+                                            var newPos = attributeGraphics.rbox().cx;// -$("#accordionSidebar").width()
                                             currentNodes.forEach(function(element){
-                                                var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                                var oldPos = element.rbox().cx - element.childDX;//-$("#accordionSidebar").width();
                                                 elementPos(element,newPos,oldPos,"horizontal");
                                             });
                                         }
@@ -934,9 +973,9 @@ function addToolEvents(tool, type) {
                         if (attributeGraphics.attr('attrDiscrete')){
 
                             if (direction === "horizontal"){   
-                                var newPos = attributeGraphics.rbox().cx - $("#accordionSidebar").width();
+                                var newPos = attributeGraphics.rbox().cx;// - $("#accordionSidebar").width();
                                 currentNodes.forEach(function(element){
-                                   var oldPos = element.rbox().cx -$("#accordionSidebar").width()-element.childDX;
+                                   var oldPos = element.rbox().cx - element.childDX;//$("#accordionSidebar").width();
                                    elementPos(element,newPos,oldPos,direction);
                                 })                                    
                             }
@@ -997,10 +1036,10 @@ function addToolEvents(tool, type) {
                     var drawer = getActiveLayer().layer;
                     let lineAttributes = {stroke: 'black', 'stroke-width': 2, fill: '#efefef', opacity: 1, linecap: 'round'};
                     attributeGraphics.parent().animate(250).dy(getActiveLayer().left.line.rbox().y-70-(attributeGraphics.parent().rbox().cy-70)-20);
-                    var axis = drawer.line(0, h, 0, drawer.height() - 40).move(attributeGraphics.parent().rbox().cx-$("#accordionSidebar").width(), 40).attr(lineAttributes);
+                    var axis = drawer.line(0, h, 0, drawer.height() - 40).move(attributeGraphics.parent().rbox().cx /*- $("#accordionSidebar").width()*/, 40).attr(lineAttributes);
                     axis.animate(250).height(drawer.height() - 40);
 
-                    var x = attributeGraphics.parent().rbox().cx-$("#accordionSidebar").width();
+                    var x = attributeGraphics.parent().rbox().cx;//-$("#accordionSidebar").width();
                     var y = axis.y();
                     var space = axis.rbox().h;
 //                    console.log(getAttributeValues(attributeName));
@@ -1102,7 +1141,7 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
 
 //                the proxy thing
 //                change line 797 after demo 
-                var xProxy = attributeGraphics.rbox().cx - $("#accordionSidebar").width();
+                var xProxy = attributeGraphics.rbox().cx;// - $("#accordionSidebar").width();
                 buildWall(attributeGraphics, wallSize, height, [xProxy, y], 'both', insideSpace, direction, true);
 
                 for (var index in axis.valueLabels) {
