@@ -10,6 +10,7 @@ var selectionFlag = false;
 var edgesFlag = false;
 var labelsFlag = false;
 
+
 var selectionCount = 0;
 var maxLayersAllowed = 10;
 
@@ -45,8 +46,8 @@ var GRAPHS = {};
 
 var SELECTION = [];
 
-var ACTIVETOOLS = {};
-var ACTIVEATTRIBUTES = {};
+var ACTIVETOOLS = {};   //group for active tools on screen
+var ACTIVEATTRIBUTES = {}; //group for active attributes on screen
 
 //ids of edge gradients
 var EDGEGRADIENTS = {};
@@ -112,6 +113,29 @@ function getColor() {
     }
 }
 
+function addTrash(){
+    entityGroup = getActiveLayer().layer.group();   //creates group for entity
+    entityGroup.addClass('canvas-tool');
+    entityGroup.id(svgID)
+    //.node.id(type + '-' + Object.keys(ACTIVETOOLS).length.toString()) 
+                console.log(entityGroup)
+
+                //only add toolEntity if it comes out of the drop zone
+                //ghost   
+
+                //creation of actual fa-icon
+                toolEntity = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
+                var relationAspect = toolEntity.width() / toolEntity.height();
+                toolEntity.height(50);
+                toolEntity.width(50 * relationAspect);
+
+                entityGroup.add(toolEntity);
+                entityGroup.add(getActiveLayer().layer
+                        .text(type)
+                        .center(toolEntity.cx(), toolEntity.cy() + toolEntity.height() * 0.6)
+                        //.onclick, add event
+                        );
+}
 
 //this function has a gradient attached to every edge instead
 function addGradientsToEdges(sourceNode, targetNode){
@@ -274,22 +298,40 @@ function createLayer(layerName, color) {
     return layer;
 }
 
+
+//and trash zone
 function addDroppingZones(layerName) {
     var layer = LAYERS[layerName];
     var drawer = layer.layer;
     var layerHeight = drawer.height();
     let rectAttributes = {stroke: 'none', fill: '#ddd', opacity: 0};
     let lineAttributes = {stroke: 'black', 'stroke-width': 2, fill: '#efefef', opacity: 0, linecap: 'round'};
-    let h = 55;
-    let w = 70;
+    let h = 50;//55;
+    let w = 65;//70;
 
     layer.bottom = {
         line: drawer.line(w, 0, drawer.width() - w - 20, 0).move(w, layerHeight - h).attr(lineAttributes),
-        rect: drawer.rect("100%", h).move(0, layerHeight - h).attr(rectAttributes)
+        rect: drawer.rect(drawer.width() - w, h).move(w, layerHeight - h).attr(rectAttributes).addClass('glow-anim'),
+        hasAttribute: false
     };
     layer.left = {
         line: drawer.line(0, h, 0, drawer.height() - 40).move(w, 40).attr(lineAttributes),
-        rect: drawer.rect(w, "100%").move(0, 0).attr(rectAttributes)
+        rect: drawer.rect(w, layerHeight - h).move(0, 0).attr(rectAttributes).addClass('glow-anim'),
+        hasAttribute: false
+    };
+
+    //trash zone -- double check if correct
+    layer.right = {
+        line: drawer.line(0, h, 0, drawer.height() - 40).move(drawer.width() - w - 20, 40).attr(lineAttributes),
+        rect: drawer.rect(w, "100%").move(drawer.width() - w, 0).attr(rectAttributes).addClass('glow-anim'),
+        hasAttribute: false
+    };
+
+    //resize when it works
+    layer.trash = {
+        line: drawer.line(0, h, 0, drawer.height() - 40).move(drawer.width() - w - 20, 40).attr(lineAttributes),
+        rect: drawer.rect(w + 50, w + 50).move(drawer.width() - w, 0).attr(rectAttributes).addClass('glow-anim'),
+        hasAttribute: false
     };
 
 }
@@ -311,17 +353,7 @@ function changeLayerNames(item, id) {
     $(item.querySelector("input[id^='item']")).attr("value", "Layer " + id);
     $(item.querySelector("button[id^='visibility']")).attr("id", "visibility-" + id);
     $(item.querySelector("button[id^='delete']")).attr("id", "delete-" + id);
-//    $(item.querySelector('div > div:nth-child(1) > div.col-2-auto.mr-1')).attr("id", "color-" + id);
-//    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("id", "p-" + id);
-//    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-auto > input')).attr("value", "Layer " + id);
-//    $(item.querySelector('div > div:nth-child(1) > div.col-8.my-aut > input')).attr("style", "cursor: grab");
-//    $(item.querySelector('div > div:nth-child(1) > div.col-2 > button')).attr("data-target", "#collapse-" + id);
-//    $(item.querySelector('div > div:nth-child(1) > div.col-2 > button')).attr("aria-controls", "collapse-" + id);
-//    $(item.querySelector('div > div.row.collapse')).attr("id", "collapse-" + id);
-//    $(item.querySelector('div > div.row.collapse > div > div.row > h6:nth-child(2)')).attr("id", "opacity-" + id);
-//    $(item.querySelector('div > div.row.collapse > div > div.collapse-item.slidecontainer > input')).attr("id", "range-" + id);
-//    $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div > div.col-4 > input')).attr("id", "gravity-handler-" + id);
-//    $(item.querySelector('div > div.row.collapse  > div:nth-child(2) > div.collapse-item.slidecontainer > div:nth-child(2) > div.col-4 > input')).attr("id", "gravity-handler-" + id);
+
 }
 
 function addColorsAndBorders(layerName, color) {
@@ -2483,19 +2515,27 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
     let label = null;
     let startingPoint = null;
     let currentPoint = null;
-    let theDistance = null;
-    let theDroppingZone = null;
+    let distance = null;
+    let targetDropZone = null;
     let activeLayer = null;
     let drawer = null;
     let direction = null;
 
+    let leftGlow = null;
+    let bottomGlow = null;
+
+    let leftZone = null;//
+    let bottomZone = null;
+
+
+     var isGlow = false;
+
+
     mc.on("panstart", function (ev) {
 
         drawer = getActiveLayer().layer;
-        startingPoint = {x: ev.srcEvent.pageX /*- $("#
+        startingPoint = {x: ev.srcEvent.pageX /*- $("#onSidebar").width()*/, y: ev.srcEvent.pageY - 70};
 
-
-        onSidebar").width()*/, y: ev.srcEvent.pageY - 70};
 
         label = drawer.text(attributeName).attr({
             fill: 'black',
@@ -2525,32 +2565,101 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
 
     mc.on("panmove", function (ev) {
 
-        currentPoint = {x: ev.srcEvent.pageX /*- $("#accordionSidebar").width()*/, y: ev.srcEvent.pageY - 70};
+        //currentPoint = {x: ev.srcEvent.pageX /*- $("#accordionSidebar").width()*/, y: ev.srcEvent.pageY - 70};
+        currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY - 70};
         group.move(currentPoint.x - startingPoint.x, currentPoint.y - startingPoint.y);
 
+        //init
         activeLayer = getActiveLayer();
-        let threshold = 300;
+        leftZone =  activeLayer.left;
+        bottomZone =  activeLayer.bottom;
+        // leftZone.addClass("glow-anim");
+        // bottomZone.addClass("glow-anim");
+        
+        
+        
+        //add a flag to see if there has been a drop
+        //isGlow = true;
+
+        //threshold for glows, 
+        let threshold = activeLayer.layer.width() - 10;
         let distanceToLeft = currentPoint.x - (activeLayer.left.rect.x() + activeLayer.left.rect.width());
         let distanceToBottom = activeLayer.bottom.rect.y() - currentPoint.y;
 
-        activeLayer.bottom.rect.attr({opacity: 0});
-        activeLayer.left.rect.attr({opacity: 0});
-
-        if (distanceToLeft < distanceToBottom) {
-            theDistance = distanceToLeft;
-            theDroppingZone = activeLayer.left;
-            direction = "vertical";
-        } else {
-            theDistance = distanceToBottom;
-            theDroppingZone = activeLayer.bottom;
-            direction = "horizontal";
+        //initial opacities are 0
+        //also make the glow appear at this point
+        if (!leftZone.hasAttribute){
+            leftZone.rect.attr({opacity: 20});
+            //leftZone.filter("url(#dropZoneBlur)");
         }
 
-        if (theDistance < threshold) {
-            theDroppingZone.rect.attr({opacity: 1 - (theDistance / threshold)});
+        if (!bottomZone.hasAttribute){
+            bottomZone.rect.attr({opacity: 20});
+           // bottomZone.filter("url(#dropZoneBlur)");
+        }
+        
+       
+        //leftZone.filter(rectFilter());
 
-            if (theDistance < 0) {
-                if (!theDroppingZone.valueLabels) {
+
+        // //start out and check and glow from the start
+        // if (distanceToLeft < distanceToBottom) {
+        //     distance = distanceToLeft;
+        //     targetDropZone = activeLayer.left;
+        //     direction = "vertical";
+        // }
+        // else {
+        //     distance = distanceToBottom;
+        //     targetDropZone = activeLayer.bottom;
+        //     direction = "horizontal";
+        // }*/
+
+
+        if (distance < threshold) {
+
+            if (distanceToLeft < distanceToBottom) {
+                distance = distanceToLeft;
+                targetDropZone = activeLayer.left;
+                direction = "vertical";
+            } else {
+                distance = distanceToBottom;
+                targetDropZone = activeLayer.bottom;
+                direction = "horizontal";
+            }
+
+           //setVisibilityOfAttributeValues(targetDropZone, 1 - (distance/threshold));
+           if (!targetDropZone.hasAttribute){
+            targetDropZone.rect.attr({opacity: 1 - (distance / threshold)});
+            }
+           //this is literally disgusting code 
+           //want inverse dependent on whether this is closer
+           if (distance < threshold/4){
+            
+            leftZone.rect.attr({opacity: distance/threshold*2});
+            bottomZone.rect.attr({opacity: distance/threshold*2});
+            targetDropZone.rect.attr({opacity: 1 - (distance / threshold)});
+
+            if (!targetDropZone.hasAttribute){
+                setVisibilityOfAttributeValues(targetDropZone, 0.25);
+            }
+
+            if (leftZone.hasAttribute){
+                leftZone.rect.attr({opacity: 0})
+            }
+
+            if (bottomZone.hasAttribute){
+                bottomZone.rect.attr({opacity: 0});
+            }
+
+
+
+           }
+
+
+            //theDropping Zone is target Zone
+
+            if (distance < 0) {
+                if (!targetDropZone.valueLabels) {
 
                     let x = null;
                     let y = null;
@@ -2559,9 +2668,25 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
                     rect.direction = direction;
                     rect.discrete = getActiveLayer().data[attributeName].discrete;
 
+                    distanceToLeft = currentPoint.x - (activeLayer.left.rect.x() + activeLayer.left.rect.width());
+                    distanceToBottom = activeLayer.bottom.rect.y() - currentPoint.y;
+                    
+                    if (distanceToLeft < distanceToBottom){
+                        x = activeLayer.bottom.line.x();
+                        y = targetDropZone.rect.cy() - 25;
+                        space = activeLayer.bottom.line.width();
+                        line = activeLayer.bottom.line;
+                    }
+
+                    else{
+                        x = activeLayer.left.rect.cx();
+                        y = activeLayer.left.line.y();
+                        space = activeLayer.left.line.rbox().h;
+                        line = activeLayer.left.line;
+                    }
                     if (direction === "horizontal") {
                         x = activeLayer.bottom.line.x();
-                        y = theDroppingZone.rect.cy() - 25;
+                        y = targetDropZone.rect.cy() - 25;
                         space = activeLayer.bottom.line.width();
                         line = activeLayer.bottom.line;
                     } else {
@@ -2571,61 +2696,75 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
                         line = activeLayer.left.line;
                     }
 
-                    addAttributeValues(attributeName, theDroppingZone, x, y, space, drawer, direction, rect,line);
+                    addAttributeValues(attributeName, targetDropZone, x, y, space, drawer, direction, rect,line);
 
                 } else {
-                    setVisibilityOfAttributeValues(theDroppingZone, 0.5);
+                    setVisibilityOfAttributeValues(targetDropZone, 0.5);
                 }
             } else {
-                setVisibilityOfAttributeValues(theDroppingZone, 0);
+                setVisibilityOfAttributeValues(targetDropZone, 0);
+                //targetDropZone.removeClass('glow-anim');
             }
 
         } else {
-            theDroppingZone.rect.attr({opacity: 0});
-            theDroppingZone = null;
+            targetDropZone.rect.attr({opacity: 0});
+            targetDropZone = null;
         }
     });
 
     mc.on("panend", function (ev) {
 
-        blink(group);
+        /*leftZone.removeClass('glow-anim');
+        bottomZone.removeClass('glow-anim');*/
+
 
         setTimeout(function () {
 
             // attribute dropped inside a dropping area
-            if (theDroppingZone && theDistance < 0) {
+            if (targetDropZone && distance < 0) {
 
                 let x = null;
                 let y = null;
                 
                 if (direction === "horizontal") {
                     x = -startingPoint.x + activeLayer.bottom.line.x() + activeLayer.bottom.line.rbox().w + rect.rbox().w / 2 + 5;
-                    y = theDroppingZone.line.cy() - startingPoint.y;
+                    y = targetDropZone.line.cy() - startingPoint.y;
                 } else {
-                    x = -startingPoint.x + theDroppingZone.rect.width();
+                    x = -startingPoint.x + targetDropZone.rect.width();
                     y = -startingPoint.y + rect.height() / 2 + 5;
                 }
 
                 group.animate(250).move(x, y);
 
-                theDroppingZone.rect.animate(250).attr({opacity: 0});
+                targetDropZone.rect.animate(250).attr({opacity: 0});
 
                 setTimeout(function () {
 
-                    theDroppingZone.line.animate(250).attr({opacity: 1});
-                    setVisibilityOfAttributeValues(theDroppingZone, 1, false);
+                    targetDropZone.line.animate(250).attr({opacity: 1});
+                    setVisibilityOfAttributeValues(targetDropZone, 1, false);
 
                 }, 350);
+                targetDropZone.hasAttribute = true;
+
 
 
             } else {
 //                removeWithAnimation(group);
-                activeLayer.bottom.rect.animate(250).attr({opacity: 0});
-                activeLayer.left.rect.animate(250).attr({opacity: 0});
+                leftZone.rect.animate(250).attr({opacity: 0});
+                leftZone.rect.removeClass('glow-anim');
+                bottomZone.rect.animate(250).attr({opacity: 0});
+                bottomZone.rect.removeClass('glow-anim');
             }
+
+            console.log(activeLayer.left.hasAttribute);
+            console.log(activeLayer.bottom.hasAttribute);
+
+            
 
         }, 300);
 
+        //disableGlow(activeLayer.left.rect, leftGlow);
+ //       disableGlow(activeLayer.bottom.rect, bottomGlow)
 
 
     });

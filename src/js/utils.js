@@ -74,12 +74,32 @@ function toFirstCapital(string)
 }
 
 function blink(object) {
-    let duration = 100;
-    let scale = 1.4;
+    let duration = 150;
+    let scale = 1.1;
     object.animate(duration).scale(scale, scale);
     setTimeout(function () {
         object.animate(duration).scale(1, 1);
     }, duration);
+}
+
+function glow(object){
+    let duration = 150;
+    let scale = 1.1;
+
+    /*window.setInterval(function() {  
+        object.toggleClass('active');
+    }, 1000);*/
+
+    
+
+
+}
+
+function disableGlow(object){//, interval){
+    let scale = 1;
+    object.scale(scale, scale);
+    object.removeClass('active');
+    //window.clearInterval(interval)
 }
 
 function showPanel(id) {

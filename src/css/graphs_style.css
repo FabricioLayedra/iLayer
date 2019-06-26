@@ -173,3 +173,47 @@ svg text {
 #wrapper{
     height: 100%;
 }
+/*note - does not work for svgs. took way too long to figure that out*/
+/*.glow {
+    
+    stroke: green;
+    stroke-width: 10px;   
+    -webkit-transition: stroke 1s linear, box-shadow 1s linear;
+       -moz-transition: stroke 1s linear, box-shadow 1s linear;
+            transition: stroke 1s linear, box-shadow 1s linear;
+}
+
+
+
+.glow.active{
+    
+    -webkit-box-shadow: 0 0 40px orange;
+       -moz-box-shadow: 0 0 40px orange;
+            box-shadow: 0 0 40px orange;
+}*/
+
+.glow-anim {
+    animation: glow-key 2.5s ease infinite;
+    stroke: orange;
+    stroke-width: 5px;
+    stroke-linecap: round;
+    -webkit-transition: stroke 1s linear, box-shadow 1s linear;
+       -moz-transition: stroke 1s linear, box-shadow 1s linear;
+            transition: stroke 1s linear, box-shadow 1s linear;
+
+
+}
+
+
+@keyframes glow-key{
+   0% {-webkit-filter: box-shadow( -.75px 0px 6px #31eefd );
+       filter: box-shadow( -.75px 0px 6px #31eefd ); stroke:#31eefd; stroke-opacity: .25;} 
+  
+   25%, 75% {-webkit-filter: box-shadow( -.75px 0px 6px #009997 );
+                filter: box-shadow( -.75px 0px 6px #009997 ); stroke:#009997;stroke-opacity: .3;}
+   50% {-webkit-filter: box-shadow( -.75px 0px 6px #92ffd7 );
+                filter: box-shadow( -.75px 0px 6px #92ffd7 ); stroke:#92ffd7; stroke-opacity: .45;} /* end green */      
+  100% {-webkit-filter: box-shadow( -.75px 0px 6px #31eefd );
+                filter: box-shadow( -.75px 0px 6px #31eefd ); stroke:#31eefd; stroke-opacity: .3;} 
+}
+

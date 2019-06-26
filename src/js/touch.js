@@ -5,6 +5,7 @@
  */
 
 var clonationMode = false;
+//var trashMode = false;
 
 function beginSliding(e) {
     this.node.allowed = true;
@@ -605,11 +606,11 @@ function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
 //    
 //    
 //    let currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-////        console.log(ghost.cx(),ghost.cy());
+////        console.log(toolEntity.cx(),toolEntity.cy());
 //    nodeGraphics.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
 }
 
-function addDragEvents(hammer, ghostFather, ghost, isProxy, graphicProxy) {
+function addDragEvents(hammer, entityGroup, toolEntity, isProxy, graphicProxy) {
 
     // let the pan gesture support all directions.
     // this will block the vertical scrolling on a touch-device while on the element
@@ -624,23 +625,23 @@ function addDragEvents(hammer, ghostFather, ghost, isProxy, graphicProxy) {
         startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
         var initX = startingPoint.x ;//- $("#accordionSidebar").width();
         var initY = startingPoint.y - 70;
-        ghost.previousX = initX;
-        ghost.previousY = initY;
+        toolEntity.previousX = initX;
+        toolEntity.previousY = initY;
 
-        ghost.disToCenterX = ghostFather.cx();
-        ghost.disToCenterY = ghostFather.cy();
+        toolEntity.disToCenterX = entityGroup.cx();
+        toolEntity.disToCenterY = entityGroup.cy();
 
     });
 
     hammer.on("panmove", function (ev) {
-        moveElements(ev, ghostFather, ghost, isProxy, graphicProxy);
+        moveElements(ev, entityGroup, toolEntity, isProxy, graphicProxy);
     });
 
 //    mc.on("panend", function (ev) {
-//        ghost.front();
-//        ghost.draggable();
-//        console.log(ghost);
-//        addPressEvents(ghost.node,ghost);
+//        toolEntity.front();
+//        toolEntity.draggable();
+//        console.log(toolEntity);
+//        addPressEvents(toolEntity.node,toolEntity);
 ////        console.log(activeLayer);
 //    });
 }
@@ -676,7 +677,7 @@ function addSelectorEvents(){
 
 //add accordionSidebar only when layers are reimplemented
 function addToolEvents(tool, type) {
-
+    //tool = 
     if (!$(tool).prop('disabled')) {
         let mc = new Hammer(tool);
 
@@ -687,49 +688,55 @@ function addToolEvents(tool, type) {
         let startingPoint = null;
         let currentPoint = null;
         let path = null;
-        let ghost = null;
-        let ghostFather = null;
+        let toolEntity = null;  //ghost
+        let entityGroup = null; //ghostFather
 
         let attributeLand = null;
 
+        //past threshold
 
-        var initX;
-        var initY;
+
+        var initX = 0;
+        var initY = 0;
+        var svgID = "";
+        var copyOnCanvas = false;
 
         mc.on("panstart", function (ev) {
-            console.log(type)
+            svgID = type + '-' + getActiveLayer().layer.id().split('-')[1];
+            console.log(tool);
             startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
 
-             initX = startingPoint.x;// - $("#accordionSidebar").width();
-             initY = startingPoint.y - 70;
+            initX = startingPoint.x;// - $("#accordionSidebar").width();
+            initY = startingPoint.y - 70;
+
+            console.log(startingPoint);
+            console.log(initY);
 
             path = $($(tool).children()[0]).children()[0].getAttribute("d");
-            ghostFather = getActiveLayer().layer.group();
 
-            //console.log(initX, initY);
+            //alraedy exists, but does not do a smooth transition
+            if ($(svgID.toString()).length > 0){
+                removeWithAnimation(entityGroup);
+                copyOnCanvas = false;
+                //return;
+            }
+            // entityGroup = getActiveLayer().layer.group();   //creates group for entity
+            // entityGroup.id(type + '-' + Object.keys(ACTIVETOOLS).length.toString())
+            // //.node.id(type + '-' + Object.keys(ACTIVETOOLS).length.toString()) 
+            // console.log(entityGroup)
 
-            //only add ghost if it comes out of the drop zone
+            // //only add toolEntity if it comes out of the drop zone
+            // //ghost   
 
-            //if (ghost.x >= $('#set-tools').outerHeight();)
+            // //creation of actual logo      
+            // toolEntity = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
+            // var relationAspect = toolEntity.width() / toolEntity.height();
+            // toolEntity.height(50);
+            // toolEntity.width(50 * relationAspect);
 
+            // toolEntity.previousX = initX;
+            // toolEntity.previousY = initY;
 
-            // ghost = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
-            // var relationAspect = ghost.width() / ghost.height();
-            // ghost.height(50);
-            // ghost.width(50 * relationAspect);
-
-            // ghostFather.add(ghost);
-            // ghostFather.add(getActiveLayer().layer
-            //         .text(type)
-            //         .center(ghost.cx(), ghost.cy() + ghost.height() * 0.6)
-            //         );
-
-            // ghost.previousX = initX;
-            // ghost.previousY = initY;
-
-            // //set the distance between the group and the tool
-            // ghostFather.childDX = ghostFather.cx() - getElementFromGroup(ghostFather, 'path').cx();
-            // ghostFather.childDY = ghostFather.cy() - getElementFromGroup(ghostFather, 'path').cy();
         });
 
         mc.on("panmove", function (event) {
@@ -738,32 +745,80 @@ function addToolEvents(tool, type) {
             var x = currentPoint.x;// - $("#accordionSidebar").width();
             var y = currentPoint.y - 70;
 
+            if ((x > $('#set-tools').outerHeight() + 5) && !copyOnCanvas){
+                entityGroup = getActiveLayer().layer.group();   //creates group for entity
+                entityGroup.addClass('canvas-tool');
+                entityGroup.id(svgID)
+                //.node.id(type + '-' + Object.keys(ACTIVETOOLS).length.toString()) 
+                console.log(entityGroup)
 
+                //only add toolEntity if it comes out of the drop zone
+                //ghost   
+
+                //creation of actual fa-icon
+                toolEntity = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
+                var relationAspect = toolEntity.width() / toolEntity.height();
+                toolEntity.height(50);
+                toolEntity.width(50 * relationAspect);
+
+                entityGroup.add(toolEntity);
+                entityGroup.add(getActiveLayer().layer
+                        .text(type)
+                        .center(toolEntity.cx(), toolEntity.cy() + toolEntity.height() * 0.6)
+                        //.onclick, add event
+                        );
+
+                // toolEntity.previousX = initX;
+                // toolEntity.previousY = initY;
+                toolEntity.previousX = x;
+                toolEntity.previousY = y;
+                //store group on canvas
+                //ACTIVETOOLS[entityGroup.id] = {group: entityGroup, toolType = type, icon = toolEntity};
+                copyOnCanvas = true;
+            }
+
+            //if ((x > $('#set-tools').outerHeight() + 5) && entityGroup.){
+
+                /*entityGroup.add(toolEntity);
+                entityGroup.add(getActiveLayer().layer
+                        .text(type)
+                        .center(toolEntity.cx(), toolEntity.cy() + toolEntity.height() * 0.6)
+                        
+                        );*/
+
+                //just to generate some random number so ids are not the same
+                //set the distance between the group and the tool
+                entityGroup.childDX = entityGroup.cx() - getElementFromGroup(entityGroup, 'path').cx();
+                entityGroup.childDY = entityGroup.cy() - getElementFromGroup(entityGroup, 'path').cy();
+           // }
 
             //////////newly added
-            ghost = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
-            var relationAspect = ghost.width() / ghost.height();
-            ghost.height(50);
-            ghost.width(50 * relationAspect);
+            // toolEntity = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
+            // var relationAspect = toolEntity.width() / toolEntity.height();
+            // toolEntity.height(50);
+            // toolEntity.width(50 * relationAspect);
 
-            ghostFather.add(ghost);
-            ghostFather.add(getActiveLayer().layer
-                    .text(type)
-                    .center(ghost.cx(), ghost.cy() + ghost.height() * 0.6)
-                    );
+            // entityGroup.add(toolEntity);
+            // entityGroup.add(getActiveLayer().layer
+            //         .text(type)
+            //         .center(toolEntity.cx(), toolEntity.cy() + toolEntity.height() * 0.6)
+            //         );
 
-            ghost.previousX = initX;
-            ghost.previousY = initY;
+            // toolEntity.previousX = initX;
+            // toolEntity.previousY = initY;
 
-            //set the distance between the group and the tool
-            ghostFather.childDX = ghostFather.cx() - getElementFromGroup(ghostFather, 'path').cx();
-            ghostFather.childDY = ghostFather.cy() - getElementFromGroup(ghostFather, 'path').cy();
+            // //set the distance between the group and the tool
+            // entityGroup.childDX = entityGroup.cx() - getElementFromGroup(entityGroup, 'path').cx();
+            // entityGroup.childDY = entityGroup.cy() - getElementFromGroup(entityGroup, 'path').cy();
             ///////////////////
 
 
-            ghostFather.dmove(x - ghost.previousX, y - ghost.previousY);
-            ghost.previousX = ghostFather.cx();
-            ghost.previousY = ghostFather.cy();
+            entityGroup.dmove(x - toolEntity.previousX, y - toolEntity.previousY);
+
+            if (copyOnCanvas){
+                toolEntity.previousX = entityGroup.cx();
+                toolEntity.previousY = entityGroup.cy();
+            }
 
             if (type === 'wall' || type === 'position' || type === 'attractor' || type === 'axis') {
                 attributeLand = isClassedGraphics(getActiveLayer().layer.node, x, y, 'toolable');
@@ -775,8 +830,9 @@ function addToolEvents(tool, type) {
             currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
             var x = currentPoint.x;// - $("#accordionSidebar").width();
             var y = currentPoint.y - 70;
-            ghost.front();
-            let mc = new Hammer(ghost.node);
+            toolEntity.front();
+            let mc = new Hammer(toolEntity.node);
+
 
             //console.log(attributeLand)
             if (attributeLand) {
@@ -789,34 +845,29 @@ function addToolEvents(tool, type) {
                         for (var index in labelsGraphics) {
                             var labelGraphic = labelsGraphics[index];
                             // IF ITS CONTINUOUS DATA THIS HAS TO CHANGE
-//                            blink(labelGraphic);
-
+                          // blink(labelGraphic);
                         }
 
                         addBuilderWallsEvents(attributeGraphics, attributeGraphics.parent());
-                        
                         // TODO: build the wall here, right after the wall tool has been added to the proxy
                         // or to a single attribute value (that's perhaps in another if)
-
-                    } else {
+                    } 
+                    else {
                         addBuilderWallsEvents(attributeGraphics, attributeGraphics);
                     }
 
-                } else if (type === 'position') {
-                    
+                }
+                else if (type === 'position') {              
                     var direction = attributeGraphics.direction;
 
                     if ($(attributeGraphics.node).hasClass('proxy')) {
-                        
                         var attributeTypeName = attributeGraphics.attr("value");
-
+                        
                         if (attributeGraphics.discrete){
                             var labelsGraphics = attributeGraphics.values;
-
                             for (var index in labelsGraphics) {
                                 var labelGraphic = labelsGraphics[index];
                                 var attributeValue = labelGraphic.node.textContent;
-
                                 var currentNodes = getActiveLayer().data[attributeTypeName].values[attributeValue];
 
                                 if (direction === "horizontal"){   
@@ -827,23 +878,22 @@ function addToolEvents(tool, type) {
                                     })                                    
                                 }
                                 else if  (direction === "vertical"){
-
-                                    if(attributeGraphics.isAxis){
-                                        
-                                        if (clonationMode){                                                                                                                               
+                                    if(attributeGraphics.isAxis){    
+                                        if (clonationMode){                                           
                                             var newPosY = labelGraphic.rbox().cy-70;                                            
                                             var newPosX = attributeGraphics.rbox().cx;// -$("#accordionSidebar").width();
 
                                             currentNodes.forEach(function(element){
-                                               if (!element.cloned){
-                                                var clone =element.clone();
-                                                var oldPosY = element.rbox().cy -70-element.childDY;
-                                                var oldPosX = element.rbox().cx - element.childDX;;//$("#accordionSidebar").width();
-                                                elementPosDrawingLine(clone,newPosX,oldPosX,newPosY,oldPosY,element);
-                                                clone.childDX = element.childDX;
-                                                clone.childDY = element.childDY;
-                                                element.cloned = clone; 
-                                               }else{
+                                                if (!element.cloned){
+                                                    var clone =element.clone();
+                                                    var oldPosY = element.rbox().cy -70-element.childDY;
+                                                    var oldPosX = element.rbox().cx - element.childDX;;//$("#accordionSidebar").width();
+                                                    elementPosDrawingLine(clone,newPosX,oldPosX,newPosY,oldPosY,element);
+                                                    clone.childDX = element.childDX;
+                                                    clone.childDY = element.childDY;
+                                                    element.cloned = clone; 
+                                                }
+                                               else{
                                                     var clone =element.cloned.clone();
                                                     var oldPosY = element.cloned.rbox().cy -70-element.cloned.childDY;
                                                     var oldPosX = element.cloned.rbox().cx - element.cloned.childDX; //$("#accordionSidebar").width()
@@ -853,21 +903,18 @@ function addToolEvents(tool, type) {
                                                     element.cloned = clone; 
                                                     element.cloned = clone; 
                                                }
-                                               
-                                            });
-                                            
-                                        }else{
+                                            });                                           
+                                        }
+                                        else{
                                             var newPos = labelGraphic.rbox().cy-70;
                                             currentNodes.forEach(function(element){
-//                                               var clone =element.clone();
-                                               var oldPos = element.rbox().cy -70-element.childDY;
-                                               elementPos(element,newPos,oldPos,direction);
+//                                              var clone =element.clone();
+                                                var oldPos = element.rbox().cy -70-element.childDY;
+                                                elementPos(element,newPos,oldPos,direction);
                                             });
 
                                             var newPos = attributeGraphics.rbox().cx;// -$("#accordionSidebar").width();
                                             currentNodes.forEach(function(element){
-//                                                var clone =element.clone();
-
                                                 var oldPos = element.rbox().cx - element.childDX;;//$("#accordionSidebar").width()-element.childDX;
                                                 elementPos(element,newPos,oldPos,"horizontal");
                                             });
@@ -1047,13 +1094,15 @@ function addToolEvents(tool, type) {
 
                 }
 
-                ghostFather.remove();
+                entityGroup.remove();
+                copyOnCanvas = false;
 
                 blink(attributeGraphics);
 
             } else {
                 if (type === 'wall' || type === 'position' || type === 'attractor' || type === 'axis') {
-                    removeWithAnimation(ghostFather);
+                    removeWithAnimation(entityGroup);
+                    copyOnCanvas = false;
                 }else if(type === 'clonator'){
                     clonationMode = true;
                 }
@@ -1061,8 +1110,8 @@ function addToolEvents(tool, type) {
 
 
 
-            addDragEvents(mc, ghostFather, ghost);
-            addPressEvents(mc, ghost, getActiveLayer().layer, type);
+            addDragEvents(mc, entityGroup, toolEntity);
+            addPressEvents(mc, toolEntity, getActiveLayer().layer, type);
             //        console.log(activeLayer);
 
 

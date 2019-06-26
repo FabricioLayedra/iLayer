@@ -453,6 +453,23 @@
           </div>
           <!-- Begin Page Content -->
           <div id="set-canvases" style ="position: relative; width: 100%;">
+            <defs>
+              <!-- <filter id="dropZoneBlur" x="0" y="0" width="125%" height="125%">
+                    <feOffset result="offOut" in="SourceGraphic" dx="5" dy="5" />
+                    <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
+                    <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+                  </filter> -->
+              <filter id = 'dropZoneBlur'><feFlood flood-color="rgb(255,255,128)" flood-opacity="0.5" in="SourceGraphic" />
+                  <feComposite operator="in" in2="SourceGraphic" />
+                  <feGaussianBlur stdDeviation="10" />
+                  <feComponentTransfer result="glow1">
+                    <feFuncA type="linear" slope="4" intercept="0" />
+                  </feComponentTransfer>
+                  <feMerge>
+                     <feMergeNode in="glow1" />
+                     <feMergeNode in="SourceGraphic" />
+                  </feMerge></filter>
+            </defs>
               <!--GET THE RIGHT DIMENSIONS-->
       <!--              <div id= "canvas-default" width="1200" height="800" style ="position: absolute">
                   </div>-->
