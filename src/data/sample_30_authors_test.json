@@ -53,7 +53,7 @@
             "Papers": 5, 
             "Citations": 12, 
             "Country": "UK",
-            "id": "Dido"
+            "id": "Renard"
         }, 
         {
             "Papers": 3,  
@@ -282,7 +282,7 @@
             "Papers": 4,
             "Citations": 10, 
             "Country": "France", 
-            "id": "Orestes"
+            "id": "Sujin"
         }, 
         {
             "Papers": 1, 
@@ -399,12 +399,12 @@
             "id": 36
         }, 
         {
-            "source": "Orestes", 
+            "source": "Sujin", 
             "target": "Kim", 
             "id": 37
         }, 
         {
-            "source": "Orestes", 
+            "source": "Sujin", 
             "target": "Farah", 
             "id": 38
         }, 
@@ -414,12 +414,12 @@
             "id": 41
         }, 
         {
-            "source": "Orestes", 
+            "source": "Sujin", 
             "target": "Emily", 
             "id": 42
         }, 
         {
-            "source": "Orestes", 
+            "source": "Sujin", 
             "target": "Alex", 
             "id": 43
         }, 
@@ -636,7 +636,7 @@
             "id": 125
         },  
         {
-            "source": "Dido", 
+            "source": "Renard", 
             "target": "Gregori", 
             "id": 137
         }, 
@@ -687,6 +687,7 @@
             "target": "Chen", 
             "id": 155
         }, 
+
         {
             "source": "Chen", 
             "target": "Lian", 
@@ -706,6 +707,22 @@
             "source": "Xavier", 
             "target": "Henry", 
             "id": 159
+        },
+        {
+            "source": "Theo", 
+            "target": "Gregori", 
+            "id": 160
+        },
+        {
+            "source": "Hamza", 
+            "target": "Xavier", 
+            "id": 161
+        },
+        {
+            "source": "Andrew", 
+            "target": "Megura", 
+            "id": 161
         }
+
     ]
 }

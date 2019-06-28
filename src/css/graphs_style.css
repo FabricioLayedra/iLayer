@@ -125,9 +125,17 @@ input{
 
 .node circle{
     /*pointer-events: all;*/
-    stroke: none;
-    stroke-width: 40px;
+    stroke: black;
+    stroke-width: .1em;
     cursor: pointer;
+    fill:#c6c8cc;
+}
+
+.edge {
+    fill: transparent;
+    stroke-width: 3.5;
+    stroke-opacity: .5;
+    pointer-events: visibleStroke;
 }
 text {
     font-family: sans-serif;
@@ -151,6 +159,20 @@ text {
 
 .attributeTool {
     background-color: #fff;
+    display: none;
+    z-index: 100;
+}
+
+.database_line{
+    position: absolute;
+    border: 2px solid black;
+    border-bottom: none;
+    z-index: -10;
+    fill: transparent;
+}
+/*hack for box*/
+.mr-2{
+    z-index:100 !important;
 }
 
 svg text {

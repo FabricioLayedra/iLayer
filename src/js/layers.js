@@ -2,7 +2,7 @@
 /*--------------------------------CONSTANTS-------------------------------------*/
 var count = 0;
 
-var nodeRadius = 30;
+var nodeRadius = 25; //30
 var distLabelGroup = 0;
 
 //selection should be global, whereas visibility should be for a single layer
@@ -25,7 +25,7 @@ var maxLayersAllowed = 10;
 //var datafile = "./data/venezuela_airports.json";
 
 //var datafile = "./data/sample15papers2016.json";//47
-var datafile = "./data/sample15papers2016_paper_anon.json";
+var datafile = "./data/sample_30_authors_test.json";
 //var datafile = "./data/americanAuthorsVIS.json.json";
 
 //Scatter plot
@@ -52,7 +52,9 @@ var ACTIVEATTRIBUTES = {}; //group for active attributes on screen
 //ids of edge gradients
 var EDGEGRADIENTS = {};
 
-var COLORS = ["#1F77B4", "#FF7F0E", "#2CA02C", "#D62728", "#9467BD", "#8C564B", "#E3775E", "#7F7F7F", "#BCBD22", "#17BECF"];
+var COLORS = ['#c6c8cc']
+var COLORS = ['gray']
+//var COLORS = ["#1F77B4", "#FF7F0E", "#2CA02C", "#D62728", "#9467BD", "#8C564B", "#E3775E", "#7F7F7F", "#BCBD22", "#17BECF"];
 
 var el = document.getElementById("layers-table");
 
@@ -309,14 +311,14 @@ function addDroppingZones(layerName) {
     let h = 50;//55;
     let w = 65;//70;
 
-    layer.bottom = {
-        line: drawer.line(w, 0, drawer.width() - w - 20, 0).move(w, layerHeight - h).attr(lineAttributes),
-        rect: drawer.rect(drawer.width() - w, h).move(w, layerHeight - h).attr(rectAttributes).addClass('glow-anim'),
+    layer.bottom = 
+{        line: drawer.line(w, 0, drawer.width() - w - 20, 0).move(w, layerHeight - h).attr(lineAttributes),
+        rect: drawer.rect(drawer.width() - w, h).move(w, layerHeight - h).attr(rectAttributes),//.addClass('glow-anim'),
         hasAttribute: false
     };
     layer.left = {
         line: drawer.line(0, h, 0, drawer.height() - 40).move(w, 40).attr(lineAttributes),
-        rect: drawer.rect(w, layerHeight - h).move(0, 0).attr(rectAttributes).addClass('glow-anim'),
+        rect: drawer.rect(w, layerHeight - h).move(0, 0).attr(rectAttributes),//.addClass('glow-anim'),
         hasAttribute: false
     };
 
@@ -670,8 +672,6 @@ function sortLayers(list) {
         let layer = children[i].getAttribute("id").toLowerCase().split("-")[1];
         $("#set-canvases").prepend($("#layer-" + layer).detach());
     }
-
-
 }
 
 /*---------------------------------PHYSICS--------------------------------------*/
@@ -1056,6 +1056,7 @@ function showCoords(event) {
 
 //loads the JSON file and creates the graph using graphLib and adds it to GRAPHS
 function loadGraph(filename, key, directed) {
+    console.log(filename)
     return $.getJSON(filename).done(function (json) {
         // Creates a new directed graph
         var g = new graphlib.Graph({directed: directed});
@@ -1212,6 +1213,7 @@ function drawGraph(layer_name, g) {
         dataKeys = arrayRemove(dataKeys, 'Number of Papers');
         dataKeys = arrayRemove(dataKeys, 'Papers Published');
         dataKeys = arrayRemove(dataKeys, 'Affiliations');
+        dataKeys = arrayRemove(dataKeys, 'id');
 //        dataKeys = arrayRemove(dataKeys, 'number of papers');
 
     });
@@ -1268,9 +1270,35 @@ function drawGraph(layer_name, g) {
     addHighlightToGroups(SVG.select('g').members);
 
     addAttributesAsTools(dataKeys);
+    
+    let n = datafile.split('/');
+    n = n[n.length - 1];
+
+    $('#file').text(n);
+    toggleAttributesButtons(dataKeys);
 
 
 //    forceLayout(g, pxs, pys);
+}
+
+function toggleAttributesView(){
+    
+
+    /*for (var index in attributesSet) {
+        let attribute = attributesSet[index];
+        var bar = document.getElementById('set-tools');
+        var attrTool = document.getElementById('tool-element').content.cloneNode(true);
+
+        $(attrTool.querySelector("button")).html(attribute);
+        $(attrTool.querySelector("button")).attr("id", attribute);
+        $(attrTool.querySelector("button")).addClass("attributeTool");
+
+        $("#search-bar-container").before(attrTool);
+        // true because everything is discrete now
+        addAttributesDraggingEvents($("#" + attribute)[0], attribute, true);
+
+    }*/
+
 }
 
 function addHighlightToGroups(groups) {
@@ -1336,13 +1364,11 @@ function drawPathInLayer(drawer, fromCenterX, fromCenterY,
             .Q({x: controlX, y: controlY}, {x: toCenterX, y: toCenterY})
             .attr({
                 stroke: LAYERS[layerName].color,
-                fill: 'transparent',
-                'stroke-width': 3.5,
-                'stroke-opacity':'.5',
                 id: id,
-                'pointer-events': 'visibleStroke'
+                class: 'edge'
             }).off();
 //    edgePath.layerName = layerName;
+   // edgePath.class('edge');
     return edgePath;
 }
 
@@ -2507,7 +2533,6 @@ function createHighlight(object, animate, hideAfter, color) {
 }
 
 function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
-
     let mc = new Hammer(element);
     mc.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
     let group = null;
@@ -2560,12 +2585,11 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
         group = drawer.group();
         group.add(rect);
         group.add(label);
+        console.log(group.node.id)
 
     });
 
     mc.on("panmove", function (ev) {
-
-        //currentPoint = {x: ev.srcEvent.pageX /*- $("#accordionSidebar").width()*/, y: ev.srcEvent.pageY - 70};
         currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY - 70};
         group.move(currentPoint.x - startingPoint.x, currentPoint.y - startingPoint.y);
 
@@ -2573,15 +2597,12 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
         activeLayer = getActiveLayer();
         leftZone =  activeLayer.left;
         bottomZone =  activeLayer.bottom;
-        // leftZone.addClass("glow-anim");
-        // bottomZone.addClass("glow-anim");
-        
         
         
         //add a flag to see if there has been a drop
         //isGlow = true;
 
-        //threshold for glows, 
+        //threshold for glows
         let threshold = activeLayer.layer.width() - 10;
         let distanceToLeft = currentPoint.x - (activeLayer.left.rect.x() + activeLayer.left.rect.width());
         let distanceToBottom = activeLayer.bottom.rect.y() - currentPoint.y;
@@ -2650,9 +2671,6 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
             if (bottomZone.hasAttribute){
                 bottomZone.rect.attr({opacity: 0});
             }
-
-
-
            }
 
 
@@ -2745,19 +2763,22 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
 
                 }, 350);
                 targetDropZone.hasAttribute = true;
+                ACTIVEATTRIBUTES[group.node.id] = {'name': attributeName, 'group': group, 'occupantZone': targetDropZone.hasAttribute ? targetDropZone : null, madeAxis: true};
+            } 
 
-
-
-            } else {
-//                removeWithAnimation(group);
+            else {
+//              removeWithAnimation(group);
                 leftZone.rect.animate(250).attr({opacity: 0});
                 leftZone.rect.removeClass('glow-anim');
                 bottomZone.rect.animate(250).attr({opacity: 0});
                 bottomZone.rect.removeClass('glow-anim');
+                ACTIVEATTRIBUTES[group.node.id] = {'name': attributeName, 'group': group, 'occupantZone': null, madeAxis: false};
+
             }
 
-            console.log(activeLayer.left.hasAttribute);
-            console.log(activeLayer.bottom.hasAttribute);
+            // console.log(activeLayer.left.hasAttribute);
+            // console.log(activeLayer.bottom.hasAttribute);
+            
 
             
 
@@ -2765,9 +2786,12 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
 
         //disableGlow(activeLayer.left.rect, leftGlow);
  //       disableGlow(activeLayer.bottom.rect, bottomGlow)
+        //now push that canavs on
 
-
+    
+        
     });
+
 
 }
 
@@ -2976,17 +3000,82 @@ function addAttributesAsTools(attributesSet) {
         var attrTool = document.getElementById('tool-element').content.cloneNode(true);
 
         $(attrTool.querySelector("button")).html(attribute);
-        $(attrTool.querySelector("button")).attr("id", attribute);
+        $(attrTool.querySelector("button")).attr({"id": attribute});
         $(attrTool.querySelector("button")).addClass("attributeTool");
+        $(attrTool.querySelector('button')).attr({'display': 'none'});
 
+
+        //$('#attributes-container').append(attrTool);
         $("#search-bar-container").before(attrTool);
         // true because everything is discrete now
         addAttributesDraggingEvents($("#" + attribute)[0], attribute, true);
+        console.log($('#' + attribute.toString()));
+
+        drawLineFromDatabase($('#' + attribute.toString()));
 
     }
 
 }
 
+function drawLineFromDatabase(attributeButton, i){
+    let initialPos = attributeButton.position();
+    let top = initialPos.top;
+    let left = initialPos.left;
+    let w = attributeButton.outerWidth();
+    let h = attributeButton.outerHeight();
+    let attribute_coordinates = {x: left + w/2, y: top + h/2}; //absolute coords -- centerpoint 
+    
+    let db_button = $('#database')
+    let db_initialPos = db_button.position();
+    let db_top = db_initialPos.top;
+    let db_left = db_initialPos.left;
+    let db_w = db_button.outerWidth();
+    let db_h = db_button.outerHeight();
+    let db_coordinates = {x: db_left + db_w/2, y: db_top + db_h/2}; //absolute coordinates of the center
+
+    console.log(attribute_coordinates);
+    console.log('sl')
+    console.log(db_coordinates);
+    let d = document.createElement('div');
+
+    //dirty if statement hack to not have liens drawn on the left for some reason
+    if (attribute_coordinates.x > db_coordinates.x){
+        $(d).addClass('database_line');
+        $(d).attr({id: i});
+        $(d).css({
+            position: 'absolute',
+            height: '20px',
+            width: attribute_coordinates.x - db_coordinates.x,
+            top: '5px',
+            //top: db_coordinates.y - 20,
+            left: db_left + db_w/2,
+
+            fill: 'transparent'
+        });
+
+        $('#database').after(d);
+    }
+
+    /*rect = drawer.rect(Math.min(label.rbox().w + 10, 82), 30).attr({
+        fill: '#d8d9df',
+        rx: 5,
+        ry: 5,
+        stroke: "#858796",
+        class: 'toolable proxy',
+        value: attributeName,
+        isDiscrete: isDiscrete
+    }).center(startingPoint.x, startingPoint.y);
+
+*/
+
+    //distance between this and button
+
+    //$('#set-tools').append()
+    //draw in set tools
+    //drawer.line(w, 0, drawer.width() - w - 20, 0).move(w, layerHeight - h).attr(lineAttributes)
+
+    //calculate line
+}
 
 
 function getAxisBasisSpace(axisX) {

@@ -102,6 +102,44 @@ function disableGlow(object){//, interval){
     //window.clearInterval(interval)
 }
 
+function toggleAttributesButtons(dataKeys){
+    $("#database").on('click', function (e) {
+
+
+        if ($('#file').css('display') !== 'none'){
+            $('#file').slideUp('fast', function(){
+                
+                $('.attributeTool').css({display: 'block', visibility: 0});
+                for (var index in dataKeys){
+                    drawLineFromDatabase($('#' + dataKeys[index].toString()));
+                        }
+
+               //actSlide();
+                        //is currently called 3x for each button, but that is ok
+                        /*for (var index in dataKeys){
+                            drawLineFromDatabase($('#' + dataKeys[index].toString()), index);
+                        }
+                        $('.database_line').slideDown('fast');*/
+
+
+                });
+             $('.attributeTool').slideDown('slow')//, function(){
+                 
+
+                 
+            //});
+        }
+
+
+        /*else if ($('#file').css('display') === 'none'){
+            $('.attributeTool').slideToggle('fast', function(){
+                $('#file').slideToggle('slow');
+            });
+        }*/
+        
+    });
+}
+
 function showPanel(id) {
     var theElement = $('#' + id);
     var duration = 400;
