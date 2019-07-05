@@ -17,7 +17,7 @@ April 2019.
 
 # Cloning the repository
 
-1. Clone https://github.com/FabricioLayedra/iLayer/tree/ilayer-tiff into your computer.
+1. Clone https://github.com/FabricioLayedra/iLayer/tree/ilayer-tiff-v2 into your computer.
 
 2. Import the project in Netbeans.
 
