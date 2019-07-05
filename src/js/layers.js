@@ -311,8 +311,8 @@ function addDroppingZones(layerName) {
     let h = 50;//55;
     let w = 65;//70;
 
-    layer.bottom = 
-{        line: drawer.line(w, 0, drawer.width() - w - 20, 0).move(w, layerHeight - h).attr(lineAttributes),
+    layer.bottom = {
+        line: drawer.line(w, 0, drawer.width() - w - 20, 0).move(w, layerHeight - h).attr(lineAttributes),
         rect: drawer.rect(drawer.width() - w, h).move(w, layerHeight - h).attr(rectAttributes),//.addClass('glow-anim'),
         hasAttribute: false
     };
@@ -325,16 +325,29 @@ function addDroppingZones(layerName) {
     //trash zone -- double check if correct
     layer.right = {
         line: drawer.line(0, h, 0, drawer.height() - 40).move(drawer.width() - w - 20, 40).attr(lineAttributes),
-        rect: drawer.rect(w, "100%").move(drawer.width() - w, 0).attr(rectAttributes).addClass('glow-anim'),
+        rect: drawer.rect(w, "100%").move(drawer.width() - w, 0).attr(rectAttributes),//.addClass('glow-anim'),
         hasAttribute: false
     };
 
     //resize when it works
     layer.trash = {
-        line: drawer.line(0, h, 0, drawer.height() - 40).move(drawer.width() - w - 20, 40).attr(lineAttributes),
-        rect: drawer.rect(w + 50, w + 50).move(drawer.width() - w, 0).attr(rectAttributes).addClass('glow-anim'),
-        hasAttribute: false
-    };
+        line: drawer.line(0, 0, 0, 0).move(drawer.width() - w - 20, 40).attr(lineAttributes),
+        rect: drawer.rect(w + 60, w + 60).move(drawer.width() - w - 60, 0).id('trash-rect').attr(rectAttributes),//.addClass('glow-anim'),
+        hasAttribute: false,
+        icon: drawer.path("M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z")
+            .attr({
+                fill: 'gray',
+                opacity: .25
+            })
+        };
+
+        layer.trash.icon.attr({
+            'transform': 'translate(' +  (layer.trash.rect.cx() - 20) + " " + ( w/2) + ") scale(.1)"
+        });
+        //will overwrite this
+        /*layer.trash.icon.attr({
+            'transform': 'translate(-' +  layer.trash.icon.cx() + ", " + "-" + layer.trash.icon.cy() + ")"
+        });*/
 
 }
 
@@ -674,377 +687,7 @@ function sortLayers(list) {
     }
 }
 
-/*---------------------------------PHYSICS--------------------------------------*/
 
-Matter.use('matter-attractors');
-
-// module aliases
-var Engine = Matter.Engine, World = Matter.World, Bodies = Matter.Bodies, Runner = Matter.Runner, Render = Matter.Render, Body = Matter.Body;
-
-function createPhysicsWorld(layer_name, boundaries) {
-
-    // create an engine
-    var engine = Engine.create();
-
-    var render = Render.create({
-        element: document.body,
-        engine: engine,
-        options: {
-            width: generalWidth,
-            height: generalHeight
-        }
-    });
-    Render.run(render);
-//    
-
-    // create demo scene
-    var world = engine.world;
-    world.gravity.scale = 0;
-
-    var strongness = 300;
-
-//   var length = 120000;
-//   var dimensions = [1200,800];
-//   var tickerLength = 300;
-//    
-    var roof = Bodies.rectangle(generalWidth / 2, -(strongness / 2) + 5, generalWidth, strongness, {isStatic: true});
-    var leftWall = Bodies.rectangle(-(strongness / 2) + 10, 0 + generalHeight / 2, strongness, generalHeight, {isStatic: true});
-    var rightWall = Bodies.rectangle(0 + generalWidth + strongness / 2 - 20, 0 + generalHeight / 2, strongness, generalHeight, {isStatic: true});
-//    console.log(generalWidth);
-
-    var ground = Bodies.rectangle(0 + generalWidth / 2, generalHeight + 100 - distLabelGroup / 2, generalWidth, 200, {isStatic: true});
-//    console.log(ground);
-
-//
-    World.add(world, roof);
-    World.add(world, leftWall);
-    World.add(world, rightWall);
-    World.add(world, ground);
-
-    //Add more boundaries
-    Engine.run(engine);
-    LAYERS[layer_name]["physics-engine"] = engine;
-    return engine;
-}
-
-function removeWorld(engine) {
-    Matter.World.clear(engine.world);
-    Matter.Engine.clear(engine);
-}
-
-//send a matter engine to restart it
-function run_physics(engine) {
-    engine.enabled = true;
-}
-
-//send a matter engine to stop it
-function stop_physics(engine) {
-    engine.enabled = false;
-}
-
-function addGravity(engine, x, y, factor) {
-//    if (engine.world.gravity.scale !== 0) {
-////        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Add gravity" ;
-//        engine.world.gravity.scale = 0;
-//    } else if (!up) {
-////        document.querySelector('#add-gravity > span.text.text-white-50').textContent = "Remove gravity" ;
-//        engine.world.gravity.scale = 0.01;
-//    } else if (up) {
-//    if (factor){
-//      engine.world.gravity.scale = factor;
-//      return;
-//    }
-    engine.world.gravity.x = x;
-    engine.world.gravity.y = y;
-    engine.world.gravity.scale = factor * 0.00001;
-//    console.log(engine.world.gravity);
-}
-
-
-function addElementsToWorld(world, layer) {
-
-    var elements = LAYERS[layer].layer.children();
-
-    for (var i = 0; i < elements.length; i++) {
-        var group = elements[i];
-        addElementToWorld(world, group);
-    }
-}
-
-function addElementToWorld(world, element) {
-    var Bodies = Matter.Bodies;
-    var World = Matter.World;
-
-    var circle = getElementFromGroup(element, "circle");
-
-
-
-    if (!element.matter && circle) {
-
-        console.log("Adding node...");
-        var x = element.cx() - element.childDX;
-//            console.log(circle.cx());
-//            console.log(group.cx()-group.childDX);
-
-        var y = element.cy() - element.childDY;
-//            console.log(circle.cy());
-//            console.log(group.cy()-group.childDY)
-//            LAYERS[layer].layer.circle(5).center(x,y).attr({fill:"red",opacity:0.25});
-
-        var radius = circle.attr("r");
-//            var deltaX = group.cx()-circle.cx();
-//            var deltaY = group.cy()-circle.cy();
-
-        var matterObject = Bodies.circle(x, y, radius);
-
-        matterObject.svg = element;
-        element.matter = matterObject;
-        element.initX = x;
-        element.initY = y;
-
-        matterObject.frictionAir = 0.05;
-        matterObject.restitution = 0.025;
-
-        World.add(world, matterObject);
-    } else if (element.type === "rect") {
-        console.log("Adding rect...");
-
-
-        var opacity = element.attr("opacity");
-        console.log("Adding text");
-        console.log("Opacity: " + opacity);
-
-
-        if (opacity !== 0) {
-
-            var x = element.attr('x');
-            var y = element.attr('y');
-            var width = element.width();
-            var height = element.height();
-
-            let valueX = 0;
-            let valueY = 0;
-
-            if (width > height) {
-                valueX = x + width / 2;
-                valueY = y;
-            } else if (height > width) {
-                valueX = x + width / 2;
-                valueY = y + height / 2;
-            }
-
-            var matterObject = Bodies.rectangle(valueX, valueY, width, height, {isStatic: true
-            });
-            matterObject.density = 1;
-            //      
-            matterObject.svg = element;
-            element.matter = matterObject;
-            World.add(world, matterObject);
-
-        }
-
-    } else if (element.type === "text") {
-
-        var bbox = element.node.getBBox();
-//        console.log(bbox);        
-        var width = bbox.width;
-        var height = bbox.height;
-
-
-        var direction = element.direction;
-        let matterX = 0;
-        let matterY = 0;
-        let matterWidth = 0;
-        let matterHeight = 0;
-
-        if (direction === 'horizontal') {
-            matterWidth = nodeRadius;
-            matterHeight = 5;
-            var valueX = bbox.x + (width / 2);
-
-            var valueY = bbox.y;
-        } else {
-            matterWidth = 5;
-            matterHeight = nodeRadius;
-            //desfase
-            var valueX = bbox.x + (width / 2) + 10;
-
-            var valueY = bbox.y + (height / 2);
-        }
-
-        var matterObject = Bodies.rectangle(valueX, valueY, matterWidth, matterHeight, {isStatic: true
-        });
-
-        matterObject.svg = element;
-        element.matter = matterObject;
-        World.add(world, matterObject);
-
-    } else if (element.type === 'line') {
-
-        console.log("Adding line");
-
-        var opacity = element.attr("opacity");
-        console.log("Adding text");
-        console.log("Opacity: " + opacity);
-        if (opacity !== 0) {
-
-            var bbox = element.rbox();
-            
-            console.log(bbox);
-            var lineBlock = Bodies.rectangle((generalWidth/2),bbox.y-70+5, generalWidth, 10, {isStatic: true});
-            Matter.Body.setStatic(lineBlock,true);
-            lineBlock.svg = element;
-            element.matter = lineBlock;
-            World.add(world, lineBlock);
-            
-        }
-    }
-    return matterObject;
-}
-
-function addAttractorToWorld(world, element) {
-    var Bodies = Matter.Bodies;
-    var World = Matter.World;
-
-    var matterObject;
-
-    if (element.type === "circle") {
-
-        var x = element.cx();
-        var y = element.cy();
-        var radius = element.attr("r");
-
-
-        matterObject = Bodies.circle(x, y, radius, {
-            isStatic: true,
-            plugin: {
-                attractors: [
-                    function (theAttractor, theBody) {
-                        let x = 0, y = 0, angle, d = 100;
-                        if (theBody.attractedTo && theBody.attractedTo.includes(theAttractor)) {
-                            let deltaX = theAttractor.position.x - theBody.position.x;
-                            let deltaY = theAttractor.position.y - theBody.position.y;
-                            angle = Math.atan(-deltaY, -deltaX);
-                            x = (deltaX + d * Math.cos(angle)) * 1e-5;
-                            y = (deltaY + d * Math.sin(angle)) * 1e-5;
-                        }
-                        return {x: x, y: y};
-                    }
-                ]
-            }
-        });
-
-        matterObject.svg = element;
-        element.matter = matterObject;
-        World.add(world, matterObject);
-
-
-    } else if (element.type === "rect") {
-
-        var x = element.attr('x');
-        var y = element.attr('y');
-        var width = element.width();
-        var height = element.height();
-
-//        let valueX = 0;
-//        let valueY = 0; 
-
-        if (width > height) {
-            valueX = x + width / 2;
-            valueY = y;
-        } else if (height > width) {
-            valueX = x + width / 2;
-            valueY = y + height / 2;
-        }
-//        console.log("************VALUES**********");
-//       
-//        console.log(width,height);
-//        console.log(x,y);
-//        console.log(valueX,valueY);
-        var matterObject = Bodies.rectangle(valueX, valueY, width, height, {isStatic: true,
-
-            plugin: {
-                attractors: [
-                    function (theAttractor, theBody) {
-                        let x = 0, y = 0, angle, d = 100;
-                        if (theBody.attractedTo && theBody.attractedTo.includes(theAttractor)) {
-                            let deltaX = theAttractor.position.x - theBody.position.x;
-                            let deltaY = theAttractor.position.y - theBody.position.y;
-                            angle = Math.atan(-deltaY, -deltaX);
-                            x = (deltaX + d * Math.cos(angle)) * 1e-5;
-                            y = (deltaY + d * Math.sin(angle)) * 1e-5;
-                        }
-                        return {x: x, y: y};
-                    }
-                ]
-            }
-        });
-
-//      
-        matterObject.svg = element;
-        element.matter = matterObject;
-        World.add(world, matterObject);
-    } else if (element.type === 'text') {
-        console.log("Adding text as an attractor...");
-        var bbox = element.node.getBBox();
-        console.log(bbox);
-
-
-
-        var width = bbox.width;
-        var height = bbox.height;
-
-        var direction = element.direction;
-
-        let valueX = bbox.x + (width / 2) - (nodeRadius / 2);
-
-        let valueY = bbox.y;
-
-//        getActiveLayer().layer.rect(nodeRadius, height).move(valueX, valueY);
-
-        let matterX = 0;
-        let matterY = 0;
-        let matterWidth = 0;
-        let matterHeight = 0;
-
-        if (direction === 'horizontal') {
-            matterX = valueX + (nodeRadius / 2);
-            matterY = valueY + (height / 2);
-            matterWidth = nodeRadius;
-            matterHeight = 5;
-        } else {
-            matterX = valueX + (nodeRadius / 2);
-            matterY = valueY + (height / 2);
-            matterWidth = 5;
-            matterHeight = nodeRadius;
-        }
-
-        var matterObject = Bodies.rectangle(bbox.x, bbox.y, matterWidth, matterHeight, {isStatic: true,
-
-            plugin: {
-                attractors: [
-                    function (theAttractor, theBody) {
-                        let x = 0, y = 0, angle, d = 100;
-                        if (theBody.attractedTo && theBody.attractedTo.includes(theAttractor)) {
-                            let deltaX = theAttractor.position.x - theBody.position.x;
-                            let deltaY = theAttractor.position.y - theBody.position.y;
-                            angle = Math.atan(-deltaY, -deltaX);
-                            x = (deltaX + d * Math.cos(angle)) * 1e-5;
-                            y = (deltaY + d * Math.sin(angle)) * 1e-5;
-                        }
-                        return {x: x, y: y};
-                    }
-                ]
-            }
-        });
-
-//      
-        matterObject.svg = element;
-        element.matter = matterObject;
-        World.add(world, matterObject);
-    }
-    return matterObject;
-}
 
 /*----------------------------GRAPHS' ACTIONS-----------------------------------*/
 
@@ -2254,7 +1897,7 @@ function main() {
                             nodeGraphics.dmove(newX - nodeGraphics.initX, newY - nodeGraphics.initY);
                             nodeGraphics.initX = nodeGraphics.cx() - nodeGraphics.childDX;
                             nodeGraphics.initY = nodeGraphics.cy() - nodeGraphics.childDY;
-                            console.log(newX);
+                            //console.log(newX);
                             //console.log(nodeGraphics.initX);
 
 
@@ -2306,7 +1949,9 @@ function main() {
     for (var i = 0; i < tools.length; i++) {
         var type = $(tools[i]).attr("id");
         console.log(type);
-        addToolEvents(tools[i], type);
+        if (type != 'database'){
+            addToolEvents(tools[i], type);
+        }
     }
     addMenuEvents();
     //addEvents();
@@ -2548,12 +2193,17 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
 
     let leftGlow = null;
     let bottomGlow = null;
+    let trashGlow = null;
 
     let leftZone = null;//
     let bottomZone = null;
+    let trashZone = null;
 
+    //specifically for trashZone
+    let trashRect = null;
+    let trashIcon = null;
 
-     var isGlow = false;
+    var isGlow = false;
 
 
     mc.on("panstart", function (ev) {
@@ -2561,6 +2211,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
         drawer = getActiveLayer().layer;
         startingPoint = {x: ev.srcEvent.pageX /*- $("#onSidebar").width()*/, y: ev.srcEvent.pageY - 70};
 
+        //for defining labels that are going to be dragged
 
         label = drawer.text(attributeName).attr({
             fill: 'black',
@@ -2577,7 +2228,17 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
             stroke: "#858796",
             class: 'toolable proxy',
             value: attributeName,
-            isDiscrete: isDiscrete
+            isDiscrete: isDiscrete,
+        }).center(startingPoint.x, startingPoint.y);
+
+        trashIcon = drawer.rect(Math.min(label.rbox().w + 10, 82), 30).attr({
+            fill: '#d8d9df',
+            rx: 5,
+            ry: 5,
+            stroke: "#858796",
+            class: 'toolable proxy',
+            value: attributeName,
+            isDiscrete: isDiscrete,
         }).center(startingPoint.x, startingPoint.y);
 
         rect.values = [];
@@ -2585,7 +2246,10 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
         group = drawer.group();
         group.add(rect);
         group.add(label);
-        console.log(group.node.id)
+
+        //group.add(trashIcon);
+        
+       
 
     });
 
@@ -2597,6 +2261,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
         activeLayer = getActiveLayer();
         leftZone =  activeLayer.left;
         bottomZone =  activeLayer.bottom;
+        trashZone = activeLayer.trash;
         
         
         //add a flag to see if there has been a drop
@@ -2606,6 +2271,19 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
         let threshold = activeLayer.layer.width() - 10;
         let distanceToLeft = currentPoint.x - (activeLayer.left.rect.x() + activeLayer.left.rect.width());
         let distanceToBottom = activeLayer.bottom.rect.y() - currentPoint.y;
+
+        //let distanceToTrash = Math.min(activeLayer.trash.rect.x() - currentPoint.x, currentPoint.y - activeLayer.trash.rect.y());
+
+        let distanceToTrash_x = Math.abs(activeLayer.trash.rect.cx() - currentPoint.x);
+        let distanceToTrash_y = Math.abs(activeLayer.trash.rect.cy() - currentPoint.y);
+        //let distanceToTrash = Math.min(Math.abs(activeLayer.trash.rect.cy() - currentPoint.y), Math.abs(activeLayer.trash.rect.cx() - currentPoint.x));
+        let distanceToTrash = [distanceToTrash_x, distanceToTrash_y];
+        //let distanceToTrash = Math.min( Math.abs(activeLayer.trash.rect.width() + activeLayer.trash.rect.x() - currentPoint.x), Math.abs(activeLayer.trash.rect.x() - currentPoint.x));
+        let distanceToTrashCoords = {x: activeLayer.trash.rect.x() - currentPoint.y, y: activeLayer.trash.rect.y() - currentPoint.y};   //818 top, 0 left
+
+       //console.log(distanceToTrash_x + " xy " + distanceToTrash_y);
+
+        //if anywhere within trash.rect.x - threshold, or anywhere within trahs.rect.y - threshold, take effect
 
         //initial opacities are 0
         //also make the glow appear at this point
@@ -2618,9 +2296,11 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
             bottomZone.rect.attr({opacity: 20});
            // bottomZone.filter("url(#dropZoneBlur)");
         }
-        
-       
-        //leftZone.filter(rectFilter());
+        //initially start out 
+        trashZone.rect.attr({opacity:30});
+        //trashZone.rect.appendChild(activeLayer.trash.icon)
+
+
 
 
         // //start out and check and glow from the start
@@ -2635,22 +2315,50 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
         //     direction = "horizontal";
         // }*/
 
-
+        
         if (distance < threshold) {
-
-            if (distanceToLeft < distanceToBottom) {
+            //left < bottom < trash
+            //left < trash < bottom
+            if ( ((distanceToLeft < distanceToBottom) && (distanceToLeft < distanceToTrash_x) )
+                )
+            {
                 distance = distanceToLeft;
                 targetDropZone = activeLayer.left;
                 direction = "vertical";
-            } else {
+            }
+
+            //bottom < left < trash
+            //bottom < trash < left
+            else if ( ((distanceToBottom <= distanceToLeft) && (distanceToBottom < distanceToTrash_y)))
+            {
                 distance = distanceToBottom;
                 targetDropZone = activeLayer.bottom;
                 direction = "horizontal";
             }
 
+            // trash < left < bottom
+            //trash < bottom < left
+            else if ( ((distanceToTrash_x < distanceToLeft) && (distanceToTrash_y < distanceToBottom))
+                ) {
+                
+                if( (distanceToTrash_x < distanceToTrash_y) && ( (distanceToTrash_x < activeLayer.trash.rect.width()) && (distanceToTrash_y < activeLayer.trash.rect.width()) )){
+                    distance = distanceToTrash_x;
+                }
+                else if( (distanceToTrash_x >= distanceToTrash_y) && ( (distanceToTrash_x < activeLayer.trash.rect.width()) && (distanceToTrash_y < activeLayer.trash.rect.height()) )){
+                    distance = distanceToTrash_y;
+                }
+                else{
+                    distance = Math.max(distanceToTrash_x, distanceToTrash_y);
+                }
+                //console.log('d ' + distance)
+                targetDropZone = activeLayer.trash;
+                direction = "trash";
+            }
+            console.log(direction)
+
            //setVisibilityOfAttributeValues(targetDropZone, 1 - (distance/threshold));
            if (!targetDropZone.hasAttribute){
-            targetDropZone.rect.attr({opacity: 1 - (distance / threshold)});
+                targetDropZone.rect.attr({opacity: 1 - (distance / threshold)});
             }
            //this is literally disgusting code 
            //want inverse dependent on whether this is closer
@@ -2658,9 +2366,12 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
             
             leftZone.rect.attr({opacity: distance/threshold*2});
             bottomZone.rect.attr({opacity: distance/threshold*2});
+            trashZone.rect.attr({opacity: distance/threshold*2});
             targetDropZone.rect.attr({opacity: 1 - (distance / threshold)});
 
+            console.log(targetDropZone.hasAttribute)
             if (!targetDropZone.hasAttribute){
+                
                 setVisibilityOfAttributeValues(targetDropZone, 0.25);
             }
 
@@ -2675,8 +2386,11 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
 
 
             //theDropping Zone is target Zone
-
-            if (distance < 0) {
+            /*console.log(direction);
+            console.log(distanceToTrash_x + " " + distanceToTrash_y);
+            console.log(distance);*/
+            if ( (distance < 50) || ((distanceToTrash_x < 100) && distanceToTrash_y < 100)){
+                console.log(targetDropZone.valueLabels)
                 if (!targetDropZone.valueLabels) {
 
                     let x = null;
@@ -2686,41 +2400,87 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
                     rect.direction = direction;
                     rect.discrete = getActiveLayer().data[attributeName].discrete;
 
-                    distanceToLeft = currentPoint.x - (activeLayer.left.rect.x() + activeLayer.left.rect.width());
-                    distanceToBottom = activeLayer.bottom.rect.y() - currentPoint.y;
+                    distanceToLeft = Math.abs(currentPoint.x - (activeLayer.left.rect.x() + activeLayer.left.rect.width()) );
+                    distanceToBottom = Math.abs(activeLayer.bottom.rect.y() - currentPoint.y);
+                    /*distanceToTrash = Math.min((activeLayer.trash.rect.x() - currentPoint.x), (currentPoint.y - activeLayer.trash.rect.y()));*/
+                    //distanceToTrash = Math.abs (currentPoint.y - activeLayer.trash.rect.y());
+
+                    distanceToTrash_x = Math.abs(activeLayer.trash.rect.cx() - currentPoint.x);
+                    distanceToTrash_y = Math.abs(activeLayer.trash.rect.cy() - currentPoint.y);
+                    //let distanceToTrash = Math.min(Math.abs(activeLayer.trash.rect.cy() - currentPoint.y), Math.abs(activeLayer.trash.rect.cx() - currentPoint.x));
+                    distanceToTrash = [distanceToTrash_x, distanceToTrash_y];
                     
-                    if (distanceToLeft < distanceToBottom){
-                        x = activeLayer.bottom.line.x();
-                        y = targetDropZone.rect.cy() - 25;
-                        space = activeLayer.bottom.line.width();
-                        line = activeLayer.bottom.line;
-                    }
+                    console.log(distanceToTrash_x + " xy " + distanceToTrash_y);
 
-                    else{
+    
+
+                    //if (distanceToLeft < distanceToBottom){
+                    if ( ((distanceToLeft < distanceToBottom) && (distanceToLeft < distanceToTrash_x)) )/* || 
+                        ((distanceToLeft < distanceToTrash) && (distanceToLeft < distanceToBottom))){*/
+                    {
                         x = activeLayer.left.rect.cx();
                         y = activeLayer.left.line.y();
                         space = activeLayer.left.line.rbox().h;
                         line = activeLayer.left.line;
+                        /*direction = 'left';*/
                     }
-                    if (direction === "horizontal") {
+
+            
+
+                    else if ( ((distanceToBottom <= distanceToLeft) && (distanceToBottom <= distanceToTrash_y)) )/*|| 
+                        ((distanceToBottom < distanceToTrash) && (distanceToBottom < distanceToLeft))
+                        )*/
+                    {
                         x = activeLayer.bottom.line.x();
-                        y = targetDropZone.rect.cy() - 25;
+                        y = activeLayer.bottom.rect.cy() - 25; //targetDropZone.rect
                         space = activeLayer.bottom.line.width();
                         line = activeLayer.bottom.line;
-                    } else {
+                       /* direction = 'bottom';*/
+                    }
+
+                    //for equal cases? with trash
+                    //check these
+                    else if ( (distanceToTrash_x < distanceToLeft) && (distanceToTrash_y < distanceToBottom) ){
+                        x = activeLayer.trash.rect.x(); ////////FIX THIS LATER TO MAKE THE DROP ZONE BIGGER
+                        y = activeLayer.trash.rect.height();
+                        space = activeLayer.trash.line.rbox().h; //check this
+                        line = activeLayer.trash.line;
+                       /* direction = 'trash';*/
+                    }
+
+                    /*if (direction === "horizontal") {
                         x = activeLayer.left.rect.cx();
                         y = activeLayer.left.line.y();
                         space = activeLayer.left.line.rbox().h;
                         line = activeLayer.left.line;
+                    } 
+
+                    else if (direction === "vertical") {
+                        x = activeLayer.bottom.line.x();
+                        y = targetDropZone.rect.cy() - 25;
+                        space = activeLayer.bottom.line.width();
+                        line = activeLayer.bottom.line;
+                    } 
+
+                    //define for trash
+                    else if (direction === "trash") {
+                        x = activeLayer.trash.rect.x();
+                        y = activeLayer.trash.line.height();
+                        space = activeLayer.trash.line.rbox().h;
+                        line = activeLayer.trash.line;
+                    }*/
+            
+                    if (direction !== "trash"){
+                        addAttributeValues(attributeName, targetDropZone, x, y, space, drawer, direction, rect,line);
                     }
 
-                    addAttributeValues(attributeName, targetDropZone, x, y, space, drawer, direction, rect,line);
-
-                } else {
+                } else {                  
                     setVisibilityOfAttributeValues(targetDropZone, 0.5);
                 }
-            } else {
-                setVisibilityOfAttributeValues(targetDropZone, 0);
+            } else {               
+                removeAttributeValues(attributeName, direction);
+                targetDropZone.valueLabels = null;
+                //setVisibilityOfAttributeValues(targetDropZone, 0);
                 //targetDropZone.removeClass('glow-anim');
             }
 
@@ -2729,7 +2489,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
             targetDropZone = null;
         }
     });
-
+//increase drop zone for trash
     mc.on("panend", function (ev) {
 
         /*leftZone.removeClass('glow-anim');
@@ -2739,17 +2499,33 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
         setTimeout(function () {
 
             // attribute dropped inside a dropping area
-            if (targetDropZone && distance < 0) {
+            if (targetDropZone && distance < 30) {
 
                 let x = null;
                 let y = null;
+
+                console.log(startingPoint.x + " " + startingPoint.y);
+                console.log(targetDropZone)
                 
                 if (direction === "horizontal") {
                     x = -startingPoint.x + activeLayer.bottom.line.x() + activeLayer.bottom.line.rbox().w + rect.rbox().w / 2 + 5;
                     y = targetDropZone.line.cy() - startingPoint.y;
-                } else {
+                } else if (direction === 'vertical') {
                     x = -startingPoint.x + targetDropZone.rect.width();
                     y = -startingPoint.y + rect.height() / 2 + 5;
+                }
+
+                else  {
+
+                }
+
+
+                if (direction === 'trash'){
+                    removeWithAnimation(group);
+                    //remove with animation 
+
+                    //removeAttributeFromExistence()
+                    //return;
                 }
 
                 group.animate(250).move(x, y);
@@ -2757,7 +2533,6 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
                 targetDropZone.rect.animate(250).attr({opacity: 0});
 
                 setTimeout(function () {
-
                     targetDropZone.line.animate(250).attr({opacity: 1});
                     setVisibilityOfAttributeValues(targetDropZone, 1, false);
 
@@ -2766,13 +2541,19 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete) {
                 ACTIVEATTRIBUTES[group.node.id] = {'name': attributeName, 'group': group, 'occupantZone': targetDropZone.hasAttribute ? targetDropZone : null, madeAxis: true};
             } 
 
+            //remove in trash zone
             else {
 //              removeWithAnimation(group);
                 leftZone.rect.animate(250).attr({opacity: 0});
                 leftZone.rect.removeClass('glow-anim');
                 bottomZone.rect.animate(250).attr({opacity: 0});
                 bottomZone.rect.removeClass('glow-anim');
-                ACTIVEATTRIBUTES[group.node.id] = {'name': attributeName, 'group': group, 'occupantZone': null, madeAxis: false};
+                trashZone.rect.animate(250).attr({opacity: 0});
+                trashZone.rect.removeClass('glow-anim');
+
+                if (direction != 'trash'){
+                    ACTIVEATTRIBUTES[group.node.id] = {'name': attributeName, 'group': group, 'occupantZone': null, madeAxis: false};
+                }
 
             }
 
@@ -2810,14 +2591,19 @@ function setVisibilityOfAttributeValues(droppingZone, opacity, progressive) {
     }
 }
 
+//tick counter
+
 function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, direction, proxy,line) {
 
     let values = getAttributeValues(attributeName);
 //    let values = {min: -102, max: 785};
-
+    
     let activeLayer = getActiveLayer();
     let isCategorical = $.isArray(values);
     droppingZone.valueLabels = new Array();
+
+    let group = drawer.group().addClass('ticks-' + attributeName);
+    group.addClass(direction);
 
     let finalX = null;
     let finalY = null;
@@ -2864,9 +2650,9 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
 
             
             if (proxy.isAxis){
-                label = drawer.text(value);
+                label = group.text(value);//drawer.text(value);
             }else{
-                label = drawer.text(function (add) {
+                label =  group.text(function (add) {//drawer.text(function (add) {
                 parts.forEach(function (part) {
                     if (direction === "vertical") {
                         add.tspan(part).dy(15).attr('x', finalX + 47);
@@ -2892,7 +2678,7 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
         // this is a continuous data attribute
         let minTick;
         let maxTick;
-        let minLabel = drawer.text('' + values.min).attr(labelAttributes);
+        let minLabel = group.text('' + values.min).attr(labelAttributes);
         proxy.values = values;
         if (direction === "horizontal") {
             x += nodeRadius;
@@ -2904,25 +2690,25 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
         let majorTicksAttributes = {stroke: 'black', 'stroke-width': 1.5};
         let minorTicksAttributes = {stroke: 'grey', 'stroke-width': 1};
         let shiftMax = 0;
-        let maxLabel = drawer.text('' + values.max).attr(labelAttributes);
+        let maxLabel = group.text('' + values.max).attr(labelAttributes);
         if (direction === "horizontal") {
             finalX = x + space + shiftMax;
             finalY = y + 10;
-            minTick = drawer.line(x, y - 2, x, y + 10).attr(majorTicksAttributes);
+            minTick = group.line(x, y - 2, x, y + 10).attr(majorTicksAttributes);
             proxy.values.minPos = x,
-            maxTick = drawer.line(finalX, y - 2, finalX, y + 10).attr(majorTicksAttributes);
+            maxTick = group.line(finalX, y - 2, finalX, y + 10).attr(majorTicksAttributes);
             proxy.values.maxPos = finalX;
         } else {
             finalX = line.x() - 15, y + 10;
             finalY = activeLayer.left.line.y() + nodeRadius;
-            minTick = drawer.line(line.x(), minLabel.cy(), line.x() - 10, minLabel.cy()).attr(majorTicksAttributes);
+            minTick = group.line(line.x(), minLabel.cy(), line.x() - 10, minLabel.cy()).attr(majorTicksAttributes);
             proxy.values.minPos = minLabel.cy();
         }
         maxLabel.move(finalX, finalY);
 
         // this has to be done after the maxLabel has been moved
         if (direction === "vertical") {
-            maxTick = drawer.line(line.x(), maxLabel.cy(), line.x() - 10, maxLabel.cy()).attr(majorTicksAttributes);
+            maxTick = group.line(line.x(), maxLabel.cy(), line.x() - 10, maxLabel.cy()).attr(majorTicksAttributes);
             proxy.values.maxPos = maxLabel.cy();
         }
 
@@ -2953,13 +2739,13 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
             if (shouldAddMajorTick) {
                 let majorTick;
                 let interpolation = Math.round(interpolate(pos, init, end, values.min, values.max) * 100) / 100;
-                let majorLabel = drawer.text('' + interpolation).attr(labelAttributes);
+                let majorLabel = group.text('' + interpolation).attr(labelAttributes);
 
                 if (direction === "horizontal") {
-                    majorTick = drawer.line(pos, activeLayer.bottom.line.y(), pos, activeLayer.bottom.line.y() + 10).attr(majorTicksAttributes);
+                    majorTick = group.line(pos, activeLayer.bottom.line.y(), pos, activeLayer.bottom.line.y() + 10).attr(majorTicksAttributes);
                     majorLabel.move(pos, y + 10);
                 } else {
-                    majorTick = drawer.line(line.x(), pos, line.x() - 10, pos).attr(majorTicksAttributes);
+                    majorTick = group.line(line.x(), pos, line.x() - 10, pos).attr(majorTicksAttributes);
                     majorLabel.move(line.x() - 15, pos - majorLabel.rbox().h / 2);
                 }
                 droppingZone.valueLabels.push(majorTick);
@@ -2972,9 +2758,9 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
                 if (i !== pos) {
                     let minorTick;
                     if (direction === "horizontal") {
-                        minorTick = drawer.line(i, activeLayer.bottom.line.y(), i, activeLayer.bottom.line.y() + 7).attr(minorTicksAttributes);
+                        minorTick = group.line(i, activeLayer.bottom.line.y(), i, activeLayer.bottom.line.y() + 7).attr(minorTicksAttributes);
                     } else {
-                        minorTick = drawer.line(line.x(), i, line.x() - 7, i).attr(minorTicksAttributes);
+                        minorTick = group.line(line.x(), i, line.x() - 7, i).attr(minorTicksAttributes);
                     }
                     droppingZone.valueLabels.push(minorTick);
                 }
@@ -2990,6 +2776,10 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
     }
 
 
+}
+
+function removeAttributeValues(attributeName, direction){
+    $('.ticks-' + attributeName + "." + direction).remove();
 }
 
 function addAttributesAsTools(attributesSet) {
@@ -3011,7 +2801,7 @@ function addAttributesAsTools(attributesSet) {
         addAttributesDraggingEvents($("#" + attribute)[0], attribute, true);
         console.log($('#' + attribute.toString()));
 
-        drawLineFromDatabase($('#' + attribute.toString()));
+        //drawLineFromDatabase($('#' + attribute.toString()));
 
     }
 

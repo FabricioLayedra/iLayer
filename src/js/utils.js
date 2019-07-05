@@ -107,27 +107,30 @@ function toggleAttributesButtons(dataKeys){
 
 
         if ($('#file').css('display') !== 'none'){
+            
             $('#file').slideUp('fast', function(){
                 
-                $('.attributeTool').css({display: 'block', visibility: 0});
+                $('.attributeTool').css({display: 'block', visibility: 'hidden'});
+                
+
                 for (var index in dataKeys){
                     drawLineFromDatabase($('#' + dataKeys[index].toString()));
-                        }
+                }
 
-               //actSlide();
-                        //is currently called 3x for each button, but that is ok
-                        /*for (var index in dataKeys){
-                            drawLineFromDatabase($('#' + dataKeys[index].toString()), index);
-                        }
-                        $('.database_line').slideDown('fast');*/
+                $('.database_line').slideDown('slow', function(){
+                    $('.attributeTool').css({visibility: 'visible'});
+                    $('.attributeTool').slideDown(500);
+                }); 
 
 
-                });
-             $('.attributeTool').slideDown('slow')//, function(){
-                 
+                /*setTimeout(function(){
+                    $('.attributeTool').slideDown('slow') 
+                }, 2500);*/
 
-                 
-            //});
+
+
+            });
+           
         }
 
 

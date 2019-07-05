@@ -169,6 +169,8 @@ text {
     border-bottom: none;
     z-index: -10;
     fill: transparent;
+    display:none;
+    visibility: 0;
 }
 /*hack for box*/
 .mr-2{
@@ -180,6 +182,8 @@ svg text {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+
+    /*font-family: FontAwesome;*/
 }
 
 #gradients{

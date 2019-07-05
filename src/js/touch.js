@@ -203,9 +203,6 @@ function addLayerEvents(layer, drawer) {
 
     mc.on("panend", function (ev) {
         if (touchCanvas) {
-
-
-
 //            let list = layer.getIntersectionList(rect, null);
 //        console.log(layer);
 //        console.log(list);
@@ -394,7 +391,7 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
             let y2;
             let magnitude;
             let triangle;
-            let color = '#f06';
+            let color = '#686868';
             let theGroup = toolGraphics.parent();
             let angle;
             let center;
@@ -619,12 +616,21 @@ function addDragEvents(hammer, entityGroup, toolEntity, isProxy, graphicProxy) {
 
 
     let startingPoint = null;
+    let activeLayer = getActiveLayer();
+    let trashZone =  activeLayer.trash;
+    let threshold_w = activeLayer.layer.width() - 10;
+    let threshold_h = activeLayer.layer.height() - 10;
+    let distanceToTrash_x = null;
+    let distanceToTrash_y = null;
+    let initX = null;
+    let initY = null;
+
 
     hammer.on("panstart", function (ev) {
 
         startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-        var initX = startingPoint.x ;//- $("#accordionSidebar").width();
-        var initY = startingPoint.y - 70;
+        initX = startingPoint.x ;//- $("#accordionSidebar").width();
+        initY = startingPoint.y - 70;
         toolEntity.previousX = initX;
         toolEntity.previousY = initY;
 
@@ -635,7 +641,30 @@ function addDragEvents(hammer, entityGroup, toolEntity, isProxy, graphicProxy) {
 
     hammer.on("panmove", function (ev) {
         moveElements(ev, entityGroup, toolEntity, isProxy, graphicProxy);
+        distanceToTrash_x = Math.abs(trashZone.rect.cx() - toolEntity.disToCenterX);
+        distanceToTrash_y = Math.abs(trashZone.rect.cy() - toolEntity.disToCenterY);
+
+        if ((distanceToTrash_x < 300) || (distanceToTrash_y < 300)) {
+            trashZone.rect.attr({opacity: (trashZone.rect.x() - distanceToTrash_x)/threshold_w*2});
+        }
+        else{
+            trashZone.rect.attr({opacity: 0});
+        }
+        
     });
+
+    hammer.on('panend', function(ev){
+        console.log(distanceToTrash_x + " dxdy " + distanceToTrash_y)
+        trashZone.rect.attr({opacity:0});
+        if ((distanceToTrash_x < 150) && (distanceToTrash_y < 150)){
+            removeWithAnimation(entityGroup);
+            copyOnCanvas = false;
+            removeGravity(activatePhysics(getActiveLayer().layer.node.id));
+            //
+        }
+
+
+    })
 
 //    mc.on("panend", function (ev) {
 //        toolEntity.front();
@@ -677,7 +706,7 @@ function addSelectorEvents(){
 
 //add accordionSidebar only when layers are reimplemented
 function addToolEvents(tool, type) {
-    //tool = 
+    
     if (!$(tool).prop('disabled')) {
         let mc = new Hammer(tool);
 
@@ -691,7 +720,10 @@ function addToolEvents(tool, type) {
         let toolEntity = null;  //ghost
         let entityGroup = null; //ghostFather
 
+        let activeLayer = null;
+
         let attributeLand = null;
+        let trashZone = null;
 
         //past threshold
 
@@ -701,6 +733,7 @@ function addToolEvents(tool, type) {
         var svgID = "";
         var copyOnCanvas = false;
 
+
         mc.on("panstart", function (ev) {
             svgID = type + '-' + getActiveLayer().layer.id().split('-')[1];
             console.log(tool);
@@ -709,9 +742,7 @@ function addToolEvents(tool, type) {
             initX = startingPoint.x;// - $("#accordionSidebar").width();
             initY = startingPoint.y - 70;
 
-            console.log(startingPoint);
-            console.log(initY);
-
+            copyOnCanvas = false;
             path = $($(tool).children()[0]).children()[0].getAttribute("d");
 
             //alraedy exists, but does not do a smooth transition
@@ -742,8 +773,14 @@ function addToolEvents(tool, type) {
         mc.on("panmove", function (event) {
             currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
 
+            activeLayer = getActiveLayer();
             var x = currentPoint.x;// - $("#accordionSidebar").width();
             var y = currentPoint.y - 70;
+            trashZone =  activeLayer.trash;
+            let threshold = activeLayer.layer.width() - 10;
+
+            distanceToTrash_x = Math.abs(activeLayer.trash.rect.cx() - x);
+            distanceToTrash_y = Math.abs(activeLayer.trash.rect.cy() - y);
 
             if ((x > $('#set-tools').outerHeight() + 5) && !copyOnCanvas){
                 entityGroup = getActiveLayer().layer.group();   //creates group for entity
@@ -775,6 +812,9 @@ function addToolEvents(tool, type) {
                 //store group on canvas
                 //ACTIVETOOLS[entityGroup.id] = {group: entityGroup, toolType = type, icon = toolEntity};
                 copyOnCanvas = true;
+
+                //initially highlight zone
+                trashZone.rect.attr({opacity:30});
             }
 
             //if ((x > $('#set-tools').outerHeight() + 5) && entityGroup.){
@@ -787,6 +827,7 @@ function addToolEvents(tool, type) {
                         );*/
 
                 //just to generate some random number so ids are not the same
+
                 //set the distance between the group and the tool
                 entityGroup.childDX = entityGroup.cx() - getElementFromGroup(entityGroup, 'path').cx();
                 entityGroup.childDY = entityGroup.cy() - getElementFromGroup(entityGroup, 'path').cy();
@@ -812,8 +853,14 @@ function addToolEvents(tool, type) {
             // entityGroup.childDY = entityGroup.cy() - getElementFromGroup(entityGroup, 'path').cy();
             ///////////////////
 
-
+            //if within threshold, then move
             entityGroup.dmove(x - toolEntity.previousX, y - toolEntity.previousY);
+
+            
+            if ((x < threshold/4) || (y < (activeLayer.layer.height() - 70)/4)) {
+                trashZone.rect.attr({opacity: (trashZone.rect.x() - distanceToTrash_x)/threshold*2});
+            }
+
 
             if (copyOnCanvas){
                 toolEntity.previousX = entityGroup.cx();
@@ -824,6 +871,7 @@ function addToolEvents(tool, type) {
                 attributeLand = isClassedGraphics(getActiveLayer().layer.node, x, y, 'toolable');
             }
 
+           
         });
 
         mc.on("panend", function (ev) {
@@ -833,6 +881,10 @@ function addToolEvents(tool, type) {
             toolEntity.front();
             let mc = new Hammer(toolEntity.node);
 
+            distanceToTrash_x = Math.abs(activeLayer.trash.rect.cx() - x);
+            distanceToTrash_y = Math.abs(activeLayer.trash.rect.cy() - y);
+
+        
 
             //console.log(attributeLand)
             if (attributeLand) {
@@ -1099,7 +1151,12 @@ function addToolEvents(tool, type) {
 
                 blink(attributeGraphics);
 
-            } else {
+            } 
+            else if ((distanceToTrash_x < 60) && (distanceToTrash_y < 60)){
+                removeWithAnimation(entityGroup);
+                copyOnCanvas = false;
+            }
+            else {
                 if (type === 'wall' || type === 'position' || type === 'attractor' || type === 'axis') {
                     removeWithAnimation(entityGroup);
                     copyOnCanvas = false;
@@ -1107,13 +1164,12 @@ function addToolEvents(tool, type) {
                     clonationMode = true;
                 }
             }
+            trashZone.rect.attr({opacity:0});
 
-
-
-            addDragEvents(mc, entityGroup, toolEntity);
-            addPressEvents(mc, toolEntity, getActiveLayer().layer, type);
-            //        console.log(activeLayer);
-
+           if (copyOnCanvas){
+                addDragEvents(mc, entityGroup, toolEntity);
+                addPressEvents(mc, toolEntity, getActiveLayer().layer, type);
+           }
 
         });
     }
