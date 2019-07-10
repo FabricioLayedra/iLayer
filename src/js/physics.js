@@ -64,6 +64,7 @@ function run_physics(engine) {
 //send a matter engine to stop it
 function stop_physics(engine) {
     engine.enabled = false;
+    console.log('engine disabled')
 }
 
 function addGravity(engine, x, y, factor) {
