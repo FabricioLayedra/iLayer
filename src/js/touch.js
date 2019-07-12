@@ -731,8 +731,9 @@ function addDragEvents(hammer, entityGroup, toolEntity, isProxy, graphicProxy) {
             });
 
             //be wary of these two for now
-            /*removeGravity(activatePhysics(getActiveLayer().layer.node.id));
-            stop_physics(activatePhysics(getActiveLayer().layer.node.id))*/
+            
+            removeGravity(activatePhysics(getActiveLayer().layer.node.id));
+            stop_physics(activatePhysics(getActiveLayer().layer.node.id))
             //
         }
 

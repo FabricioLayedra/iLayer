@@ -62,7 +62,7 @@ var EDGEGRADIENTS = {};
 var COLORS = ['#c6c8cc']
 var COLORS = ['gray']
 var STARTERLAYOUTS = ['cluster', 'force', 'bar', 'scatter'];
-var startingLayout = 1;
+var startingLayout = 0;
 
 
 var el = document.getElementById("layers-table");
