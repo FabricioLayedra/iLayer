@@ -14,6 +14,12 @@ var labelsFlag = false;
 var selectionCount = 0;
 var maxLayersAllowed = 10;
 
+var EDGESHIDDEN = false;
+var GLOBALLABELSHIDDEN = false;
+
+
+
+
 //var datafile = "./data/authors_relations_SC_JD_sample2015_anonymized.json";
 
 //var datafile = "./data/authors_relations_SC_JD_sample2015.json";
@@ -52,9 +58,12 @@ var ACTIVEATTRIBUTES = {}; //group for active attributes on screen
 //ids of edge gradients
 var EDGEGRADIENTS = {};
 
+//var COLORS = ["#1F77B4", "#FF7F0E", "#2CA02C", "#D62728", "#9467BD", "#8C564B", "#E3775E", "#7F7F7F", "#BCBD22", "#17BECF"];
 var COLORS = ['#c6c8cc']
 var COLORS = ['gray']
-//var COLORS = ["#1F77B4", "#FF7F0E", "#2CA02C", "#D62728", "#9467BD", "#8C564B", "#E3775E", "#7F7F7F", "#BCBD22", "#17BECF"];
+var STARTERLAYOUTS = ['cluster', 'force', 'bar', 'scatter'];
+var startingLayout = 1;
+
 
 var el = document.getElementById("layers-table");
 
@@ -757,7 +766,9 @@ function addGraphAsLayer(g, layerName) {
     var darkenColor = lightenDarkenColor(color, -10);
 
 //    drawGraph(LAYERS[layer_name].layer, g);
+
     drawGraph(layerName, g);
+
 
 
 
@@ -780,6 +791,12 @@ function drawGraph(layer_name, g) {
     var edges = g.edges();
     var dataKeys = null;
 
+    let x, y = null;
+    let a, r = null;
+
+    let counter = 0;  //counter
+    let c = nodeRadius + 8;  //spread 4
+
     // adding to the nodes objects of the graph both the fabric and the matter associated objects
     nodeKeys.forEach(function (nodeKey) {
 
@@ -791,12 +808,33 @@ function drawGraph(layer_name, g) {
 //            nodeData.edges = new Array();
 //        }
 
-
         var radius = nodeRadius;
 
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
-        var y = getRandomBetween(nodeRadius, generalHeight-120);
-        var x = getRandomBetween(nodeRadius + 100, generalWidth-100);
+
+        if (STARTERLAYOUTS[startingLayout] === 'cluster'){
+            a = counter * 137.5;
+            r = c * Math.sqrt(counter);
+
+            x = r * Math.cos(a) + (generalWidth)/2;
+            y = r * Math.sin(a) + (generalHeight + 70 - 100)/2; 
+            
+            counter++;
+        }
+
+        else if (STARTERLAYOUTS[startingLayout] === 'bar'){
+            ;
+        }
+
+        else if (STARTERLAYOUTS[startingLayout] === 'scatter'){
+            ;
+        }
+
+        else { //force  
+            x = getRandomBetween(nodeRadius + 100, generalWidth-100);
+            y = getRandomBetween(nodeRadius, generalHeight-120);
+        }
+        
         //console.log(nodeRadius)
 
         //GOTTA CHANGE IF THE GRAPH STRUCTURE CHANGES
@@ -813,6 +851,7 @@ function drawGraph(layer_name, g) {
 
         nodeData.spawnX = circle.cx();
         nodeData.spawnY = circle.cy();
+        console.log(nodeData)
 
         //stored in GRAPHS.authors2016
         //nodeData.spawnX = x;
@@ -834,6 +873,9 @@ function drawGraph(layer_name, g) {
         //set the distance between the group and its label
         group.textDX = group.cx() - getElementFromGroup(group, 'text').cx();
         group.textDY = group.cy() - getElementFromGroup(group, 'text').cy();
+
+        group.spawnX = group.cx();
+        group.spawnY = group.cy();
 
         distLabelGroup = radius / 2;
 
@@ -921,7 +963,11 @@ function drawGraph(layer_name, g) {
     toggleAttributesButtons(dataKeys);
 
 
-//    forceLayout(g, pxs, pys);
+    if (STARTERLAYOUTS[startingLayout] === 'force'){
+        forceLayout(g, pxs, pys);
+    }
+    
+    //forceLayout(g, pxs, pys)
 }
 
 function toggleAttributesView(){
@@ -1196,15 +1242,16 @@ function updateEdgesEnds(nodeGraphics, coordX, coordY, directed) {
 
 function addMovingEvents(nodeGraphics, directed) {
     nodeGraphics.parent().draggable();
-    nodeGraphics.parent().on('dragmove', function event(e) {
-        let theBody = nodeGraphics.matter;
-        if (theBody) {
+    nodeGraphics.parent().on('dragmove', function event(e){
+
+        let bodyMatter = nodeGraphics.matter;
+        if (bodyMatter) {
             let event = e.detail.event;
             var x = event.offsetX;
             var y = event.offsetY;
             Body.translate(nodeGraphics.matter, {
-                x: (x - theBody.position.x) * 0.25,
-                y: (y - theBody.position.y) * 0.25
+                x: (x - bodyMatter.position.x) * 0.25,
+                y: (y - bodyMatter.position.y) * 0.25
             });
         }
         console.log(nodeGraphics);
@@ -1730,7 +1777,7 @@ function forceLayout(g) {
     // make a new graph
     var graph = new Springy.Graph();
     var edges = g.edges();
-    var nodes = g.nodes();
+    var nodes = g.nodes();  //names only
     var data = {"nodes": [], "edges": []};
 
     // make some nodes
@@ -1741,10 +1788,10 @@ function forceLayout(g) {
     for (var i = 0; i < edges.length; i++) {
         data["edges"].push([edges[i].v, edges[i].w]);
     }
-
+    
     graph.loadJSON(data);
 //
-    var layout = new Springy.Layout.ForceDirected(graph, 400.0, 400.0, 0.8);
+    var layout = new Springy.Layout.ForceDirected(graph, 400.0, 600.0, 0.4);
 
     renderer = new Springy.Renderer(layout,
             function clear() {
@@ -1756,25 +1803,50 @@ function forceLayout(g) {
             function drawNode(node, p) {
 //        console.log(node.id,p.x,p.y);
                 // calculate bounding box of graph layout.. with ease-in
-//	var currentBB = layout.getBoundingBox();
-//	var targetBB = {bottomleft: new Springy.Vector(-2, -2), topright: new Springy.Vector(2, 2)};
-//	var toScreen = function(p) {
-//		var size = currentBB.topright.subtract(currentBB.bottomleft);
-//		var sx = p.subtract(currentBB.bottomleft).divide(size.x).x * 1200;
-//		var sy = p.subtract(currentBB.bottomleft).divide(size.y).y * 800;
-//		return new Springy.Vector(sx, sy);
-//	};
-//        var s = toScreen(p);
-//        			var contentWidth = 5;
-//			var contentHeight = 5;
-//			var boxWidth = contentWidth + 6;
-//			var boxHeight = contentHeight + 6;
+	/*var currentBB = layout.getBoundingBox();
+	var targetBB = {bottomleft: new Springy.Vector(-2, -2), topright: new Springy.Vector(2, 2)};
+	var toScreen = function(p) {
+		var size = currentBB.topright.subtract(currentBB.bottomleft);
+		var sx = p.subtract(currentBB.bottomleft).divide(size.x).x * 1200;
+		var sy = p.subtract(currentBB.bottomleft).divide(size.y).y * 800;
+		return new Springy.Vector(sx, sy);
+	};
+        var s = toScreen(p);
+		var contentWidth = 5;
+			var contentHeight = 5;
+			var boxWidth = contentWidth + 6;
+			var boxHeight = contentHeight + 6;*/
+
+                var svg_nodes = getActiveLayer().layer.select('g.node').members
+                /*svg_nodes = 
+                var nodeGraphics = 
+                //*/
                 var nodeGraphics = g.node(node.id).svg;
-                pxs[node.id] = nodeGraphics.cx() + p.x;
-                pys[node.id] = nodeGraphics.cy() + p.y;
-//                nodeGraphics.dmove(p.x,p.y);
-                nodeGraphics.cx(pxs[node.id]);
-                nodeGraphics.cy(pys[node.id]);
+
+                //console.log(nodeGraphics.parent().node)
+ 
+                
+
+                let tx = p.x > 0 ? p.x + nodeRadius/2 : p.x - nodeRadius/2;
+                let ty = p.y > 0 ? p.y + nodeRadius/2 : p.y - nodeRadius/2;
+
+                pxs[node.id] = nodeGraphics.cx() + p.x + nodeRadius;
+                pys[node.id] = nodeGraphics.cy() + p.y + nodeRadius;
+                /*pxs[node.id] = nodeGraphics.cx() + tx;
+                pys[node.id] = nodeGraphics.cy() + ty;*/
+                //console.log(tx + " " + ty)
+
+                
+                nodeGraphics.parent().translate(p.x, p.y);
+                //nodeGraphics.parent().translate(pxs[node.id] - nodeGraphics.cx(), pys[node.id] - nodeGraphics.cy());
+
+
+                /*Body.translate(nodeGraphics.matter, {
+                    x: pxs[node.id],
+                    y: pys[node.id]
+                })*/
+
+                updateEdgesEnds(nodeGraphics, g.directed)
 //                nodeGraphics.on("stop",function(){console.log("PARO")});
 //                updateEdgesEnds(nodeGraphics,false);
 //        updateLabelPosition(nodeGraphics);
@@ -1798,10 +1870,14 @@ function forceLayout(g) {
     setTimeout(
             function () {
                 console.log("STOP");
+                
                 renderer.stop();
-                document.getElementById("loading").style.display = "none";
+                //document.getElementById("loading").style.display = "none";
                 scaleLayout(g, pxs, pys);
-            }, 500);
+                
+            }, 2000);
+
+    //save pxs and pxy of originals
 
     pxs = {};
     pys = {};
@@ -1842,23 +1918,23 @@ function scaleLayout(g, pxs, pys) {
 
 
 
-//function forceLayout2(g){
-//    var graph = createGraph();
-//    var edges = g.edges();
-//    var nodes = g.nodes();
-//    var data = {"nodes":[],"edges":[]};
+/*function forceLayout2(g){
+   var graph = createGraph();
+   var edges = g.edges();
+   var nodes = g.nodes();
+   var data = {"nodes":[],"edges":[]};
+
+   // make some nodes
+//    
+//    for (var i = 0; i< nodes.length; i++){
+//        data["nodes"].push(nodes[i]);
 //
-//    // make some nodes
-////    
-////    for (var i = 0; i< nodes.length; i++){
-////        data["nodes"].push(nodes[i]);
-////
-////    }
-//    for (var i = 0; i< edges.length; i++){
-//        graph.addLink(edges[i].v,edges[i].w);
 //    }
-//    console.log(graph.forcelayout()));
-//}
+   for (var i = 0; i< edges.length; i++){
+       graph.addLink(edges[i].v,edges[i].w);
+   }
+   console.log(graph.forcelayout());
+}*/
 
 /*-----------------------------------MAIN---------------------------------------*/
 
@@ -1870,8 +1946,8 @@ function main() {
         for (var layer in LAYERS) {
             //        console.log(LAYERS[layer])
             if (LAYERS[layer]["physics-engine"]) {
-                bodies = Composite.allBodies(LAYERS[layer]["physics-engine"].world);
 //                console.log(bodies);
+                bodies = Composite.allBodies(LAYERS[layer]["physics-engine"].world);
 
                 /*console.log('LAYERS[layer]["physics-engine"].world.gravity.scale');
                  console.log(LAYERS[layer]["physics-engine"].world.gravity.scale);*/
@@ -1975,6 +2051,10 @@ function main() {
 //        addGraphAsLayer(GRAPHS["authors2016"], "3");
 
         activateLayer("1");
+        $("#hideEdges").toggleClass('active');
+        getActiveLayer().layer.select('g.edge').attr({"opacity":0});
+        EDGESHIDDEN = true;
+        //showHideEdges();
 
 
 //        addAttractorsToWorld(['affiliation','citations'],100,'affiliation')

@@ -392,30 +392,29 @@ function elementPosDrawingLine(element,newPosX,oldPosX,newPosY,oldPosY,previous)
 
 
 
-var edgesHidden = false;
 
 function showHideEdges(){
-    console.log(edgesHidden)
+    console.log(EDGESHIDDEN)
 
     //make this global because currently all edges are still registered as part of layer 1
-    if (!edgesHidden){
+    if (!EDGESHIDDEN){
         getActiveLayer().layer.select('g.edge').attr({"opacity":0});
-        edgesHidden = true;
+        EDGESHIDDEN = true;
     }else{
         getActiveLayer().layer.select('g.edge').attr({"opacity":1});
-        edgesHidden = false;
+        EDGESHIDDEN = false;
     }
 }
 
-var globalLabelsHidden = false;
+
 
 function showHideLabels(){
-    if (!globalLabelsHidden){
+    if (!GLOBALLABELSHIDDEN){
         getActiveLayer().layer.select('text.node-label').attr({"opacity":0});
-        globalLabelsHidden = true;
+        GLOBALLABELSHIDDEN = true;
     }else{
         getActiveLayer().layer.select('text.node-label').attr({"opacity":1});
-        globalLabelsHidden = false;
+        GLOBALLABELSHIDDEN = false;
     }
 }
 

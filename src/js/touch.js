@@ -1722,6 +1722,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
 
             if (!removed){
                 addDragAttribute(new Hammer(group.node), group, rect, targetDropZone, attributeName, direction);
+                console.log(group.node)
                 console.log('added drag attr')
             }
             //wow it finally works lol. absolutely needs a new hammer node and the rectangle
