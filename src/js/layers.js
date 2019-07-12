@@ -49,7 +49,7 @@ var datafile = "./data/sample_30_authors_test.json";
 var LAYERS = {};
 
 var GRAPHS = {};
-
+var GRAPHTOLOAD = 'authors2016';
 var SELECTION = [];
 
 var ACTIVETOOLS = {};   //group for active tools on screen
@@ -2669,7 +2669,7 @@ function addAttractorsToWorld(distance, chosen) {
         var attractor = attractorGraphics.matter;
         var aff = Object.keys(attractees)[attractIndex];
 
-        var label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex] + width / 2, y + height / 2 - 5, 'authors2016', aff).attr({fill: "white"});
+        var label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex] + width / 2, y + height / 2 - 5, GRAPHTOLOAD, aff).attr({fill: "white"});
 //            label.center(x+width/2,y+height/2);
 
         for (var elIndex in elements) {
@@ -2766,7 +2766,7 @@ function sortByAttributeWalls(distance, chosen, orientation) {
 
             attractorGraphics = getActiveLayer().layer.rect(width, height).move(positions[attractIndex], fixedAxis).fill(getActiveLayer().color).attr({"class": "attractor"});
 
-            label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex] + width / 2, fixedAxis + height / 2 - 5, 'authors2016', aff).attr({fill: "white"});
+            label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex] + width / 2, fixedAxis + height / 2 - 5, GRAPHTOLOAD, aff).attr({fill: "white"});
 
             addAttractorToWorld(world, attractorGraphics);
 
@@ -2776,7 +2776,7 @@ function sortByAttributeWalls(distance, chosen, orientation) {
             var attractor = attractorGraphics.matter;
             var aff = Object.keys(attractees)[attractIndex];
 
-//            var label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex]+width/2,y+height/2-5, 'authors2016', aff).attr({fill:"white"});
+//            var label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex]+width/2,y+height/2-5, GRAPHTOLOAD, aff).attr({fill:"white"});
 //            label.center(x+width/2,y+height/2);
 
             for (var elIndex in elements) {
@@ -2838,7 +2838,7 @@ function sortByAttributeWalls(distance, chosen, orientation) {
 //            } 
         } else if (!axisX && !getActiveLayer().axis.y) {
             attractorGraphics = getActiveLayer().layer.rect(height, width).move(fixedAxis, positions[attractIndex]).fill(getActiveLayer().color);
-            label = drawLabel(getActiveLayer().layer, aff, fixedAxis + height / 2 - 5, positions[attractIndex] + width / 2, 'authors2016', aff).attr({fill: "white"}).transform({rotation: 270});
+            label = drawLabel(getActiveLayer().layer, aff, fixedAxis + height / 2 - 5, positions[attractIndex] + width / 2, GRAPHTOLOAD, aff).attr({fill: "white"}).transform({rotation: 270});
             for (var elIndex in elements) {
                 var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
                 let element = elements[elIndex];
@@ -3093,7 +3093,7 @@ function sortByAttribute(distance, chosen, orientation) {
         var label = null;
         if (axisX && !getActiveLayer().axis.x) {
             attractorGraphics = getActiveLayer().layer.rect(width, height).move(positions[attractIndex], fixedAxis).fill(getActiveLayer().color).attr({"class": "toolable", "attribute-type": chosen});
-            label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex] + width / 2, fixedAxis + height / 2 - 5, 'authors2016', aff).attr({fill: "white"});
+            label = drawLabel(getActiveLayer().layer, aff, positions[attractIndex] + width / 2, fixedAxis + height / 2 - 5, GRAPHTOLOAD, aff).attr({fill: "white"});
             attractorGraphics.labelGraphics = label;
 //            for (var elIndex in elements) {
 //                var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
@@ -3110,7 +3110,7 @@ function sortByAttribute(distance, chosen, orientation) {
 //            }
         } else if (!axisX && !getActiveLayer().axis.y) {
             attractorGraphics = getActiveLayer().layer.rect(height, width).move(fixedAxis, positions[attractIndex]).fill(getActiveLayer().color);
-            label = drawLabel(getActiveLayer().layer, aff, fixedAxis + height / 2 - 5, positions[attractIndex] + width / 2, 'authors2016', aff).attr({fill: "white"}).transform({rotation: 270});
+            label = drawLabel(getActiveLayer().layer, aff, fixedAxis + height / 2 - 5, positions[attractIndex] + width / 2, GRAPHTOLOAD, aff).attr({fill: "white"}).transform({rotation: 270});
             for (var elIndex in elements) {
                 var data = getElementFromGroup(elements[elIndex], 'circle').nodeData.authorInfo;
                 let element = elements[elIndex];

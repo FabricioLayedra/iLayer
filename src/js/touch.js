@@ -483,6 +483,42 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
 
     }
 
+    else if (type === 'force'){
+        mc.get('press').set({time: 300});
+
+        
+            let line = null;
+            let startingPoint = null;
+            let currentPoint = null;
+            let color = '#686868';
+            let theGroup = toolGraphics.parent();
+            
+            let center;
+
+            
+
+        mc.on('press', function (event) {
+
+            event.preventDefault();
+            $(event.target).attr('oncontextmenu', 'return false');
+            mc.off('panmove');
+            blink(theGroup);
+        });
+
+
+
+        mc.on('pressup', function (event) {
+            mc.off('panstart');
+            mc.off('panmove');
+            mc.off('panend');
+            forceLayout(GRAPHS[GRAPHTOLOAD], pxs, pys)
+            addDragEvents(mc, toolGraphics.parent(), toolGraphics);
+            addPressEvents(mc, toolGraphics.parent(), toolGraphics);
+        });
+
+        
+    }
+
 
 
 }
