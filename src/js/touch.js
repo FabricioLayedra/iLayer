@@ -370,9 +370,8 @@ function addSelectionEvents(nodeParent) {
 }
 function addPressEvents(mc, toolGraphics, drawer, type, child) {
     //for tool events
-
+    mc.get('press').set({time: 300});
     if (type === 'gravity') {
-        mc.get('press').set({time: 300});
 
         mc.on('press', function (event) {
 
@@ -460,7 +459,7 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
                 mc.off('panstart');
                 mc.off('panmove');
                 mc.off('panend');
-                addDragEvents(mc, toolGraphics.parent(), toolGraphics);
+                addDragEvents(mc, toolGraphics.parent(), toolGraphics, type);
 
             });
         });
@@ -468,12 +467,12 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
             mc.off('panstart');
             mc.off('panmove');
             mc.off('panend');
-            addDragEvents(mc, toolGraphics.parent(), toolGraphics);
+            addDragEvents(mc, toolGraphics.parent(), toolGraphics, type);
         });
 
     } else if (type === 'bending') {
 
-//        console.log();
+        
         addLayerEvents(getActiveLayer().layer.node, getActiveLayer().layer);
     } else if (type === 'wall') {
 
@@ -484,21 +483,16 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
     }
 
     else if (type === 'force'){
-        mc.get('press').set({time: 300});
 
-        
-            let line = null;
-            let startingPoint = null;
-            let currentPoint = null;
-            let color = '#686868';
-            let theGroup = toolGraphics.parent();
-            
-            let center;
-
-            
+        let line = null;
+        let startingPoint = null;
+        let currentPoint = null;
+        let color = '#686868';
+        let theGroup = toolGraphics.parent();  
+        let center;
+         
 
         mc.on('press', function (event) {
-
             event.preventDefault();
             $(event.target).attr('oncontextmenu', 'return false');
             mc.off('panmove');
@@ -512,8 +506,8 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
             mc.off('panmove');
             mc.off('panend');
             forceLayout(GRAPHS[GRAPHTOLOAD], pxs, pys)
-            addDragEvents(mc, toolGraphics.parent(), toolGraphics);
-            addPressEvents(mc, toolGraphics.parent(), toolGraphics);
+            addDragEvents(mc, toolGraphics.parent(), toolGraphics, type);
+            addPressEvents(mc, toolGraphics.parent(), toolGraphics, type);
         });
 
         
@@ -643,12 +637,12 @@ function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
 //    nodeGraphics.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
 }
 
-function addDragEvents(hammer, entityGroup, toolEntity, isProxy, graphicProxy) {
+function addDragEvents(hammer, entityGroup, toolEntity, type, isProxy, graphicProxy) {
 
     // let the pan gesture support all directions.
     // this will block the vertical scrolling on a touch-device while on the element
     hammer.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
-    console.log(entityGroup)
+    //console.log(entityGroup)
 
     let startingPoint = null;
     let currentPoint = null;
@@ -663,7 +657,8 @@ function addDragEvents(hammer, entityGroup, toolEntity, isProxy, graphicProxy) {
 
 
     hammer.on("panstart", function (ev) {
-        console.log('t')
+        console.log('addDragEvents triggered')
+
         startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
         initX = startingPoint.x ;//- $("#accordionSidebar").width();
         initY = startingPoint.y - 70;
@@ -681,7 +676,21 @@ function addDragEvents(hammer, entityGroup, toolEntity, isProxy, graphicProxy) {
     hammer.on("panmove", function (ev) {
         //moveElements(ev, entityGroup, toolEntity, isProxy, graphicProxy);
         currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY - 70};
-        entityGroup.dmove(currentPoint.x - toolEntity.disToCenterX, currentPoint.y - toolEntity.disToCenterY);
+
+        //for walls, only allow them to move along one direction
+        //entityGroup undefined after force
+        if (type == 'wall'){
+            if (toolEntity.position == 'left' || toolEntity.position == 'right'){
+                entityGroup.dmove(currentPoint.x - toolEntity.disToCenterX, 0);
+            }
+            else if (toolEntity.position == 'bottom' || toolEntity.position == 'top'){
+                entityGroup.dmove(0, currentPoint.y - toolEntity.disToCenterY);
+            }
+        }
+        else{
+            entityGroup.dmove(currentPoint.x - toolEntity.disToCenterX, currentPoint.y - toolEntity.disToCenterY);
+        }
+        
         
         //use disToCenterXY instead of previousXY for more centered dragging
 
@@ -935,6 +944,7 @@ function addToolEvents(tool, type) {
                             // IF ITS CONTINUOUS DATA THIS HAS TO CHANGE
                           // blink(labelGraphic);
                         }
+                        console.log(attributeGraphics.width());
 
                         addBuilderWallsEvents(attributeGraphics, attributeGraphics.parent());
                         // TODO: build the wall here, right after the wall tool has been added to the proxy
@@ -1104,7 +1114,7 @@ function addToolEvents(tool, type) {
                         var attributeValue = attributeGraphics.node.textContent;
                         var currentNodes = getActiveLayer().data[attributeTypeName].values[attributeValue];
 
-                        console.log(attributeGraphics.discrete);
+                        //console.log(attributeGraphics.discrete);
                         if (attributeGraphics.attr('attrDiscrete')){
                             if (direction === "horizontal"){   
                                 var newPos = attributeGraphics.rbox().cx;// - $("#accordionSidebar").width();
@@ -1184,11 +1194,16 @@ function addToolEvents(tool, type) {
                 copyOnCanvas = false;
             }
             else {
+                if (type === 'gravity' || type === 'force' || type === 'bending'){
+                    console.log('manipulatable physics added')
+                    copyOnCanvas = true;
+                }
                 if (type === 'wall' || type === 'position' || type === 'attractor' || type === 'axis') {
                     removeWithAnimation(entityGroup);
                     copyOnCanvas = false;
                 }else if(type === 'clonator'){
                     clonationMode = true;
+                    copyOnCanvas = true;
                 }
             }
             trashZone.rect.attr({opacity:0});
@@ -1197,8 +1212,8 @@ function addToolEvents(tool, type) {
                 opacity: .25
             })
 
-           if (copyOnCanvas){
-                addDragEvents(mc, entityGroup, toolEntity);
+           if (copyOnCanvas){        
+                addDragEvents(mc, entityGroup, toolEntity, type);
                 addPressEvents(mc, toolEntity, getActiveLayer().layer, type);
            }
 
@@ -1277,7 +1292,9 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
 
 //                the proxy thing
 //                change line 797 after demo 
+                
                 var xProxy = attributeGraphics.rbox().cx;// - $("#accordionSidebar").width();
+                //console.log(xProxy);
                 buildWall(attributeGraphics, wallSize, height, [xProxy, y], 'both', insideSpace, direction, true);
 
                 for (var index in axis.valueLabels) {
@@ -1295,6 +1312,7 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
         } else if (orientation === "vertical") {
             let x = axis.line.cx();
             var yProxy = attributeGraphics.rbox().cy - 70;
+            //console.log(yProxy);
 
             if ($(attributeGraphics.node).hasClass('proxy')) {
                 attributeGraphics.axis = axis;
@@ -1338,6 +1356,7 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
 //note -- this will fire twice. it's unavoidable with our current setup in hammer 
 function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer) {
     let mc = new Hammer(element);
+    //console.log(element)
     
     //mc.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
     mc.get('pan').set({enable: true, direction: Hammer.DIRECTION_ALL, threshold: 5});
@@ -1368,9 +1387,11 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
     var isGlow = false;
     //var count = 0;
 
+    //for removal of walls
+    let wallDir = null;
+
     mc.on("panstart", function (ev) {
-        
-        
+
         drawer = getActiveLayer().layer;
         startingPoint = {x: ev.srcEvent.pageX /*- $("#onSidebar").width()*/, y: ev.srcEvent.pageY - 70};
 
@@ -1417,8 +1438,10 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
         
     });
 
+
     mc.on("panmove", function (ev) {
         currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY - 70};
+
         group.move(currentPoint.x - startingPoint.x, currentPoint.y - startingPoint.y);
 
         //init
@@ -1571,7 +1594,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
                     //let distanceToTrash = Math.min(Math.abs(activeLayer.trash.rect.cy() - currentPoint.y), Math.abs(activeLayer.trash.rect.cx() - currentPoint.x));
                     distanceToTrash = [distanceToTrash_x, distanceToTrash_y];
                     
-                    console.log(distanceToTrash_x + " xy " + distanceToTrash_y);
+                    //console.log(distanceToTrash_x + " xy " + distanceToTrash_y);
 
     
 
@@ -1633,8 +1656,8 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
                         space = activeLayer.trash.line.rbox().h;
                         line = activeLayer.trash.line;
                     }*/
-            
-                    if (direction !== "trash"){
+                    //console.log(targetDropZone.hasAttribute);
+                    if (direction !== "trash" && !targetDropZone.hasAttribute){
                         addAttributeValues(attributeName, targetDropZone, x, y, space, drawer, direction, rect,line);
                     }
 
@@ -1653,10 +1676,10 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
                         // trashZone.icon.removeClass('hover')
                     }
 
-                } else {                  
+                } else if (!targetDropZone.hasAttribute) {                  
                     setVisibilityOfAttributeValues(targetDropZone, 0.5);
                 }
-            } else {               
+            } else if (!targetDropZone.hasAttribute) {               
                 removeAttributeValues(attributeName, direction);
                 targetDropZone.valueLabels = null;
                 //setVisibilityOfAttributeValues(targetDropZone, 0);
@@ -1680,36 +1703,41 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
         bottomZone.removeClass('glow-anim');*/
 
         let removed = false;
+        
 
         setTimeout(function () {
 
             // attribute dropped inside a dropping area
             //addAttributesDraggingEvents(group, attributeName, isDiscrete)
+            //console.log(targetDropZone == activeLayer.bottom);
+            //if (activeZone)
+            
 
-            if (targetDropZone && distance < 30) {
+            if ((targetDropZone && distance < 30) && !targetDropZone.hasAttribute) {
 
                 let x = null;
                 let y = null;
-
-                console.log(startingPoint.x + " " + startingPoint.y);
-                console.log(targetDropZone)
                 
                 if (direction === "horizontal") {
                     x = -startingPoint.x + activeLayer.bottom.line.x() + activeLayer.bottom.line.rbox().w + rect.rbox().w / 2 + 5;
                     y = targetDropZone.line.cy() - startingPoint.y;
+                    group.droppedLocation = 'horizontal';
                 }
                 else if (direction === 'vertical') {
                     x = -startingPoint.x + targetDropZone.rect.width();
                     y = -startingPoint.y + rect.height() / 2 + 5;
+                    group.droppedLocation = 'vertical';
                 }
 
                 if (direction === 'trash'){
                     removed = true;
                     removeWithAnimation(group);
+                    //$('.wall-' + ).remove();
                     trashZone.icon.attr({
                         fill: 'gray',
                         opacity: .25
                     })
+                    
                     //remove with animation 
 
                     //removeAttributeFromExistence()
@@ -1749,8 +1777,10 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
 
             }
 
-            console.log(direction + " ")
-            console.log(targetDropZone);
+            /*console.log(direction + " ")
+            console.log(group.droppedLocation  );*/
+
+            
             
             trashZone.icon.attr({
                 fill: 'gray',
@@ -1758,11 +1788,19 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
             })
 
             if (!removed){
-                addDragAttribute(new Hammer(group.node), group, rect, targetDropZone, attributeName, direction);
-                console.log(group.node)
-                console.log('added drag attr')
+                addPressAttribute(new Hammer(group.node), group, rect, targetDropZone, attributeName, direction);
+                console.log('added press attr')
             }
             //wow it finally works lol. absolutely needs a new hammer node and the rectangle
+
+            if (group.droppedLocation == 'vertical'){
+               $('.wall-vertical').remove();
+            }
+
+            else if (group.droppedLocation == 'horizontal'){
+                $('.wall-horizontal').remove();
+            }
+            //also remove old axes
 
         }, 300);
         
@@ -1777,9 +1815,10 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
 
 }
 
-function addDragAttribute(hammer, entityGroup, attrEntity, zone, attrName, dir){
+function addPressAttribute(hammer, entityGroup, attrEntity, zone, attrName, dir){
 
     hammer.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
+    hammer.get('press').set({time: 300});
 
     //console.log(entityGroup.label)
     let startingPoint = null;
@@ -1809,135 +1848,136 @@ function addDragAttribute(hammer, entityGroup, attrEntity, zone, attrName, dir){
     let thresh = null;
     let distance, targetDropZone, direction = null;
 
+    hammer.on('press', function(event){
+        event.preventDefault();
+        $(event.target).attr('oncontextmenu', 'return false');
+        hammer.off('panmove');
+        blink(entityGroup);
 
-    hammer.on("panstart", function (ev) {
-        startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-        initX = startingPoint.x;
-        initY = startingPoint.y - 70;
-        attrEntity.previousX = initX;
-        attrEntity.previousY = initY;
+        hammer.on("panstart", function (ev) {
+            startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+            initX = startingPoint.x;
+            initY = startingPoint.y - 70;
+            attrEntity.previousX = initX;
+            attrEntity.previousY = initY;
 
-        attrEntity.disToCenterX = entityGroup.cx();
-        attrEntity.disToCenterY = entityGroup.cy();
+            attrEntity.disToCenterX = entityGroup.cx();
+            attrEntity.disToCenterY = entityGroup.cy();
 
-        distanceToTrash_x = Math.abs(trashZone.rect.cx() - attrEntity.disToCenterX);
-        distanceToTrash_y = Math.abs(trashZone.rect.cy() - attrEntity.disToCenterY);
-    });
-
-
-
-
-    hammer.on("panmove", function (ev) {
-        currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY - 70};
-        entityGroup.dmove(currentPoint.x - attrEntity.disToCenterX, currentPoint.y - attrEntity.disToCenterY);
+            distanceToTrash_x = Math.abs(trashZone.rect.cx() - attrEntity.disToCenterX);
+            distanceToTrash_y = Math.abs(trashZone.rect.cy() - attrEntity.disToCenterY);
+        });
 
 
-        //if targetZone is pulled out, remove the target attributes
-        distanceToLeft = currentPoint.x - (leftZone.rect.x() + leftZone.rect.width());
-        distanceToBottom = bottomZone.rect.y() - currentPoint.y;
-        distanceToTrash_x = Math.abs(trashZone.rect.cx() - attrEntity.disToCenterX);
-        distanceToTrash_y = Math.abs(trashZone.rect.cy() - attrEntity.disToCenterY);
+        hammer.on("panmove", function (ev) {
+            currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY - 70};
+            entityGroup.dmove(currentPoint.x - attrEntity.disToCenterX, currentPoint.y - attrEntity.disToCenterY);
 
-        console.log(distanceToTrash_x + " " + distanceToTrash_y);
+            //if targetZone is pulled out, remove the target attributes
+            distanceToLeft = currentPoint.x - (leftZone.rect.x() + leftZone.rect.width());
+            distanceToBottom = bottomZone.rect.y() - currentPoint.y;
+            distanceToTrash_x = Math.abs(trashZone.rect.cx() - attrEntity.disToCenterX);
+            distanceToTrash_y = Math.abs(trashZone.rect.cy() - attrEntity.disToCenterY);
 
-    
-        //initializations
-        trashZone.rect.attr({opacity:30});
+            //console.log(distanceToTrash_x + " " + distanceToTrash_y);
 
-
-        /*if ((distanceToLeft < distanceToBottom) && (distanceToLeft < distanceToTrash_x)){
-            distance = distanceToLeft;
-            targetDropZone = activeLayer.left;
-            direction = "vertical";
-        }
-
-        //bottom < left < trash
-        //bottom < trash < left
-        else if ((distanceToBottom <= distanceToLeft) && (distanceToBottom < distanceToTrash_y)){
-            distance = distanceToBottom;
-            targetDropZone = activeLayer.bottom;
-            direction = "horizontal";
-        }*/
-
-        /*else if ((distanceToTrash_x < distanceToLeft) && (distanceToTrash_y < distanceToBottom)){*/
-        if( (distanceToTrash_x < distanceToTrash_y) && ( (distanceToTrash_x < activeLayer.trash.rect.width()) && (distanceToTrash_y < activeLayer.trash.rect.width()) )){
-            distance = distanceToTrash_x;
-        }
-
-        else if( (distanceToTrash_x >= distanceToTrash_y) && ( (distanceToTrash_x < activeLayer.trash.rect.width()) && (distanceToTrash_y < activeLayer.trash.rect.height()) )){
-            distance = distanceToTrash_y;
-        }
-        else{
-            distance = Math.max(distanceToTrash_x, distanceToTrash_y);
-        }
         
-        /*targetDropZone = activeLayer.trash;
-        direction = "trash";*/
-        /*}*/
+            //initializations
+            trashZone.rect.attr({opacity:30});
 
-        //don't highlight any of these here, just have option to remove
-        /*if (!targetDropZone.hasAttribute){
-            targetDropZone.rect.attr({opacity: 1 - (distance / threshold)});
-        }*/
+            if( (distanceToTrash_x < distanceToTrash_y) && ( (distanceToTrash_x < activeLayer.trash.rect.width()) && (distanceToTrash_y < activeLayer.trash.rect.width()) )){
+                distance = distanceToTrash_x;
+            }
 
-        if (distance < 500){
+            else if( (distanceToTrash_x >= distanceToTrash_y) && ( (distanceToTrash_x < activeLayer.trash.rect.width()) && (distanceToTrash_y < activeLayer.trash.rect.height()) )){
+                distance = distanceToTrash_y;
+            }
+            else{
+                distance = Math.max(distanceToTrash_x, distanceToTrash_y);
+            }
 
-            trashZone.rect.attr({opacity: (trashZone.rect.cx() - distance)/threshold_w*2});
+            //don't highlight any of these here, just have option to remove
+            /*if (!targetDropZone.hasAttribute){
+                targetDropZone.rect.attr({opacity: 1 - (distance / threshold)});
+            }*/
 
-            /*leftZone.rect.attr({opacity: 1.25*Math.abs((activeZone.rect.cx() - currentPoint.x)/threshold_w)});
-            bottomZone.rect.attr({opacity: 1.25*Math.abs((activeZone.rect.cy() - currentPoint.y)/threshold_h)})*/
+            if (distance < 500){
+
+                trashZone.rect.attr({opacity: (trashZone.rect.cx() - distance)/threshold_w*2});
+
+                /*leftZone.rect.attr({opacity: 1.25*Math.abs((activeZone.rect.cx() - currentPoint.x)/threshold_w)});
+                bottomZone.rect.attr({opacity: 1.25*Math.abs((activeZone.rect.cy() - currentPoint.y)/threshold_h)})*/
+                
+                let op = 1.25 - 1.25*Math.abs(1-distance/threshold_w)
+                //console.log(op)
+
+                $('.ticks-' + attrName + "." + dir).attr({opacity: op})
+                activeZone.line.attr({opacity: op})
+                /*activeZone.line.attr({opacity: 1 - 1.25*Math.abs(activeDistance/threshold)})*/
+            }
+
+            if (distanceToTrash_x < 100 && distanceToTrash_y < 100){
+                trashZone.icon.attr({
+                    fill: 'white',
+                    opacity: 1
+                })
+            }
             
-            let op = 1.25 - 1.25*Math.abs(1-distance/threshold_w)
-            console.log(op)
+            else{
+                trashZone.rect.attr({opacity: 0});
+                trashZone.icon.attr({
+                    fill: 'gray',
+                    opacity: .25
+                })
+            }
 
-            $('.ticks-' + attrName + "." + dir).attr({opacity: op})
-            activeZone.line.attr({opacity: op})
-            /*activeZone.line.attr({opacity: 1 - 1.25*Math.abs(activeDistance/threshold)})*/
-        }
+            //detect if its in the trash zone
 
-        if (distanceToTrash_x < 100 && distanceToTrash_y < 100){
-            trashZone.icon.attr({
-                fill: 'white',
-                opacity: 1
-            })
-        }
-        
-        else{
-            trashZone.rect.attr({opacity: 0});
+            attrEntity.disToCenterX = entityGroup.cx();
+            attrEntity.disToCenterY = entityGroup.cy();
+
+        });
+
+
+        hammer.on("panend", function (ev) {
+            trashZone.rect.attr({opacity:0});
+            activeZone.rect.animate(250).attr({opacity: 0});
+
+            setTimeout(function(){
+                removeAttributeValues(attrName, dir);
+                removeWithAnimation(entityGroup);
+                activeZone.hasAttribute = false;
+                activeZone.line.attr({opacity: 0});
+                if (entityGroup.droppedLocation == 'vertical'){
+                   $('.wall-vertical').remove();
+                }
+
+                else if (entityGroup.droppedLocation == 'horizontal'){
+                    $('.wall-horizontal').remove();
+                }
+            }, 300)
+            
+            activeZone.valueLabels = null;
             trashZone.icon.attr({
                 fill: 'gray',
                 opacity: .25
-            })
-        }
+            });
 
-        //detect if its in the trash zone
-
-
-        attrEntity.disToCenterX = entityGroup.cx();
-        attrEntity.disToCenterY = entityGroup.cy();
-
-
-    });
-
-    hammer.on("panend", function (ev) {
-        
-
-        trashZone.rect.attr({opacity:0});
-        activeZone.rect.animate(250).attr({opacity: 0});
-
-        setTimeout(function(){
-            removeAttributeValues(attrName, dir);
-            removeWithAnimation(entityGroup);
-            activeZone.line.attr({opacity: 0});
-        }, 300)
-        
-        activeZone.valueLabels = null;
-        trashZone.icon.attr({
-            fill: 'gray',
-            opacity: .25
         });
 
-    });
+    })
+
+    hammer.on('pressup', function (event) {
+            hammer.off('panstart');
+            hammer.off('panmove');
+            hammer.off('panend');
+            //addPressAttribute(hammer, entityGroup, attrEntity, zone, attrName, dir){
+            console.log('addPressAttribute added')
+            addPressAttribute(hammer, entityGroup, attrEntity, zone, attrName, dir);
+            //addDragEvents(mc, toolGraphics.parent(), toolGraphics);
+        });
+
+   
 }
 
 
@@ -1945,7 +1985,7 @@ function addDragAttribute(hammer, entityGroup, attrEntity, zone, attrName, dir){
 function addAttributeValuesEvents(nodeGraphics, attributeName) {
     nodeGraphics.on('pointerdown', function () {
         console.log("showing");
-        console.log(nodeGraphics.node.textContent);
+        //console.log(nodeGraphics.node.textContent);
         highlightNodesByAttributeValue(nodeGraphics.node.textContent, attributeName, true);
     });
 

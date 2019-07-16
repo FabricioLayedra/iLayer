@@ -818,6 +818,14 @@ function drawGraph(layer_name, g) {
 
             x = r * Math.cos(a) + (generalWidth)/2;
             y = r * Math.sin(a) + (generalHeight + 70 - 100)/2; 
+
+            //quick hack for spacing issues
+            if (counter == 0){
+                y += 10;
+            }
+            if (counter == 1){
+                x += 20;
+            }
             
             counter++;
         }
@@ -851,8 +859,7 @@ function drawGraph(layer_name, g) {
 
         nodeData.spawnX = circle.cx();
         nodeData.spawnY = circle.cy();
-        console.log(nodeData)
-
+        
         //stored in GRAPHS.authors2016
         //nodeData.spawnX = x;
         //nodeData.spawnY = y;
@@ -1818,15 +1825,10 @@ function forceLayout(g) {
 			var boxHeight = contentHeight + 6;*/
 
                 var svg_nodes = getActiveLayer().layer.select('g.node').members
-                /*svg_nodes = 
-                var nodeGraphics = 
-                //*/
                 var nodeGraphics = g.node(node.id).svg;
 
                 //console.log(nodeGraphics.parent().node)
  
-                
-
                 let tx = p.x > 0 ? p.x + nodeRadius/2 : p.x - nodeRadius/2;
                 let ty = p.y > 0 ? p.y + nodeRadius/2 : p.y - nodeRadius/2;
 
@@ -2864,7 +2866,7 @@ function sortByAttributeWalls(distance, chosen, orientation) {
     }
 }
 
-function setWalls(distance, chosen, orientation) {
+/*function setWalls(distance, chosen, orientation) {
 
     var textSet = getActiveLayer().attributes;
     var elements = getActiveLayer().layer.select('g.node').members;
@@ -2895,78 +2897,86 @@ function setWalls(distance, chosen, orientation) {
 //          wall1.transform({scaleY:-1});
         var time = 500;
         wall1.animate(time).height(generalHeight).after(function () {
-            addDragEvents(new Hammer(wall1.node), wall1, wall1);
+            addDragEvents(new Hammer(wall1.node), wall1, wall1, 'wall');
             addAttractorToWorld(world, wall1);
         });
 //            
         let wall2 = getActiveLayer().layer.rect(5, 0).move(position + width / 2 + nodeRadius / 2 + 5, fixedAxis - generalHeight).fill(getActiveLayer().color).back();
         wall2.animate(time).height(generalHeight).after(function () {
-            addDragEvents(new Hammer(wall2.node), wall2, wall2);
+            addDragEvents(new Hammer(wall2.node), wall2, wall2, 'wall');
             addAttractorToWorld(world, wall2);
         });
     }
-}
+}*/
 
 var crossedPoint = false;
 
-function buildWall(graphicObject, width, height, originPosition, mode, insideSpace, orientation, isProxy, animated) {
+function buildWall(graphicObject, width, height, originPosition, mode, insideSpace, orientation, isProxy) {
     var world = getPhysicsEngine(getActiveLayerName()).world;
     var direction = graphicObject.direction;
+    entityGroup = getActiveLayer().layer.group().addClass('wall-' + direction);
 //    console.log(direction);
+    
+
 
     if (mode === 'both') {
         if (!graphicObject.walls) {
             if (direction === "horizontal") {
 //                console.log("drawing horizontal");
+                
                 let originXleft = originPosition[0] - nodeRadius/1.5;
                 let originXright = originPosition[0] + nodeRadius/1.5 - width;
                 let originY = originPosition[1];
-
-                let wall1 = getActiveLayer().layer.rect(width, height).move(originXleft, originY).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
+                if (isProxy){
+                    originXleft = originPosition[0] - graphicObject.width()/2;
+                    originXright = originPosition[0] + graphicObject.width()/2;
+                }
+                
+                let wall1 = entityGroup.rect(width, height).move(originXleft, originY).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
                 wall1.position = "left"
                 wall1.direction = direction;
                 wall1.wall = true;
                 wall1.previousIncrement = 0;
                 addAttractorToWorld(world, wall1);
-                addDragEvents(new Hammer(wall1.node), wall1, wall1, isProxy, graphicObject);
+                addDragEvents(new Hammer(wall1.node), wall1, wall1, 'wall', isProxy, graphicObject);
 
-                let wall2 = getActiveLayer().layer.rect(width, height).move(originXright, originY).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
-                addAttractorToWorld(world, wall2);
-                addDragEvents(new Hammer(wall2.node), wall2, wall2, isProxy, graphicObject);
+                let wall2 = entityGroup.rect(width, height).move(originXright, originY).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();              
                 wall2.position = "right"
                 wall2.direction = direction;
                 wall2.wall = true;
                 wall2.previousIncrement = 0;
                 wall1.y(wall1.y()-height);
                 wall2.y(wall2.y()-height);
-                
+                addAttractorToWorld(world, wall2);
+                addDragEvents(new Hammer(wall2.node), wall2, wall2, 'wall', isProxy, graphicObject);
                 graphicObject.walls = [wall1, wall2];
                 
             } else if (direction === 'vertical') {
-
                 let originYtop = originPosition[1] - nodeRadius/1.5;
                 let originYbottom = originPosition[1] + nodeRadius/1.5 - height;
                 let originX = originPosition[0];
 
-                let wall1 = getActiveLayer().layer.rect(width, height).move(originX, originYtop).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
+                if (isProxy){
+                    originYtop = originPosition[1] - graphicObject.height()/2;
+                    originYbottom = originPosition[1] + graphicObject.height()/2;
+                }
+
+                let wall1 = entityGroup.rect(width, height).move(originX, originYtop).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
                 wall1.direction = direction;
                 wall1.position = "top"
                 wall1.wall = true;
                 wall1.previousIncrement = 0;
-
                 addAttractorToWorld(world, wall1);
-                addDragEvents(new Hammer(wall1.node), wall1, wall1, isProxy, graphicObject);
+                addDragEvents(new Hammer(wall1.node), wall1, wall1, 'wall', isProxy, graphicObject);
 
 
-                let wall2 = getActiveLayer().layer.rect(width, height).move(originX, originYbottom).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
-
-                addAttractorToWorld(world, wall2);
-                addDragEvents(new Hammer(wall2.node), wall2, wall2, isProxy, graphicObject);
-
+                let wall2 = entityGroup.rect(width, height).move(originX, originYbottom).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();            
                 wall2.position = "bottom";
                 wall2.direction = direction;
                 wall2.wall = true;
                 wall2.previousIncrement = 0;
+                addAttractorToWorld(world, wall2);
+                addDragEvents(new Hammer(wall2.node), wall2, wall2, 'wall', isProxy, graphicObject);
 
                 graphicObject.walls = [wall1, wall2];
             }
@@ -2974,17 +2984,28 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
         } else {
             if (direction === "horizontal") {
                 
-                console.log("HEIGHT");
-                console.log(graphicObject.walls[0].height());
+                /*console.log("HEIGHT");
+                console.log(graphicObject.walls[0].height());*/
                 
                 if (orientation==="up"){
                     var increment = height-graphicObject.walls[0].previousIncrement;
                     graphicObject.walls[0].previousIncrement = height;
-                    height = graphicObject.walls[0].height() + increment;
+
+                    if (graphicObject.walls[0].height() + increment < generalHeight - 20){
+                        height = graphicObject.walls[0].height() + increment;
+                    }
+                    
+                    //height = graphicObject.walls[0].height() + increment;
+
                 }else{
                     var increment = graphicObject.walls[0].previousIncrement-height;
                     graphicObject.walls[0].previousIncrement = height;
-                    height = graphicObject.walls[0].height() - increment;
+
+                    if (graphicObject.walls[0].height() - increment >= 0){
+                        height = graphicObject.walls[0].height() - increment;
+                    }
+                   
+                    //height = graphicObject.walls[0].height() - increment;
                 }
                 
                 
