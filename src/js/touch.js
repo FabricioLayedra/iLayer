@@ -270,18 +270,15 @@ function addNodeToSelection(group) {
         hideHighlight(circle);
         circle.animate(100).attr({"r": circle.attr("r") + 10});
         circle.animate(100).attr({"r": circle.attr("r")});
-//        console.log(circle);
-//        console.log(getActiveLayer());
-//        console.log(getActiveLayer().layer);
         var halo = drawHaloInCircle(getActiveLayer().layer, circle, 5, getActiveLayer().color);
-//        console.log(halo);
         console.log(group.add(halo));
         group.add(halo);
         console.log(group);
         ;
         halo.back();
         SELECTION.push(group);
-    } else {
+    } 
+    else {
         getElementFromGroup(group, 'path').remove();
         SELECTION = arrayRemove(SELECTION, group);
     }
@@ -301,10 +298,8 @@ function selectionMode(mode, buttonPressed) {
         var groups = getActiveLayer().layer.select('g.node').members;
         for (var index in groups) {
             let group = groups[index];
-//            console.log(group);
             removeTouchEvents(group);
             group.on('pointerdown', function () {
-//                console.log(group.node.id);
                 console.log(group);
                 //check if node is in selection
                 addNodeToSelection(group);
@@ -349,9 +344,7 @@ function addSelectionEvents(nodeParent) {
     //selectionFlag = true
 
     nodeParent.node.hammer = mc;
-/////////////////////////////////////////////////////////////////////////////////////////////////
     //mc.get('press').set({time: 300});
-
 
     if (selectionFlag){
         mc.on('press', function (event) {
@@ -368,6 +361,7 @@ function addSelectionEvents(nodeParent) {
         mc.off('pressup');
     }
 }
+
 function addPressEvents(mc, toolGraphics, drawer, type, child) {
     //for tool events
     mc.get('press').set({time: 300});
@@ -617,43 +611,27 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
         
     }
 
-
-
 }
 
 function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
     //console.log("moving");
     let currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
 
-//    console.log("Previous");
-//    console.log(x,y);
-
     var x = currentPoint.x /*- $("#accordionSidebar").width()*/ - child.previousX;
     var y = currentPoint.y - 70 - child.previousY;
 
-
-//    console.log(child.disToCenterX+x,child.disToCenterY+y);
-//    getActiveLayer().layer.circle(5).center(x,y).fill("red");
-//    console.log("*******************");
-//    console.log(x,y);
-
 /// THE IF IS NOT THE BEST THING TO DO BUT WE NEED TO KEEP GOING. 
     if (nodeGraphics === child) {
-//        console.log("child");
         if (nodeGraphics.wall) {
-//            console.log("wall");
             if (nodeGraphics.direction === "horizontal") {
-//                console.log("in horizontal");
                 nodeGraphics.center(child.disToCenterX + x, child.cy());
             } else if (nodeGraphics.direction === "vertical") {
-//                console.log("in vertical");
                 nodeGraphics.center(child.cx(), child.disToCenterY + y);
             }
             if (isProxy) {
                 console.log("Move all of them");
 
                 for (var index in graphicProxy.axis.valueLabels) {
-
 
                     var wall = null;
                     if (nodeGraphics.direction === "horizontal") {
@@ -662,7 +640,7 @@ function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
                             if (!wall.initialX) {
                                 wall.initialX = wall.cx();
                             }
-                            //                        console.log(wallX.cx()+x);
+                            
                             wall.center(wall.initialX + x, wall.cy());
                         } else if (nodeGraphics.position === "right") {
 
@@ -670,10 +648,8 @@ function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
                             if (!wall.initialX) {
                                 wall.initialX = wall.cx();
                             }
-                            //                        console.log(wallX.cx()+x);
+                            
                             wall.center(wall.initialX + x, wall.cy());
-
-//                        graphicProxy.axis.valueLabels[index].walls[0] = wallX;
                         }
                     } else if (nodeGraphics.direction === "vertical") {
                         if (nodeGraphics.position === "top") {
@@ -681,7 +657,7 @@ function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
                             if (!wall.initialY) {
                                 wall.initialY = wall.cy();
                             }
-                            //                        console.log(wallX.cx()+x);
+                            
                             wall.center(wall.cx(), wall.initialY + y);
                         } else {
 
@@ -689,10 +665,8 @@ function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
                             if (!wall.initialY) {
                                 wall.initialY = wall.cy();
                             }
-                            //                        console.log(wallX.cx()+x);
+                            
                             wall.center(wall.cx(), wall.initialY + y);
-
-//                        graphicProxy.axis.valueLabels[index].walls[0] = wallX;
                         }
                     }
                     if (wall.matter) {
@@ -710,35 +684,10 @@ function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
         child.previousY = nodeGraphics.cy();
     }
 
-
-
-//    console.log("DISTANCE");
-//    console.log(child.disToCenterX,child.disToCenterY);
-//    console.log(child.previousX,child.previousY);
-//
-//            getActiveLayer().layer.circle(5).center(child.disToCenterX+x,child.disToCenterY+y).fill("BLUE");
-//    child.disToCenterX = child.disToCenterX;
-//    child.disToCenterY = child.disToCenterY+y;
-
-//    console.log("DIST");
-//    console.log(child.disToCenterX,child.disToCenterY);
-//    console.log(child.previousX+child.disToCenterX,child.previousY+child.disToCenterY);
-//    child.previousX += 5;
-//    child.previousY += 5;   
-//    console.log(nodeGraphics.cx());
-
     if (nodeGraphics.matter) {
         Matter.Body.setPosition(nodeGraphics.matter, {x: child.cx(), y: child.cy()});
     }
 
-    //console.log(nodeGraphics.cx())
-
-
-//    
-//    
-//    let currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-////        console.log(toolEntity.cx(),toolEntity.cy());
-//    nodeGraphics.center(currentPoint.x-$("#accordionSidebar").width(),currentPoint.y-70);
 }
 
 function addDragEvents(hammer, entityGroup, toolEntity, type, isProxy, graphicProxy) {
@@ -845,8 +794,8 @@ function addDragEvents(hammer, entityGroup, toolEntity, type, isProxy, graphicPr
 
             //be wary of these two for now
             if (type === 'gravity'){
-                removeGravity(activatePhysics(getActiveLayer().layer.node.id));
-            stop_physics(activatePhysics(getActiveLayer().layer.node.id))
+                //removeGravity(activatePhysics(getActiveLayer().layer.node.id));
+                stop_physics(activatePhysics(getActiveLayer().layer.node.id))
             }
             
             //
@@ -872,7 +821,6 @@ function applyWallStyle(object) {
     let drawer = getActiveLayer().layer;
 
     if (object.type === 'text') {
-//        object.attr({"stroke-dasharray": 4, stroke: 'green', 'stroke-width': 3});
         object.attr({"text-decoration":"underline"});
     } else if (object.type === 'rect') {
         object.attr({stroke: '#f4bf42', 'stroke-width': 2.5});
@@ -1040,6 +988,7 @@ function addToolEvents(tool, type) {
             //console.log(attributeLand)
             if (attributeLand) {
                 var attributeGraphics = getCrossedClassedGraphicObject(getActiveLayer().layer.node, x, y, 'toolable');
+                console.log(attributeGraphics);
 
                 if (type === 'wall') {
                     applyWallStyle(attributeGraphics);
@@ -1355,26 +1304,21 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
         axis = getActiveLayer().bottom;
 
         hammer.on("panup", function (event) {
-            direction = 'up'
-//            console.log("Going to the top");
-
+            direction = 'up';
         });
 
         hammer.on("pandown", function (event) {
-            direction = 'down'
-//            console.log("Going to the down");
+            direction = 'down';
         });
     } else if (orientation === 'vertical') {
         axis = getActiveLayer().left;
 
         hammer.on('panleft', function (event) {
             direction = 'left';
-//            console.log("Going to the left");
         });
 
         hammer.on("panright", function (event) {
             direction = 'right';
-//            console.log("Going to the right");
         });
     }
 
@@ -1386,18 +1330,17 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
         currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
         height = -( currentPoint.y - startingPoint.y);
         width = currentPoint.x - startingPoint.x;
+        console.log(height);
 
         if (orientation === "horizontal") {
 
             var y = axis.line.cy();
-//            console.log("changing");
-//            console.log(y);
 
             if ($(attributeGraphics.node).hasClass('proxy')) {
                 attributeGraphics.axis = axis;
 
-//                the proxy thing
-//                change line 797 after demo 
+                //the proxy thing
+                //change line 797 after demo 
                 
                 var xProxy = attributeGraphics.rbox().cx;// - $("#accordionSidebar").width();
                 //console.log(xProxy);
@@ -1412,7 +1355,8 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
 
                     buildWall(axis.valueLabels[index], wallSize, height, [x, y], 'both', insideSpace, direction);
                 }
-            } else {
+            } 
+            else {
                 buildWall(attributeGraphics, wallSize, height, [attributeGraphics.cx(), y], 'both', insideSpace, direction);
             }
         } else if (orientation === "vertical") {
