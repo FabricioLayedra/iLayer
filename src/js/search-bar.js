@@ -58,7 +58,6 @@ getAvailableEntities(datafile).then(
         console.log(ui);
         console.log(ui.item.value);
         SVG.get(format_id(ui.item.value)).fill("red");
-        
 
     },
     close: function( event, ui ) {

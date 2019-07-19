@@ -64,10 +64,6 @@ var COLORS = ['gray']
 var STARTERLAYOUTS = ['cluster', 'force', 'bar', 'scatter'];
 var startingLayout = 0;
 
-//starting axes layouts 
-var starterScatterAxesAttributes = {x: 'Citations', y: 'Papers'};
-var starterBarAxesAttributes = {x: 'Country', y: null};
-
 
 var el = document.getElementById("layers-table");
 
@@ -133,23 +129,23 @@ function addTrash(){
     entityGroup.addClass('canvas-tool');
     entityGroup.id(svgID)
     //.node.id(type + '-' + Object.keys(ACTIVETOOLS).length.toString()) 
-    console.log(entityGroup)
+                console.log(entityGroup)
 
-    //only add toolEntity if it comes out of the drop zone
-    //ghost   
+                //only add toolEntity if it comes out of the drop zone
+                //ghost   
 
-    //creation of actual fa-icon
-    toolEntity = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
-    var relationAspect = toolEntity.width() / toolEntity.height();
-    toolEntity.height(50);
-    toolEntity.width(50 * relationAspect);
+                //creation of actual fa-icon
+                toolEntity = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
+                var relationAspect = toolEntity.width() / toolEntity.height();
+                toolEntity.height(50);
+                toolEntity.width(50 * relationAspect);
 
-    entityGroup.add(toolEntity);
-    entityGroup.add(getActiveLayer().layer
-            .text(type)
-            .center(toolEntity.cx(), toolEntity.cy() + toolEntity.height() * 0.6)
-            //.onclick, add event
-            );
+                entityGroup.add(toolEntity);
+                entityGroup.add(getActiveLayer().layer
+                        .text(type)
+                        .center(toolEntity.cx(), toolEntity.cy() + toolEntity.height() * 0.6)
+                        //.onclick, add event
+                        );
 }
 
 //this function has a gradient attached to every edge instead
@@ -415,6 +411,8 @@ function addMenuEvents(){
             showHideEdges(!edgesFlag)//, true);
         }
         */
+
+
         showHideEdges();
 
        // e.srcEvent.stopPropogation();
@@ -830,6 +828,14 @@ function drawGraph(layer_name, g) {
             }
             
             counter++;
+        }
+
+        else if (STARTERLAYOUTS[startingLayout] === 'bar'){
+            ;
+        }
+
+        else if (STARTERLAYOUTS[startingLayout] === 'scatter'){
+            ;
         }
 
         else { //force  
@@ -2050,16 +2056,6 @@ function main() {
         $("#hideEdges").toggleClass('active');
         getActiveLayer().layer.select('g.edge').attr({"opacity":0});
         EDGESHIDDEN = true;
-
-        //check for bar/scatter here
-        if (STARTERLAYOUTS[startingLayout] === 'bar'){
-            defaultBarChart(starterBarAxesAttributes)
-        }
-
-        if (STARTERLAYOUTS[startingLayout] === 'scatter'){
-            defaultScatterplot(starterScatterAxesAttributes);
-        }
-
         //showHideEdges();
 
 
@@ -2362,9 +2358,7 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
 
         });
 
-    }
-
-    else {
+    } else {
 
         // this is a continuous data attribute
         let minTick;
