@@ -332,7 +332,8 @@ function elementPos(element,newPos,oldPos,orientation){
     //        console.log("Updating edges...");
             updateEdgesEnds(getElementFromGroupByPropertyValue(element,'type','circle'), currentX);
         });
-    }else{
+    }
+    else {
     //    console.log(pointX);
 
         element.animate(500).dy(point).during(function (pos, morph, eased, situation) {
