@@ -206,7 +206,7 @@ function defaultBarChart(starterAttributes, gravityDirection){
         ACTIVEATTRIBUTES[h_group.node.id] = {'name': h_attributeName, 'group': h_group, 'occupantZone': bottomZone, madeAxis: true};
 
         addPressAttribute(new Hammer(h_group.node), h_group, h_rect, bottomZone, h_attributeName, 'horizontal');
-
+        
         moveTemplateNodes({x: temp_h.x, y: temp_h.y}, true, true);
 
         for (let i = 30; i < generalHeight; i+nodeRadius*2 + 10){
@@ -215,7 +215,7 @@ function defaultBarChart(starterAttributes, gravityDirection){
         //add 
 
         if (gravityEnabled == 'horizontal'){
-        	;//addGravity();
+        	addGravity();
 	    }
 	}
 

@@ -445,7 +445,7 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
                 triangle.rotate(angle);
                 let scale = 14 * (magnitude / 1000);
                 triangle.scale(scale, scale);
-                console.log('triggered')
+
                 addGravity(activatePhysics(getActiveLayer().layer.node.id), deltaX / magnitude, deltaY / magnitude, magnitude);
 
                 mc.off('panstart');
@@ -795,7 +795,7 @@ function addDragEvents(hammer, entityGroup, toolEntity, type, isProxy, graphicPr
             //be wary of these two for now
             if (type === 'gravity'){
                 //removeGravity(activatePhysics(getActiveLayer().layer.node.id));
-                //stop_physics(activatePhysics(getActiveLayer().layer.node.id))
+                stop_physics(activatePhysics(getActiveLayer().layer.node.id))
             }
             
             //
