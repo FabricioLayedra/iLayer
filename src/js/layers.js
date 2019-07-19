@@ -62,7 +62,7 @@ var EDGEGRADIENTS = {};
 var COLORS = ['#c6c8cc']
 var COLORS = ['gray']
 var STARTERLAYOUTS = ['cluster', 'force', 'bar', 'scatter'];
-var startingLayout = 0; //-1 for randomized node placement
+var startingLayout = 0;
 
 //starting axes layouts 
 var starterScatterAxesAttributes = {x: 'Citations', y: 'Papers'};
@@ -2052,13 +2052,13 @@ function main() {
         EDGESHIDDEN = true;
 
         //check for bar/scatter here
-        /*if (STARTERLAYOUTS[startingLayout] === 'bar'){
+        if (STARTERLAYOUTS[startingLayout] === 'bar'){
             defaultBarChart(starterBarAxesAttributes)
         }
 
         if (STARTERLAYOUTS[startingLayout] === 'scatter'){
             defaultScatterplot(starterScatterAxesAttributes);
-        }*/
+        }
 
         //showHideEdges();
 
