@@ -688,12 +688,13 @@ function addDragEvents(hammer, entityGroup, toolEntity, type, isProxy, graphicPr
                 opacity: .25
             });
 
-            //be wary of these two for now
+
 
             if (type === 'gravity'){
                 //removeGravity(activatePhysics(getActiveLayer().layer.node.id));
                 stop_physics(activatePhysics(getActiveLayer().layer.node.id))
             }
+
             
             removeGravity(activatePhysics(getActiveLayer().layer.node.id));
             stop_physics(activatePhysics(getActiveLayer().layer.node.id))
