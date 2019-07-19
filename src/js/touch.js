@@ -106,8 +106,8 @@ function removeTouchEvents(nodeParent) {
 // the idea here is that we will have different modes and depending on the mode we are, the same gesture will do different things
 // modes are often set by the user or even the layer itself
 
-function addLayerEvents(layer, drawer) {
-    let mc = new Hammer(layer);
+function addLayerEvents(mc, layer, drawer) {
+    //let mc = new Hammer(layer);
 
     // let the pan gesture support all directions.
     // this will block the vertical scrolling on a touch-device while on the element
@@ -371,15 +371,13 @@ function addSelectionEvents(nodeParent) {
 function addPressEvents(mc, toolGraphics, drawer, type, child) {
     //for tool events
     mc.get('press').set({time: 300});
+
     if (type === 'gravity') {
 
         mc.on('press', function (event) {
-
             event.preventDefault();
             $(event.target).attr('oncontextmenu', 'return false');
             mc.off('panmove');
-
-
 
             let line = null;
             let startingPoint = null;
@@ -470,11 +468,117 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
             addDragEvents(mc, toolGraphics.parent(), toolGraphics, type);
         });
 
-    } else if (type === 'bending') {
+    } 
 
-        
-        addLayerEvents(getActiveLayer().layer.node, getActiveLayer().layer);
-    } else if (type === 'wall') {
+    else if (type === 'bending') {
+
+        mc.on('press', function (event){
+            event.preventDefault();
+            $(event.target).attr('oncontextmenu', 'return false');
+            //mc.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
+            mc.off('panmove');
+
+            let startingPoint = null;
+            let currentPoint = null;
+            let segment = null;
+            let segment2 = null;
+            let line = null;
+            let rect = null;
+            let intersection = null;
+            let touchCanvas = true;
+            let layer = getActiveLayer().layer.node;
+            let drawer = getActiveLayer().layer;
+            let center = null;
+
+            blink(toolGraphics.parent());
+            
+            mc.on('panstart', function(ev){
+                //startingPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+                center = toolGraphics.rbox().addOffset();
+                startingPoint = {x: center.cx, y: center.cy - 65};
+                rect = layer.createSVGRect();
+                rect.x = startingPoint.x;
+                rect.y = startingPoint.y;
+                //touchCanvas = isFreePoint(layer, startingPoint.x, startingPoint.y);
+
+                
+                
+                line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y)
+                        .stroke({color: '#f06', width: 1, linecap: 'round'})
+                        .attr({'stroke-dasharray': [8, 3], stroke: 'red'});
+
+            });
+
+            mc.on("panmove", function (ev) {
+
+                currentPoint = {x: ev.srcEvent.offsetX, y: ev.srcEvent.offsetY};
+                line.attr("x2", currentPoint.x);
+                line.attr("y2", currentPoint.y);
+                line.stroke({color: '#f06000', width: 1, linecap: 'round'});
+
+                rect.x = Math.min(startingPoint.x, currentPoint.x);
+                rect.y = Math.min(startingPoint.y, currentPoint.y);
+                rect.width = Math.abs(currentPoint.x - startingPoint.x);
+                rect.height = Math.abs(currentPoint.y - startingPoint.y);
+                //        drawer.rect(rect.width,rect.height).move(rect.x,rect.y);
+                let list = layer.getIntersectionList(rect, null);
+                //        console.log(layer);
+                //        console.log(list);
+
+                list.forEach(function (element) {
+                    let edge = SVG.get(element.id);
+                    //            console.log(edge);
+                    if (edge.type === "path") {
+                        intersection = line.intersectsPath(edge);
+                        if (intersection.length) {
+                            segment2 = edge.getSegment(1);
+                            segment2.coords[0] = currentPoint.x;
+                            segment2.coords[1] = currentPoint.y;
+                            edge.replaceSegment(1, segment2);
+                            edge.highlight.replaceSegment(1, segment2);
+                            edge.highlight.show();
+                        }
+                    }
+                    else if (edge.type === "circle") {
+                        let direction = line.attr("x2") - line.attr("x1");
+                        if (direction > 0) {
+                            console.log(direction);
+                            console.log("GOING DOWN");
+                        } else if (direction < 0) {
+                            console.log(direction);
+                            console.log("GOING UP");
+                        }
+                    }
+                    });
+                });
+
+            mc.on("panend", function (ev){
+                getActiveLayer().layer.select('g').members.forEach(function (n) {
+                    let children = n.node.children;
+                    for (var k = 0; k < children.length; k++) {
+                        let element = SVG.get(children[k].id);
+                        if (element.highlight) {
+                            element.highlight.hide();
+                        }
+                    }
+                });
+                line.remove();
+                mc.off('panstart');
+                mc.off('panmove');
+                mc.off('panend');
+                addDragEvents(mc, toolGraphics.parent(), toolGraphics, type);
+            });
+        });
+
+        mc.on('pressup', function (event) {
+            mc.off('panstart');
+            mc.off('panmove');
+            mc.off('panend');
+            addDragEvents(mc, toolGraphics.parent(), toolGraphics, type);
+        });   
+    } 
+
+    else if (type === 'wall') {
 
 
 
@@ -740,9 +844,11 @@ function addDragEvents(hammer, entityGroup, toolEntity, type, isProxy, graphicPr
             });
 
             //be wary of these two for now
-            
-            removeGravity(activatePhysics(getActiveLayer().layer.node.id));
+            if (type === 'gravity'){
+                removeGravity(activatePhysics(getActiveLayer().layer.node.id));
             stop_physics(activatePhysics(getActiveLayer().layer.node.id))
+            }
+            
             //
         }
 
