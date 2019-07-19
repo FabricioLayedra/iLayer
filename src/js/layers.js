@@ -62,7 +62,10 @@ var EDGEGRADIENTS = {};
 var COLORS = ['#c6c8cc']
 var COLORS = ['gray']
 var STARTERLAYOUTS = ['cluster', 'force', 'bar', 'scatter'];
-var startingLayout = 0;
+var startingLayout = 0; //-1 for random
+
+var starterScatterAxesAttributes = {x: 'Citations', y: 'Papers'};
+var starterBarAxesAttributes = {x: 'Country', y: null};
 
 
 var el = document.getElementById("layers-table");
@@ -828,14 +831,6 @@ function drawGraph(layer_name, g) {
             }
             
             counter++;
-        }
-
-        else if (STARTERLAYOUTS[startingLayout] === 'bar'){
-            ;
-        }
-
-        else if (STARTERLAYOUTS[startingLayout] === 'scatter'){
-            ;
         }
 
         else { //force  
@@ -2056,6 +2051,14 @@ function main() {
         $("#hideEdges").toggleClass('active');
         getActiveLayer().layer.select('g.edge').attr({"opacity":0});
         EDGESHIDDEN = true;
+
+        if (STARTERLAYOUTS[startingLayout] === 'bar'){
+            defaultBarChart(starterBarAxesAttributes);
+        }
+
+        else if (STARTERLAYOUTS[startingLayout] === 'scatter'){
+            defaultScatterplot(starterScatterAxesAttributes);
+        }
         //showHideEdges();
 
 
