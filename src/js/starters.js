@@ -80,10 +80,13 @@ function defaultScatterplot(starterAttributes){
     h_group.add(h_rect);
     h_group.add(h_label);
     h_group.addClass('attr-' + h_attributeName); 
+    h_group.droppedLocation = 'horizontal';
 
     v_group.add(v_rect);
     v_group.add(v_label);
     v_group.addClass('attr-' + v_attributeName); 
+    v_group.droppedLocation = 'vertical';
+
 
 
     let h_coords = {x: activeLayer.bottom.line.x(), y: activeLayer.bottom.rect.cy() - 25};
@@ -149,6 +152,11 @@ function defaultBarChart(starterAttributes, gravityDirection){
 
     let gravityEnabled = gravityDirection;
 
+    //addToolEvents(, type) //gravity, etc.
+    
+
+
+
 	//place both in position
 	//draw axes
 	//position
@@ -209,13 +217,13 @@ function defaultBarChart(starterAttributes, gravityDirection){
         
         moveTemplateNodes({x: temp_h.x, y: temp_h.y}, true, true);
 
-        for (let i = 30; i < generalHeight; i+nodeRadius*2 + 10){
+        /*for (let i = 30; i < generalHeight; i+nodeRadius*2 + 10){
         	moveTemplateNodes({x: temp_h.x, y: i}, false, true);
-        }
+        }*/
         //add 
-
+        console.log(gravityEnabled)
         if (gravityEnabled == 'horizontal'){
-        	addGravity();
+        	applyGravity();
 	    }
 	}
 
@@ -269,7 +277,7 @@ function defaultBarChart(starterAttributes, gravityDirection){
 	    //addgravity in that direction
 
 	    if (gravityEnabled == 'vertical'){
-	    	addGravity();
+	    	applyGravity();
 	    }
 	    
 
@@ -279,14 +287,16 @@ function defaultBarChart(starterAttributes, gravityDirection){
 }
 
 function moveTemplateNodes(coords, activateWall, activatePosition){
-
 	let temp = coords;
 	let attributeGraphics = getCrossedClassedGraphicObject(getActiveLayer().layer.node, temp.x, temp.y, 'toolable');
-
+	console.log(attributeGraphics);
+	//console.log(attributeGraphics)
 	let direction = attributeGraphics.direction;
+
 	
 
 	if (activateWall) {
+
 	    applyWallStyle(attributeGraphics);
 	    if ($(attributeGraphics.node).hasClass('proxy')) {
 	        var labelsGraphics = attributeGraphics.values;
@@ -577,11 +587,117 @@ function moveTemplateNodes(coords, activateWall, activatePosition){
 	}
 
 	console.log(getActiveLayer().data[attributeGraphics.attr("value")])
+	
 
 }
 
-function addGravity(dir){
-	;
+function applyGravity(){
+
+    let activeLayer = getActiveLayer();
+    let drawer = getActiveLayer().layer;
+    let startingPoint = null;
+    let mc = null;
+
+    let w = 65; 
+    let h = 50;
+    let type = 'gravity';
+
+    //let tool = $('#gravity')[0];
+    let path = $($('#gravity').children()[0]).children()[0].getAttribute("d");
+    let entityGroup = getActiveLayer().layer.group().addClass('canvas-tool');
+    let svgID = 'gravity-' + getActiveLayer().layer.id().split('-')[1];
+    
+
+    let toolEntity = getActiveLayer().layer.path(path).attr({"tool": true, fill: getActiveLayer().color});
+
+    //toolEntity.move(500, 500);
+    toolEntity.move(drawer.width() - w -20, 100)
+    var relationAspect = toolEntity.width() / toolEntity.height();
+    toolEntity.height(50);
+    toolEntity.width(50 * relationAspect);
+
+	toolEntity.copyOnCanvas = false;
+    
+    entityGroup.add(toolEntity);
+    entityGroup.add(getActiveLayer().layer
+        .text('gravity')
+        .center(toolEntity.cx(), toolEntity.cy() + toolEntity.height() * 0.6)
+    );
+
+    entityGroup.id(svgID);
+
+    startingPoint = {x: toolEntity.cx(), y: toolEntity.cy() + toolEntity.height() * .6};
+    toolEntity.previousX = startingPoint.x;
+    toolEntity.previousY = startingPoint.y;
+
+    mc = new Hammer(toolEntity.node);
+
+    setTimeout(function(){
+    	addGravityVector(mc, toolEntity, entityGroup)}, 1000);
+    
+   	addDragEvents(mc, entityGroup, toolEntity, type);
+ 	addPressEvents(mc, toolEntity, getActiveLayer().layer, type);
+    //addDragEvents();
+    //addPressEvents();
+    //need to also find a way to set copyOnCanvas to true
+}
+
+function addGravityVector(mc, toolGraphics, group){
+	let path = null;
+	let line, deltaX, deltaY, x2, y2, magnitude, triangle, angle, center = null;
+	let color = '#686868';
+	let drawer = getActiveLayer().layer;
+
+	center = toolGraphics.rbox().addOffset();
+	startingPoint = {x: center.cx , y: center.cy - 65};
+	line = drawer.line(startingPoint.x, startingPoint.y, startingPoint.x, startingPoint.y + 75)
+            .attr({
+                stroke: color,
+                fill: color,
+                color: color,
+                'stroke-width': 1,
+                'stroke-linecap': 'round'
+            });
+    triangle = drawer.polygon('3,0 -10,-6 -10,6');
+    triangle.fill(color).move(startingPoint.x, startingPoint.y);
+    deltaX = line.attr("x2") - line.attr("x1");
+    deltaY = line.attr("y2") - line.attr("y1");
+    magnitude = Math.sqrt(Math.pow(Math.abs(deltaX), 2) + Math.pow(Math.abs(deltaY), 2));
+
+    line.attr({'stroke-width': 40 * (magnitude / 1000)});
+
+    angle = (Math.atan(deltaY / deltaX) * 180) / Math.PI;
+    if (line.attr("x1") > line.attr("x2")) {
+        angle -= 180;
+    }
+
+    triangle.attr('transform', null);
+    triangle.center(center.cx, center.cy + 15);
+    triangle.rotate(angle);
+    let scale = 14 * (magnitude / 1000);
+    triangle.scale(scale, scale);
+
+    let matrix = new SVG.Matrix(group);
+    let inverse = matrix.inverse();
+    group.add(line);
+    group.add(triangle);
+    line.transform(inverse);
+
+    triangle.transform(inverse);
+
+    triangle.rotate(angle);
+
+    //triangle.scale(scale, scale);
+
+    addGravity(activatePhysics(getActiveLayer().layer.node.id), deltaX / magnitude, deltaY / magnitude, magnitude);
+
+
+
+
+
+
+
+
 }
 
 function resetDefaultPosition(){
@@ -592,6 +708,5 @@ function resetDefaultPosition(){
 		elementPos(element, element.spawnX, element.rbox().cx, 'horizontal');
 		elementPos(element, element.spawnY, element.rbox().cy - 70, 'vertical');
 	})
-
-
 }
+

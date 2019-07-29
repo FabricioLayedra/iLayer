@@ -132,23 +132,23 @@ function addTrash(){
     entityGroup.addClass('canvas-tool');
     entityGroup.id(svgID)
     //.node.id(type + '-' + Object.keys(ACTIVETOOLS).length.toString()) 
-                console.log(entityGroup)
+    console.log(entityGroup)
 
-                //only add toolEntity if it comes out of the drop zone
-                //ghost   
+    //only add toolEntity if it comes out of the drop zone
+    //ghost   
 
-                //creation of actual fa-icon
-                toolEntity = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
-                var relationAspect = toolEntity.width() / toolEntity.height();
-                toolEntity.height(50);
-                toolEntity.width(50 * relationAspect);
+    //creation of actual fa-icon
+    toolEntity = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
+    var relationAspect = toolEntity.width() / toolEntity.height();
+    toolEntity.height(50);
+    toolEntity.width(50 * relationAspect);
 
-                entityGroup.add(toolEntity);
-                entityGroup.add(getActiveLayer().layer
-                        .text(type)
-                        .center(toolEntity.cx(), toolEntity.cy() + toolEntity.height() * 0.6)
-                        //.onclick, add event
-                        );
+    entityGroup.add(toolEntity);
+    entityGroup.add(getActiveLayer().layer
+            .text(type)
+            .center(toolEntity.cx(), toolEntity.cy() + toolEntity.height() * 0.6)
+            //.onclick, add event
+            );
 }
 
 //this function has a gradient attached to every edge instead
@@ -764,8 +764,6 @@ function addGraphAsLayer(g, layerName) {
 
     addNewLayer(layerName);
     var color = LAYERS[layerName].color;
-//    console.log("COLOR NODES");
-//    console.log(color);
     var darkenColor = lightenDarkenColor(color, -10);
 
 //    drawGraph(LAYERS[layer_name].layer, g);
@@ -787,7 +785,7 @@ function addGraphAsLayer(g, layerName) {
 function drawGraph(layer_name, g) {
     var draw = LAYERS[layer_name].layer;
     var color = LAYERS[layer_name].color;
-//    console.log(color);
+
     var graphId = g._label;
     var directed = g.directed;
     var nodeKeys = g.nodes();
@@ -867,6 +865,7 @@ function drawGraph(layer_name, g) {
 //        group.add(ear);
         group.add(circle);
         group.add(label);
+        group.nodeData = nodeData;
 
         //set the distance between the group and the circle
         group.childDX = group.cx() - getElementFromGroup(group, 'circle').cx();
@@ -885,6 +884,7 @@ function drawGraph(layer_name, g) {
         createHighlight(group);
         addTouchEvents(group);
         addSelectionEvents(group);
+        addTooltipEvents(group);
 
         //circular references
         nodeData.svg = circle;
@@ -892,6 +892,7 @@ function drawGraph(layer_name, g) {
         circle.nodeData = nodeData;
 
         dataKeys = Object.keys(nodeData.authorInfo);
+        //console.log(nodeData)
         //removing the keys I do not want
 //        dataKeys = arrayRemove(dataKeys, 'id');
         dataKeys = arrayRemove(dataKeys, 'group');
@@ -901,6 +902,8 @@ function drawGraph(layer_name, g) {
         dataKeys = arrayRemove(dataKeys, 'Papers Published');
         dataKeys = arrayRemove(dataKeys, 'Affiliations');
         dataKeys = arrayRemove(dataKeys, 'id');
+
+        
 //        dataKeys = arrayRemove(dataKeys, 'number of papers');
 
     });
@@ -1130,8 +1133,8 @@ function updateHighlights(object) {
 }
 
 function updateEdgesEnds(nodeGraphics, coordX, coordY, directed) {
-//    console.log("INSIDE THE METHOD");
-//    console.log(nodeGraphics);
+
+
     var x = !coordX ? nodeGraphics.rbox().cx /*-$("#accordionSidebar").width()*/ : coordX;
     var y = !coordY ? nodeGraphics.rbox().cy - 70 : coordY;
     var segment;
@@ -1158,9 +1161,6 @@ function updateEdgesEnds(nodeGraphics, coordX, coordY, directed) {
 
     });
     nodeGraphics.nodeData.outEdges.forEach(function (outEdge, i) {
-//        console.log("OUTEDGES");
-
-        //        console.log(outEdge);
 
         segment = outEdge.getSegment(0);
         segment.coords[0] = x;
@@ -1792,18 +1792,16 @@ function forceLayout(g) {
     }
     
     graph.loadJSON(data);
-//
+
     var layout = new Springy.Layout.ForceDirected(graph, 400.0, 600.0, 0.4);
 
     renderer = new Springy.Renderer(layout,
             function clear() {
-//        console.log(this);
             },
             function drawEdge(edge, p1, p2) {
-//        console.log(edge,p1,p2);
             },
             function drawNode(node, p) {
-//        console.log(node.id,p.x,p.y);
+                    //console.log(node.id,p.x,p.y);
                 // calculate bounding box of graph layout.. with ease-in
 	/*var currentBB = layout.getBoundingBox();
 	var targetBB = {bottomleft: new Springy.Vector(-2, -2), topright: new Springy.Vector(2, 2)};
@@ -1844,21 +1842,21 @@ function forceLayout(g) {
                 })*/
 
                 updateEdgesEnds(nodeGraphics, g.directed)
-//                nodeGraphics.on("stop",function(){console.log("PARO")});
-//                updateEdgesEnds(nodeGraphics,false);
-//        updateLabelPosition(nodeGraphics);
+                //nodeGraphics.on("stop",function(){console.log("PARO")});
+              // updateEdgesEnds(nodeGraphics,false);
+        //updateLabelPosition(nodeGraphics);
 
 
-//         .cx(g.node(node.id).svg.cx()+p.x),g.node(node.id).svg.cy(g.node(node.id).svg.cy()+p.y);
-//        g.node(node.id).svg.dmove(s.x, s.y);
+        //.cx(g.node(node.id).svg.cx()+p.x),g.node(node.id).svg.cy(g.node(node.id).svg.cy()+p.y);
+        //g.node(node.id).svg.dmove(s.x, s.y);
 
-//g.node(node.id).svg.transform({"x":p.x,"y":p.y});
-//        console.log(layout.getBoundingBox());
+    //g.node(node.id).svg.transform({"x":p.x,"y":p.y});
+    //        console.log(layout.getBoundingBox());
             }
     );
 
     renderer.start();
-//        console.log(renderer);
+
 
 //    renderer.onRenderStop = function(d){
 //        console.log("paro");
@@ -2052,13 +2050,17 @@ function main() {
         getActiveLayer().layer.select('g.edge').attr({"opacity":0});
         EDGESHIDDEN = true;
 
-        if (STARTERLAYOUTS[startingLayout] === 'bar'){
-            defaultBarChart(starterBarAxesAttributes);
+        window.onload = function(){
+            if (STARTERLAYOUTS[startingLayout] === 'bar'){
+
+            defaultBarChart(starterBarAxesAttributes, 'horizontal');
         }
 
         else if (STARTERLAYOUTS[startingLayout] === 'scatter'){
             defaultScatterplot(starterScatterAxesAttributes);
         }
+        }
+        
         //showHideEdges();
 
 
@@ -2919,7 +2921,7 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
     var direction = graphicObject.direction;
     entityGroup = getActiveLayer().layer.group().addClass('wall-' + direction);
 //    console.log(direction);
-    
+    //console.log(graphicObject)
 
 
     if (mode === 'both') {
@@ -2929,7 +2931,12 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 
                 let originXleft = originPosition[0] - nodeRadius/1.5;
                 let originXright = originPosition[0] + nodeRadius/1.5 - width;
+
+                if (originXright - originXleft > 28){
+                    originXright = originPosition[0] + nodeRadius/2.25 - width;
+                }
                 let originY = originPosition[1];
+
                 if (isProxy){
                     originXleft = originPosition[0] - graphicObject.width()/2;
                     originXright = originPosition[0] + graphicObject.width()/2;
@@ -2940,6 +2947,12 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 wall1.direction = direction;
                 wall1.wall = true;
                 wall1.previousIncrement = 0;
+                wall1.addClass('wall-1');
+
+                if (isProxy){
+                    wall1.addClass('proxy');
+                    wall1.attr({'stroke': 'black', 'stroke-width': 1.5})
+                }
                 addAttractorToWorld(world, wall1);
                 addDragEvents(new Hammer(wall1.node), wall1, wall1, 'wall', isProxy, graphicObject);
 
@@ -2950,11 +2963,19 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 wall2.previousIncrement = 0;
                 wall1.y(wall1.y()-height);
                 wall2.y(wall2.y()-height);
+                wall2.addClass('wall-2');
+
+                if (isProxy){
+                    wall2.addClass('proxy');
+                    wall2.attr({'stroke': 'black', 'stroke-width': 1.5})
+                }
                 addAttractorToWorld(world, wall2);
                 addDragEvents(new Hammer(wall2.node), wall2, wall2, 'wall', isProxy, graphicObject);
                 graphicObject.walls = [wall1, wall2];
                 
-            } else if (direction === 'vertical') {
+            } 
+            else if (direction === 'vertical') {
+
                 let originYtop = originPosition[1] - nodeRadius/1.5;
                 let originYbottom = originPosition[1] + nodeRadius/1.5 - height;
                 let originX = originPosition[0];
@@ -2969,22 +2990,35 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 wall1.position = "top"
                 wall1.wall = true;
                 wall1.previousIncrement = 0;
+                wall1.addClass('wall-1');
+
+                if (isProxy){
+                    wall1.addClass('proxy');
+                    wall1.attr({'stroke': 'black', 'stroke-width': 1.5})
+                }
                 addAttractorToWorld(world, wall1);
                 addDragEvents(new Hammer(wall1.node), wall1, wall1, 'wall', isProxy, graphicObject);
 
 
-                let wall2 = entityGroup.rect(width, height).move(originX, originYbottom).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();            
+                let wall2 = entityGroup.rect(width, height).move(originX, originYbottom).addClass('wall-2').fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();            
                 wall2.position = "bottom";
                 wall2.direction = direction;
                 wall2.wall = true;
                 wall2.previousIncrement = 0;
+                wall2.addClass('wall-2');
+
+                if (isProxy){
+                    wall2.addClass('proxy');
+                    wall2.attr({'stroke': 'black', 'stroke-width': 1.5})
+                }
                 addAttractorToWorld(world, wall2);
                 addDragEvents(new Hammer(wall2.node), wall2, wall2, 'wall', isProxy, graphicObject);
 
                 graphicObject.walls = [wall1, wall2];
             }
 
-        } else {
+        } 
+        else {
             if (direction === "horizontal") {
                 
                 /*console.log("HEIGHT");
@@ -3000,7 +3034,8 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                     
                     //height = graphicObject.walls[0].height() + increment;
 
-                }else{
+                }
+                else{
                     var increment = graphicObject.walls[0].previousIncrement-height;
                     graphicObject.walls[0].previousIncrement = height;
 
@@ -3041,7 +3076,8 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 Matter.Body.setPosition(wall1.matter, {x: wall1.cx(), y: wall1.cy()});
 
                 Matter.Body.setPosition(wall2.matter, {x: wall2.cx(), y: wall2.cy()});
-            } else if (direction === "vertical") {
+            } 
+            else if (direction === "vertical") {
 //                console.log("BUILDING WALL");
 //                console.log(width);
 //                console.log(graphicObject.walls[0].width()!=width);
@@ -3056,8 +3092,7 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                         graphicObject.walls[0].previousIncrement = width;
                         width = graphicObject.walls[0].width() - increment;
                     }
-//                }
-//                if ()
+
                 var scale = width / graphicObject.walls[0].width();
 
 

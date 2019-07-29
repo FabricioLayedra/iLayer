@@ -344,7 +344,7 @@ function selectionMode(mode, buttonPressed) {
     console.log(selectionFlag);
 }
 
-//make this so that it is triggered by button press only
+//for selecting a new node 
 function addSelectionEvents(nodeParent) {
     var mc = new Hammer(nodeParent.node);
     //selectionFlag = true
@@ -369,6 +369,81 @@ function addSelectionEvents(nodeParent) {
         mc.off('pressup');
     }
 }
+
+//
+function addTooltipEvents(nodeParent){
+    
+    var mc = new Hammer(nodeParent.node);
+    nodeParent.node.hammer = mc;
+    mc.get('press').set({time: 200});
+
+    let group = null;
+    let rect = null;
+    let label = null;
+    let attributes = {};
+
+    let startingPoint = null;
+    let currentPoint = null;
+    let distance = null;
+    let targetDropZone = null;
+    let activeLayer = null;
+    let drawer = null;
+    let direction = null;
+    let authorInfo = null;
+    let tooltipText = "";
+    //let t = tippy('button')
+    let els = document.querySelectorAll('.node');
+    let tip = document.querySelector('nodeTip');
+
+    //var tooltip = new Tooltip(els, tip);
+    tippy.setDefaults({
+        animation: 'fade',
+        arrow: true,
+        content: 'test',
+        theme: 'light',
+        dynamicTitle: true,
+        interactive: false,
+        hideOnClick: false
+    })
+    //Tipped.create('#nodeTip', 'text');
+    let nodeTip = tippy(els);
+    nodeTip = nodeTip[0];
+
+    authorInfo = nodeParent.nodeData.authorInfo;
+    delete authorInfo.id;
+
+        //let d = arrayRemove(authorInfo, 'id')
+    for (var index in authorInfo){
+        tooltipText += String(index).charAt(0).toUpperCase() + String(index).slice(1) + ": " + authorInfo[index] + "<br/>";
+    }
+    nodeTip.setContent(tooltipText);
+    nodeTip.hide();
+
+
+    mc.on('tap', function (ev){
+        ev.preventDefault();
+
+        drawer = getActiveLayer().layer;
+        startingPoint = {};
+
+        //console.log(authorInfo);
+        
+        console.log(tooltipText)
+        //nodeTip.setContent(tooltipText);
+        nodeTip.enable();
+
+        
+        
+
+
+        //hide all previous rectangles 
+        //draw rectangle, fetch attributes
+
+
+
+    })
+}
+
 function addPressEvents(mc, toolGraphics, drawer, type, child) {
     //for tool events
     mc.get('press').set({time: 300});
@@ -588,7 +663,7 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
 
 
     else if (type === 'wall') {
-
+        console.log('is a wall')
 
 
     } else if (type === 'position') {
@@ -630,6 +705,11 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
 
 }
 
+function addTapEvents(){
+    //draw a rectangle
+
+}
+
 function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
     //console.log("moving");
     let currentPoint = {x: event.srcEvent.pageX, y: event.srcEvent.pageY};
@@ -663,8 +743,6 @@ function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
                 console.log("Move all of them");
 
                 for (var index in graphicProxy.axis.valueLabels) {
-
-
                     var wall = null;
                     if (nodeGraphics.direction === "horizontal") {
                         if (nodeGraphics.position === "left") {
@@ -705,6 +783,8 @@ function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
 //                        graphicProxy.axis.valueLabels[index].walls[0] = wallX;
                         }
                     }
+
+                    console.log('wall matter: ' + wall.matter)
                     if (wall.matter) {
                         Matter.Body.setPosition(wall.matter, {x: wall.cx(), y: wall.cy()});
                     }
@@ -764,14 +844,17 @@ function addDragEvents(hammer, entityGroup, toolEntity, type, isProxy, graphicPr
     let trashZone =  activeLayer.trash;
     let threshold_w = activeLayer.layer.width() - 10;
     let threshold_h = activeLayer.layer.height() - 10;
+
     let distanceToTrash_x = null;
     let distanceToTrash_y = null;
     let initX = null;
     let initY = null;
 
+    //console.log(entityGroup);
+
 
     hammer.on("panstart", function (ev) {
-        console.log('addDragEvents triggered')
+        console.log('addDragEvents triggered');
 
         startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
         initX = startingPoint.x ;//- $("#accordionSidebar").width();
@@ -793,9 +876,15 @@ function addDragEvents(hammer, entityGroup, toolEntity, type, isProxy, graphicPr
 
         //for walls, only allow them to move along one direction
         //entityGroup undefined after force
+
+        //moveElements(ev, entityGroup, toolEntity, isProxy, graphicProxy);
         if (type == 'wall'){
+            //console.log('is a wall');
+            moveElements(ev, entityGroup, toolEntity, isProxy, graphicProxy);
+            
             if (toolEntity.position == 'left' || toolEntity.position == 'right'){
-                entityGroup.dmove(currentPoint.x - toolEntity.disToCenterX, 0);
+                //entityGroup.dmove(currentPoint.x - toolEntity.disToCenterX, 0);
+                moveElements(ev, entityGroup, toolEntity, isProxy, graphicProxy);
             }
             else if (toolEntity.position == 'bottom' || toolEntity.position == 'top'){
                 entityGroup.dmove(0, currentPoint.y - toolEntity.disToCenterY);
@@ -808,36 +897,32 @@ function addDragEvents(hammer, entityGroup, toolEntity, type, isProxy, graphicPr
         
         //use disToCenterXY instead of previousXY for more centered dragging
 
+        if (type != 'wall'){
+            distanceToTrash_x = Math.abs(trashZone.rect.cx() - toolEntity.disToCenterX);
+            distanceToTrash_y = Math.abs(trashZone.rect.cy() - toolEntity.disToCenterY);
 
-        distanceToTrash_x = Math.abs(trashZone.rect.cx() - toolEntity.disToCenterX);
-        distanceToTrash_y = Math.abs(trashZone.rect.cy() - toolEntity.disToCenterY);
+            if ((distanceToTrash_x < 300) || (distanceToTrash_y < 300)) {
+                trashZone.rect.attr({opacity: (trashZone.rect.x() - distanceToTrash_x)/threshold_w*2});
+            }
 
-        /*console.log(entityGroup.cx() + " cxcy " + entityGroup.cy())
-        console.log(distanceToTrash_x + " dtxy " + distanceToTrash_y)*/
-
-        if ((distanceToTrash_x < 300) || (distanceToTrash_y < 300)) {
-            trashZone.rect.attr({opacity: (trashZone.rect.x() - distanceToTrash_x)/threshold_w*2});
-            /*trashZone.icon.attr({
-                fill: 'gray',
-                opacity: .25
-            })*/
-        }
-        if (distanceToTrash_x < 100 && distanceToTrash_y < 100){
-            trashZone.icon.attr({
-                fill: 'white',
-                opacity: 1
-            })
+            if (distanceToTrash_x < 100 && distanceToTrash_y < 100){
+                trashZone.icon.attr({
+                    fill: 'white',
+                    opacity: 1
+                });
+            }
+            
+            else{
+                trashZone.rect.attr({opacity: 0});
+                trashZone.icon.attr({
+                    fill: 'gray',
+                    opacity: .25
+                });
+            }
+            toolEntity.disToCenterX = entityGroup.cx();
+            toolEntity.disToCenterY = entityGroup.cy();
         }
         
-        else{
-            trashZone.rect.attr({opacity: 0});
-            trashZone.icon.attr({
-                fill: 'gray',
-                opacity: .25
-            })
-        }
-        toolEntity.disToCenterX = entityGroup.cx();
-        toolEntity.disToCenterY = entityGroup.cy();
         
     });
 
@@ -846,12 +931,19 @@ function addDragEvents(hammer, entityGroup, toolEntity, type, isProxy, graphicPr
         trashZone.rect.attr({opacity:0});
         if ((distanceToTrash_x < 60) && (distanceToTrash_y < 60)){
             
-            removeWithAnimation(entityGroup);
-            copyOnCanvas = false;
-            trashZone.icon.attr({
-                fill: 'gray',
-                opacity: .25
-            });
+            if (type != 'wall'){
+                removeWithAnimation(entityGroup);
+                copyOnCanvas = false;
+                trashZone.icon.attr({
+                    fill: 'gray',
+                    opacity: .25
+                });
+               
+
+            }
+
+
+            
 
             //be wary of these two for now
             
@@ -1018,6 +1110,7 @@ function addToolEvents(tool, type) {
 
             if (type === 'wall' || type === 'position' || type === 'attractor' || type === 'axis') {
                 attributeLand = isClassedGraphics(getActiveLayer().layer.node, x, y, 'toolable');
+
             }
 
             if (distanceToTrash_x < 100 && distanceToTrash_y < 100){
@@ -1042,6 +1135,7 @@ function addToolEvents(tool, type) {
             var x = currentPoint.x;// - $("#accordionSidebar").width();
             var y = currentPoint.y - 70;
             toolEntity.front();
+            
             let mc = new Hammer(toolEntity.node);
 
             distanceToTrash_x = Math.abs(activeLayer.trash.rect.cx() - x);
@@ -1052,6 +1146,7 @@ function addToolEvents(tool, type) {
             //console.log(attributeLand)
             if (attributeLand) {
                 var attributeGraphics = getCrossedClassedGraphicObject(getActiveLayer().layer.node, x, y, 'toolable');
+                console.log(attributeGraphics)
 
                 if (type === 'wall') {
                     applyWallStyle(attributeGraphics);
@@ -1065,6 +1160,7 @@ function addToolEvents(tool, type) {
                         console.log(attributeGraphics.width());
 
                         addBuilderWallsEvents(attributeGraphics, attributeGraphics.parent());
+                        //attributeGraphics
                         // TODO: build the wall here, right after the wall tool has been added to the proxy
                         // or to a single attribute value (that's perhaps in another if)
                     } 
@@ -1307,6 +1403,7 @@ function addToolEvents(tool, type) {
                 blink(attributeGraphics);
 
             }
+
             else if ((distanceToTrash_x < 60) && (distanceToTrash_y < 60)){
                 removeWithAnimation(entityGroup);
                 copyOnCanvas = false;
@@ -1319,7 +1416,8 @@ function addToolEvents(tool, type) {
                 if (type === 'wall' || type === 'position' || type === 'attractor' || type === 'axis') {
                     removeWithAnimation(entityGroup);
                     copyOnCanvas = false;
-                }else if(type === 'clonator'){
+                }
+                else if(type === 'clonator'){
                     clonationMode = true;
                     copyOnCanvas = true;
                 }
@@ -1367,26 +1465,22 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
         axis = getActiveLayer().bottom;
 
         hammer.on("panup", function (event) {
-            direction = 'up'
-//            console.log("Going to the top");
-
+            direction = 'up';
         });
 
         hammer.on("pandown", function (event) {
-            direction = 'down'
-//            console.log("Going to the down");
+            direction = 'down';
         });
-    } else if (orientation === 'vertical') {
+    } 
+    else if (orientation === 'vertical') {
         axis = getActiveLayer().left;
 
         hammer.on('panleft', function (event) {
             direction = 'left';
-//            console.log("Going to the left");
         });
 
         hammer.on("panright", function (event) {
             direction = 'right';
-//            console.log("Going to the right");
         });
     }
 
@@ -1402,14 +1496,12 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
         if (orientation === "horizontal") {
 
             var y = axis.line.cy();
-//            console.log("changing");
-//            console.log(y);
 
             if ($(attributeGraphics.node).hasClass('proxy')) {
                 attributeGraphics.axis = axis;
 
-//                the proxy thing
-//                change line 797 after demo 
+                //the proxy thing
+                //change line 797 after demo 
                 
                 var xProxy = attributeGraphics.rbox().cx;// - $("#accordionSidebar").width();
                 //console.log(xProxy);
@@ -1459,7 +1551,8 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
                 unBoldText(axis.valueLabels[index]);
                 axis.valueLabels[index].walls[0].previousIncrement = 0;
             }
-        } else {
+        } 
+        else {
             let attributeName = attributeGraphics.attr("attrType");
             let attributeValue = attributeGraphics.node.textContent;
             highlightNodesByAttributeValue(attributeValue, attributeName, false);
@@ -1548,7 +1641,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
         group = drawer.group();
         group.add(rect);
         group.add(label);
-        group.addClass('attr-' + attributeName);       
+        group.addClass('toolable proxy attr-' + attributeName);    
 
 
         //}
@@ -2066,11 +2159,14 @@ function addPressAttribute(hammer, entityGroup, attrEntity, zone, attrName, dir)
                 removeWithAnimation(entityGroup);
                 activeZone.hasAttribute = false;
                 activeZone.line.attr({opacity: 0});
-                if (entityGroup.droppedLocation == 'vertical'){
-                   $('.wall-vertical').remove();
+
+
+                //if (entityGroup.class)
+                if (dir == 'vertical'){
+                    $('.wall-vertical').remove();
                 }
 
-                else if (entityGroup.droppedLocation == 'horizontal'){
+                else if (dir == 'horizontal'){
                     $('.wall-horizontal').remove();
                 }
             }, 300)

@@ -20,6 +20,8 @@
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.css" rel="stylesheet">
     <link href="css/graphs_style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@4/themes/light.css"/>
+
 
     <!-- Custom styles for civerse-->
     <link href="css/table_style.css" rel="stylesheet">
@@ -35,6 +37,8 @@
     <link rel="shortcut icon" type="image/png" href="img/logo.png" />
 
     <link rel="stylesheet" href="css/jquery.contextMenu.min.css">
+
+    
 
     <title>iLayer-tiff</title>
 
@@ -352,11 +356,11 @@
             <!-- Edges related -->
 
             
-            <div class="mr-2">
+            <!-- <div class="mr-2">
                 <button class="btn button-color tool" type="button" id="bending">
                     <i class="fas fa-bacon fa-sm"></i>
                   </button>
-            </div>
+            </div> -->
             
             <div class="mr-2">
                 <button class="btn button-color tool" type="button" id="force">
@@ -467,6 +471,8 @@
           </div>
           <!-- Begin Page Content -->
           <div id="set-canvases" style ="position: relative; width: 100%;">
+
+            <div class="nodeTip"></div>
             <defs>
               <!-- <filter id="dropZoneBlur" x="0" y="0" width="125%" height="125%">
                     <feOffset result="offOut" in="SourceGraphic" dx="5" dy="5" />
@@ -484,6 +490,7 @@
                      <feMergeNode in="SourceGraphic" />
                   </feMerge></filter>
             </defs>
+            <!-- <button data-tippy-content="nodeTooltip" id = 'nodeTooltip'></button> -->
               <!--GET THE RIGHT DIMENSIONS-->
       <!--              <div id= "canvas-default" width="1200" height="800" style ="position: absolute">
                   </div>-->
@@ -532,7 +539,14 @@
     <!-- Sorting plugin-->
     <script src="lib/jquery-sortable.js"></script> 
     <script src="lib/Sortable.min.js"></script>
-    <script src="lib/svg_2.7.1.js"></script>    
+    <script src="lib/svg_2.7.1.js"></script>
+
+    <!-- Tippy tooltip library -->   
+    <script src="https://unpkg.com/popper.js@1"></script>
+
+    <script src="https://unpkg.com/tippy.js@4"></script> 
+    <!-- 
+    <script src="lib/tippyjs-master/src/index.js" charset="utf-8"></script> -->
 
     
     <!-- iLayer core -->
