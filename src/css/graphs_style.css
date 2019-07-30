@@ -59,6 +59,11 @@ body {
 
 }
 
+.button-color tool{
+    width: 2.5em;
+    height: 2.5em;
+}
+
 .button-color.active{
     background-color: #717172
 

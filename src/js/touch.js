@@ -391,11 +391,11 @@ function addTooltipEvents(nodeParent){
     let direction = null;
     let authorInfo = null;
     let tooltipText = "";
-    //let t = tippy('button')
+
     let els = document.querySelectorAll('.node');
     let tip = document.querySelector('nodeTip');
 
-    //var tooltip = new Tooltip(els, tip);
+
     tippy.setDefaults({
         animation: 'fade',
         arrow: true,
@@ -405,19 +405,22 @@ function addTooltipEvents(nodeParent){
         interactive: false,
         hideOnClick: false
     })
-    //Tipped.create('#nodeTip', 'text');
+
     let nodeTip = tippy(els);
     nodeTip = nodeTip[0];
 
     authorInfo = nodeParent.nodeData.authorInfo;
     delete authorInfo.id;
+    //console.log(nodeTip)
+    //nodeParent.add(nodeTip)
+    //nodeParent.add(nodeTip);
 
-        //let d = arrayRemove(authorInfo, 'id')
+
     for (var index in authorInfo){
         tooltipText += String(index).charAt(0).toUpperCase() + String(index).slice(1) + ": " + authorInfo[index] + "<br/>";
     }
     nodeTip.setContent(tooltipText);
-    nodeTip.hide();
+
 
 
     mc.on('tap', function (ev){
@@ -425,22 +428,11 @@ function addTooltipEvents(nodeParent){
 
         drawer = getActiveLayer().layer;
         startingPoint = {};
-
-        //console.log(authorInfo);
         
         console.log(tooltipText)
-        //nodeTip.setContent(tooltipText);
-        nodeTip.enable();
-
-        
-        
-
 
         //hide all previous rectangles 
         //draw rectangle, fetch attributes
-
-
-
     })
 }
 
@@ -693,7 +685,15 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
             mc.off('panstart');
             mc.off('panmove');
             mc.off('panend');
-            forceLayout(GRAPHS[GRAPHTOLOAD], pxs, pys)
+
+            //forceLayout(GRAPHS[GRAPHTOLOAD], pxs, pys)
+            if (forceGraph == undefined){
+                altForceLayout(GRAPHS[GRAPHTOLOAD]);
+            }
+            else{
+                forceGraph.start();
+            }      
+            
             addDragEvents(mc, toolGraphics.parent(), toolGraphics, type);
             addPressEvents(mc, toolGraphics.parent(), toolGraphics, type);
         });
@@ -1043,7 +1043,7 @@ function addToolEvents(tool, type) {
             copyOnCanvas = false;
 
             path = $($(tool).children()[0]).children()[0].getAttribute("d");
-            console.log($(svgID.toString()).length)
+            console.log(path)
 
             //already exists, but does not do a smooth transition
             if ($('g#' + svgID.toString()).length > 0){
@@ -1421,6 +1421,12 @@ function addToolEvents(tool, type) {
                     clonationMode = true;
                     copyOnCanvas = true;
                 }
+
+                else if (type === 'cartesian'){
+                    if (forceGraph != undefined){
+                        forceGraph.stop();
+                    }
+                }
             }
             trashZone.rect.attr({opacity:0});
             trashZone.icon.attr({
@@ -1643,7 +1649,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
         group.add(label);
         group.addClass('toolable proxy attr-' + attributeName);    
 
-
+        console.log(group)
         //}
 
         

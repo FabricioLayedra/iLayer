@@ -62,10 +62,11 @@ var EDGEGRADIENTS = {};
 var COLORS = ['#c6c8cc']
 var COLORS = ['gray']
 var STARTERLAYOUTS = ['cluster', 'force', 'bar', 'scatter'];
-var startingLayout = 0; //-1 for random
+var startingLayout = 1; //-1 for random
 
 var starterScatterAxesAttributes = {x: 'Citations', y: 'Papers'};
 var starterBarAxesAttributes = {x: 'Country', y: null};
+var forceGraph;
 
 
 var el = document.getElementById("layers-table");
@@ -969,7 +970,8 @@ function drawGraph(layer_name, g) {
 
 
     if (STARTERLAYOUTS[startingLayout] === 'force'){
-        forceLayout(g, pxs, pys);
+        //forceLayout(g, pxs, pys);
+        altForceLayout(g);//, pxs, pys);
     }
     
     //forceLayout(g, pxs, pys)
@@ -1474,10 +1476,10 @@ function addContextMenuSelection(sel) {
 
 function newLayerItem(callback) {
     return {"send":
-                {
-                    "name": "New Layer...",
-                    "callback": callback
-                }
+        {
+            "name": "New Layer...",
+            "callback": callback
+        }
     };
 }
 
@@ -1770,6 +1772,130 @@ function makeAttractor(svgElement) {
 
     }
 }
+
+
+function altForceLayout(g) {
+
+    var pxs = {};
+    var pys = {};
+    // make a new graph
+
+    var edges = g.edges();
+    var nodes = g.nodes();  //names only
+    var data = {"nodes": [], "edges": []};
+
+    var constraints = {
+        repulsion: 1200,
+        stiffness: 600,
+        friction: .5,
+        gravity: true,
+        fps: 65,
+        dt: .02,
+        precision: .6
+    }
+
+    forceGraph = arbor.ParticleSystem(constraints);
+    forceGraph.parameters({gravity: true})
+    var particleSys;
+    var grip = g; 
+
+    for (var i = 0; i < nodes.length; i++) {
+        data["nodes"].push(nodes[i]);
+        forceGraph.addNode(nodes[i])
+    }
+    for (var i = 0; i < edges.length; i++) {
+        data["edges"].push([edges[i].v, edges[i].w]);
+        forceGraph.addEdge(edges[i].v, edges[i].w)
+    }
+
+    var myRenderer = {
+        init: function(sys){//, g){
+            particleSys = sys;
+            particleSys.screenSize(generalWidth, generalHeight);
+
+            particleSys.screenPadding(75);
+            particleSys.screenStep(1);
+            //myRenderer.initMouseHandling();
+
+            /*for (var i = 0; i < nodes.length; i++) {
+                data["nodes"].push(nodes[i]);
+                particleSys.addNode(nodes[i])
+            }
+            for (var i = 0; i < edges.length; i++) {
+                data["edges"].push([edges[i].v, edges[i].w]);
+                particleSys.addEdge(edges[i].v, edges[i].w)
+                //graph.
+            }*/
+            //particles = sys;
+
+            
+            //graph.loadJSON(data);
+        },
+        redraw: function(){//node, p){
+
+            //called when redrawing
+            
+
+            particleSys.eachNode(function(node, p){
+                //node 
+                var svg_nodes = getActiveLayer().layer.select('g.node').members;
+
+                //console.log(grip);
+                var nodeGraphics = grip.node(node.name).svg;
+                //console.log(p);
+
+                /*let tx = p.x < 0 ? 0 : p.x;
+                tx = p.x > generalWidth ? generalWidth : p.x;
+                let ty = p.y < 0 ? 0 : p.y;
+                ty = p.y > generalHeight ? generalHeight : p.y;*/
+                console.log(p.x + " " + p.y)
+
+                nodeGraphics.parent().translate( p.x - nodeGraphics.cx(), p.y - nodeGraphics.cy());
+                updateEdgesEnds(nodeGraphics, g.directed);
+
+            });
+
+
+
+            /*particleSystem.eachEdge(function(edge, p1, p2){
+                
+            });*/
+
+            /*let tx = p.x > 0 ? p.x + nodeRadius/2 : p.x - nodeRadius/2;
+            let ty = p.y > 0 ? p.y + nodeRadius/2 : p.y - nodeRadius/2;*/
+
+            /*pxs[node.id] = nodeGraphics.cx() + p.x + nodeRadius;
+            pys[node.id] = nodeGraphics.cy() + p.y + nodeRadius;
+            console.log(p)*/
+
+          /*pxs = {};
+            pys = {};*/
+
+        }
+
+        //return init()
+    }
+
+    //return myRenderer;
+
+    forceGraph.renderer = myRenderer;
+
+
+    setTimeout(
+        function () {
+            console.log("STOP");
+            
+            forceGraph.stop();
+            //document.getElementById("loading").style.display = "none";
+            //scaleLayout(g, pxs, pys);
+            
+        }, 5000);
+    //graph.renderer.init()
+
+    /*graph.renderer = renderer;*/
+                
+}
+
 var pxs;
 var pys;
 function forceLayout(g) {
@@ -1786,10 +1912,13 @@ function forceLayout(g) {
 
     for (var i = 0; i < nodes.length; i++) {
         data["nodes"].push(nodes[i]);
+
     }
     for (var i = 0; i < edges.length; i++) {
         data["edges"].push([edges[i].v, edges[i].w]);
     }
+    console.log(nodes);
+    console.log(edges);
     
     graph.loadJSON(data);
 
@@ -1819,6 +1948,9 @@ function forceLayout(g) {
 
                 var svg_nodes = getActiveLayer().layer.select('g.node').members
                 var nodeGraphics = g.node(node.id).svg;
+                console.log(node);
+
+
 
                 //console.log(nodeGraphics.parent().node)
  
@@ -1830,6 +1962,7 @@ function forceLayout(g) {
                 /*pxs[node.id] = nodeGraphics.cx() + tx;
                 pys[node.id] = nodeGraphics.cy() + ty;*/
                 //console.log(tx + " " + ty)
+
 
                 
                 nodeGraphics.parent().translate(p.x, p.y);
@@ -1862,29 +1995,20 @@ function forceLayout(g) {
 //        console.log("paro");
 //    };
 
-    setTimeout(
+    /*setTimeout(
             function () {
                 console.log("STOP");
                 
                 renderer.stop();
                 //document.getElementById("loading").style.display = "none";
-                scaleLayout(g, pxs, pys);
+                //scaleLayout(g, pxs, pys);
                 
             }, 2000);
-
+*/
     //save pxs and pxy of originals
 
     pxs = {};
     pys = {};
-//    console.log(getSvgId("colab"));
-//    svgPanZoom(getSvgId("colab"));
-//  
-//     var springy = window.springy = jQuery('#springydemo').springy({
-//        graph: graph,
-//        nodeSelected: function(node){
-//          console.log('Node selected: ' + JSON.stringify(node));
-//        }
-//      });
 }
 
 function scaleLayout(g, pxs, pys) {
@@ -2088,7 +2212,10 @@ function main() {
 
 }
 
-main();
+$(document).ready(function(){
+    main(); 
+});
+
 /*
 $(function () {
     $(this).bind("contextmenu", function (e) {
