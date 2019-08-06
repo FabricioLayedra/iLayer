@@ -34,16 +34,16 @@ function slide(event) {
         if (this.matter) {
             this.matter.position.x = this.node.initX;
             this.matter.position.y = this.node.initY;
-//              Matter.Body.setPosition(this.matter,(this.node.initX,this.node.initY));
-//            this.matter.position.x +=5;
-//            console.log(this.matter.position.x);
-//            this.matter.position.y += 5;
+            //Matter.Body.setPosition(this.matter,(this.node.initX,this.node.initY));
+            //this.matter.position.x +=5;
+            //console.log(this.matter.position.x);
+            //this.matter.position.y += 5;
         }
 
 
 
     }
-}
+ }
 
 function highlight(event, node, show) {
     event.preventDefault();
@@ -689,6 +689,7 @@ function addPressEvents(mc, toolGraphics, drawer, type, child) {
             //forceLayout(GRAPHS[GRAPHTOLOAD], pxs, pys)
             if (forceGraph == undefined){
                 altForceLayout(GRAPHS[GRAPHTOLOAD]);
+                console.log('loading forcegraph')
             }
             else{
                 forceGraph.start();
@@ -929,6 +930,7 @@ function addDragEvents(hammer, entityGroup, toolEntity, type, isProxy, graphicPr
     hammer.on('panend', function(ev){
         console.log(distanceToTrash_x + " dxdy " + distanceToTrash_y)
         trashZone.rect.attr({opacity:0});
+        addDragEvents(hammer, entityGroup, toolEntity, type);
         if ((distanceToTrash_x < 60) && (distanceToTrash_y < 60)){
             
             if (type != 'wall'){
@@ -941,9 +943,7 @@ function addDragEvents(hammer, entityGroup, toolEntity, type, isProxy, graphicPr
                
 
             }
-
-
-            
+   
 
             //be wary of these two for now
             
@@ -1027,6 +1027,9 @@ function addToolEvents(tool, type) {
         var initY = 0;
         var svgID = "";
         var copyOnCanvas = false;
+        globalToolsOnCanvas.type = false;
+
+
 
 
         mc.on("panstart", function (ev) {
@@ -1041,14 +1044,35 @@ function addToolEvents(tool, type) {
             initY = startingPoint.y - 70;
 
             copyOnCanvas = false;
+            globalToolsOnCanvas.type = false;
 
             path = $($(tool).children()[0]).children()[0].getAttribute("d");
             console.log(path)
 
             //already exists, but does not do a smooth transition
             if ($('g#' + svgID.toString()).length > 0){
+                console.log('removing entity group');
+
+                if (entityGroup == undefined || entityGroup == null){
+                    let svgID = type + '-' +  getActiveLayer().layer.id().split('-')[1];
+                    if (ACTIVETOOLS[svgID]){
+                        removeWithAnimation(ACTIVETOOLS[svgID]);
+                        copyOnCanvas = false;
+                        globalToolsOnCanvas.type = false;
+                    }
+                    //created with a gravity icon 
+                    //compare 'canvas tool with gravity icon'
+
+                }
+                else{
+                    console.log(entityGroup)
+
+
                 removeWithAnimation(entityGroup);
                 copyOnCanvas = false;
+                globalToolsOnCanvas.type = false;
+                }
+                
                 //return;
             }
 
@@ -1057,6 +1081,7 @@ function addToolEvents(tool, type) {
             entityGroup = getActiveLayer().layer.group();   //creates group for entity
             entityGroup.addClass('canvas-tool');
             entityGroup.id(svgID)
+
 
             //creation of actual fa-icon
             toolEntity = getActiveLayer().layer.path(path).move(initX, initY).attr({"tool": true, fill: getActiveLayer().color});
@@ -1075,6 +1100,7 @@ function addToolEvents(tool, type) {
             //store group on canvas
             //ACTIVETOOLS[entityGroup.id] = {group: entityGroup, toolType = type, icon = toolEntity};
             copyOnCanvas = true;
+            globalToolsOnCanvas.type = true;
 
             //initially highlight zone
             trashZone.rect.attr({opacity:30});
@@ -1400,6 +1426,7 @@ function addToolEvents(tool, type) {
 
                 entityGroup.remove();
                 copyOnCanvas = false;
+                globalToolsOnCanvas.type = false;
                 blink(attributeGraphics);
 
             }
@@ -1407,19 +1434,23 @@ function addToolEvents(tool, type) {
             else if ((distanceToTrash_x < 60) && (distanceToTrash_y < 60)){
                 removeWithAnimation(entityGroup);
                 copyOnCanvas = false;
+                globalToolsOnCanvas.type = false;
             }
             else {
                 if (type === 'gravity' || type === 'force' || type === 'bending'){
                     console.log('manipulatable physics added')
                     copyOnCanvas = true;
+                    globalToolsOnCanvas.type = true;
                 }
                 if (type === 'wall' || type === 'position' || type === 'attractor' || type === 'axis') {
                     removeWithAnimation(entityGroup);
                     copyOnCanvas = false;
+                    globalToolsOnCanvas.type = false;
                 }
                 else if(type === 'clonator'){
                     clonationMode = true;
                     copyOnCanvas = true;
+                    globalToolsOnCanvas.type = true;
                 }
 
                 else if (type === 'cartesian'){

@@ -17,6 +17,7 @@ var maxLayersAllowed = 10;
 var EDGESHIDDEN = false;
 var GLOBALLABELSHIDDEN = false;
 
+var globalToolsOnCanvas = {};
 
 
 
@@ -60,9 +61,10 @@ var EDGEGRADIENTS = {};
 
 //var COLORS = ["#1F77B4", "#FF7F0E", "#2CA02C", "#D62728", "#9467BD", "#8C564B", "#E3775E", "#7F7F7F", "#BCBD22", "#17BECF"];
 var COLORS = ['#c6c8cc']
-var COLORS = ['gray']
+//var COLORS = ['gray']
+//var COLORS = ['#2385ca']
 var STARTERLAYOUTS = ['cluster', 'force', 'bar', 'scatter'];
-var startingLayout = 1; //-1 for random
+var startingLayout = 2; //-1 for random
 
 var starterScatterAxesAttributes = {x: 'Citations', y: 'Papers'};
 var starterBarAxesAttributes = {x: 'Country', y: null};
@@ -814,7 +816,7 @@ function drawGraph(layer_name, g) {
 
         //HERE WE HAVE TO SET THE POSITION TAKING INTO ACCOUNT A LAYOUT
 
-        if (STARTERLAYOUTS[startingLayout] === 'cluster'){
+        //if (STARTERLAYOUTS[startingLayout] === 'cluster'){
             a = counter * 137.5;
             r = c * Math.sqrt(counter);
 
@@ -830,12 +832,12 @@ function drawGraph(layer_name, g) {
             }
             
             counter++;
-        }
+        /*}
 
         else { //force  
             x = getRandomBetween(nodeRadius + 100, generalWidth-100);
             y = getRandomBetween(nodeRadius, generalHeight-120);
-        }
+        }*/
         
         //console.log(nodeRadius)
 
@@ -1774,7 +1776,7 @@ function makeAttractor(svgElement) {
 }
 
 
-function altForceLayout(g) {
+function altForceLayout(g, c) {
 
     var pxs = {};
     var pys = {};
@@ -1784,15 +1786,24 @@ function altForceLayout(g) {
     var nodes = g.nodes();  //names only
     var data = {"nodes": [], "edges": []};
 
-    var constraints = {
-        repulsion: 1200,
-        stiffness: 600,
-        friction: .5,
-        gravity: true,
-        fps: 65,
-        dt: .02,
-        precision: .6
+    var constraints;
+
+    if (c != undefined){
+        ;
     }
+    else{
+        constraints = {
+            repulsion: 1500,
+            stiffness: 800,
+            friction: .5,
+            gravity: true,
+            fps: 65,
+            dt: .02,
+            precision: .6
+        }    
+    }
+
+    
 
     forceGraph = arbor.ParticleSystem(constraints);
     forceGraph.parameters({gravity: true})
@@ -1813,8 +1824,8 @@ function altForceLayout(g) {
             particleSys = sys;
             particleSys.screenSize(generalWidth, generalHeight);
 
-            particleSys.screenPadding(75);
-            particleSys.screenStep(1);
+            particleSys.screenPadding(100);
+            particleSys.screenStep(.95);
             //myRenderer.initMouseHandling();
 
             /*for (var i = 0; i < nodes.length; i++) {
@@ -2076,6 +2087,7 @@ function main() {
                     var currentBody = bodies[i];
 
                     var nodeGraphics = currentBody.svg;
+                    //console.log(nodeGraphics)
                     if (nodeGraphics) {
 
                         if (!!getElementFromGroup(nodeGraphics, 'circle')) {
@@ -2146,6 +2158,7 @@ function main() {
         console.log(type);
         if (type != 'database'){
             addToolEvents(tools[i], type);
+            globalToolsOnCanvas.type = false;
         }
     }
     addMenuEvents();
@@ -2174,16 +2187,15 @@ function main() {
         getActiveLayer().layer.select('g.edge').attr({"opacity":0});
         EDGESHIDDEN = true;
 
-        window.onload = function(){
-            if (STARTERLAYOUTS[startingLayout] === 'bar'){
+       if (STARTERLAYOUTS[startingLayout] === 'bar'){
 
             defaultBarChart(starterBarAxesAttributes, 'horizontal');
-        }
+        }   
 
         else if (STARTERLAYOUTS[startingLayout] === 'scatter'){
             defaultScatterplot(starterScatterAxesAttributes);
         }
-        }
+        
         
         //showHideEdges();
 

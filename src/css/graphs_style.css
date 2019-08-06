@@ -133,7 +133,9 @@ input{
     stroke: black;
     stroke-width: .1em;
     cursor: pointer;
-    fill:#c6c8cc;
+    
+    /*fill:#c6c8cc;*/
+    /*opacity: .95;*/
 }
 
 .edge {

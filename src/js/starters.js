@@ -214,21 +214,24 @@ function defaultBarChart(starterAttributes, gravityDirection){
         ACTIVEATTRIBUTES[h_group.node.id] = {'name': h_attributeName, 'group': h_group, 'occupantZone': bottomZone, madeAxis: true};
 
         addPressAttribute(new Hammer(h_group.node), h_group, h_rect, bottomZone, h_attributeName, 'horizontal');
-        
-        moveTemplateNodes({x: temp_h.x, y: temp_h.y}, true, true);
+	    positionAndAddGravity(moveTemplateNodes, {x: temp_h.x, y: temp_h.y}, true, true)
+        /*moveTemplateNodes({x: temp_h.x, y: temp_h.y}, true, true)*/
 
-        /*for (let i = 30; i < generalHeight; i+nodeRadius*2 + 10){
+      
+	    	/*if (gravityEnabled == 'horizontal'){
+		    	applyGravity( function(){
+		    		//
+		    		return moveTemplateNodes({x: temp_h.x, y: temp_h.y}, true, true)
+		    	});
+		    }
+		    */
+
+	    /*for (let i = 30; i < generalHeight; i+nodeRadius*2 + 10){
         	moveTemplateNodes({x: temp_h.x, y: i}, false, true);
         }*/
-        //add 
-        console.log(gravityEnabled)
-        if (gravityEnabled == 'horizontal'){
-        	applyGravity();
-	    }
 	}
 
 	if (v_attributeName != null){
-
 		var v_discrete = getActiveLayer().data[v_attributeName].discrete;
 	    //for y axis
 	    let v_group = drawer.group();
@@ -273,14 +276,11 @@ function defaultBarChart(starterAttributes, gravityDirection){
 	    ACTIVEATTRIBUTES[v_group.node.id] = {'name': v_attributeName, 'group': v_group, 'occupantZone': leftZone, madeAxis: true};
 
 	    addPressAttribute(new Hammer(v_group.node), v_group, v_rect, leftZone, v_attributeName, 'vertical');
-	    moveTemplateNodes({x: temp_v.x, y: temp_v.y}, false, true);
+
+	    positionAndAddGravity(moveTemplateNodes, {x: temp_v.x, y: temp_v.y}, false, true);
 	    //addgravity in that direction
 
-	    if (gravityEnabled == 'vertical'){
-	    	applyGravity();
-	    }
 	    
-
 	}
 
 	//add horizontal gravity
@@ -292,8 +292,6 @@ function moveTemplateNodes(coords, activateWall, activatePosition){
 	console.log(attributeGraphics);
 	//console.log(attributeGraphics)
 	let direction = attributeGraphics.direction;
-
-	
 
 	if (activateWall) {
 
@@ -331,8 +329,8 @@ function moveTemplateNodes(coords, activateWall, activatePosition){
 	                for (var index in axis.valueLabels) {
 
 	                    var x = axis.valueLabels[index].cx();
-	                    console.log(x + " " + y);
-	                    console.log(height);
+	                    /*console.log(x + " " + y);
+	                    console.log(height);*/
 	                    buildWall(axis.valueLabels[index], wallSize, height, [x, y], 'both', insideSpace, direction);
 	                }
 	            } 
@@ -591,7 +589,7 @@ function moveTemplateNodes(coords, activateWall, activatePosition){
 
 }
 
-function applyGravity(){
+function positionAndAddGravity(moveNodesCallback, coords, isWall, isPosition){
 
     let activeLayer = getActiveLayer();
     let drawer = getActiveLayer().layer;
@@ -601,6 +599,8 @@ function applyGravity(){
     let w = 65; 
     let h = 50;
     let type = 'gravity';
+
+    moveNodesCallback(coords, isWall, isPosition);
 
     //let tool = $('#gravity')[0];
     let path = $($('#gravity').children()[0]).children()[0].getAttribute("d");
@@ -625,6 +625,7 @@ function applyGravity(){
     );
 
     entityGroup.id(svgID);
+    ACTIVETOOLS[svgID] = entityGroup;
 
     startingPoint = {x: toolEntity.cx(), y: toolEntity.cy() + toolEntity.height() * .6};
     toolEntity.previousX = startingPoint.x;
@@ -633,7 +634,9 @@ function applyGravity(){
     mc = new Hammer(toolEntity.node);
 
     setTimeout(function(){
-    	addGravityVector(mc, toolEntity, entityGroup)}, 1000);
+    	addGravityVector(mc, toolEntity, entityGroup)
+    	globalToolsOnCanvas.gravity = true;
+    }, 1000);
     
    	addDragEvents(mc, entityGroup, toolEntity, type);
  	addPressEvents(mc, toolEntity, getActiveLayer().layer, type);

@@ -3,7 +3,7 @@
 Matter.use('matter-attractors');
 
 // module aliases
-var Engine = Matter.Engine, World = Matter.World, Bodies = Matter.Bodies, Runner = Matter.Runner, Render = Matter.Render, Body = Matter.Body;
+var Engine = Matter.Engine, World = Matter.World, Bodies = Matter.Bodies, Runner = Matter.Runner, Render = Matter.Render, Body = Matter.Body, Mouse = Matter.Mouse, MouseConstraint = Matter.MouseConstraint;
 
 function createPhysicsWorld(layer_name, boundaries) {
 
@@ -138,12 +138,10 @@ function addElementToWorld(world, element) {
 
         World.add(world, matterObject);
     } else if (element.type === "rect") {
-        console.log("Adding rect...");
+        //console.log("Adding rect...");
 
 
         var opacity = element.attr("opacity");
-        console.log("Adding text");
-        console.log("Opacity: " + opacity);
 
 
         if (opacity !== 0) {
@@ -212,11 +210,11 @@ function addElementToWorld(world, element) {
 
     } else if (element.type === 'line') {
 
-        console.log("Adding line");
+        //console.log("Adding line");
 
         var opacity = element.attr("opacity");
-        console.log("Adding text");
-        console.log("Opacity: " + opacity);
+        /*console.log("Adding text");
+        console.log("Opacity: " + opacity);*/
         if (opacity !== 0) {
 
             var bbox = element.rbox();
