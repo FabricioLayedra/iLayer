@@ -320,8 +320,6 @@ function getElementFromGroupByPropertyValue(group, property,value) {
 function elementPos(element,newPos,oldPos,orientation){
     
     let point = newPos - oldPos;
-
-//                                        console.log(getElementFromGroupByPropertyValue(element,'type','circle').node.id);
     if (orientation === "horizontal"){
     //    console.log(pointX);
 
@@ -409,12 +407,12 @@ function showHideEdges(){
 
 
 function showHideLabels(){
-    if (!GLOBALLABELSHIDDEN){
+    if (!LABELSHIDDEN){
         getActiveLayer().layer.select('text.node-label').attr({"opacity":0});
-        GLOBALLABELSHIDDEN = true;
+        LABELSHIDDEN = true;
     }else{
         getActiveLayer().layer.select('text.node-label').attr({"opacity":1});
-        GLOBALLABELSHIDDEN = false;
+        LABELSHIDDEN = false;
     }
 }
 

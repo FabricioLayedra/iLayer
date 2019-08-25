@@ -5,6 +5,8 @@ Matter.use('matter-attractors');
 // module aliases
 var Engine = Matter.Engine, World = Matter.World, Bodies = Matter.Bodies, Runner = Matter.Runner, Render = Matter.Render, Body = Matter.Body, Mouse = Matter.Mouse, MouseConstraint = Matter.MouseConstraint;
 
+var mouse, mouseConstraint;
+
 function createPhysicsWorld(layer_name, boundaries) {
 
     // create an engine
@@ -37,9 +39,19 @@ function createPhysicsWorld(layer_name, boundaries) {
 //    console.log(generalWidth);
 
     var ground = Bodies.rectangle(0 + generalWidth / 2, generalHeight + 100 - distLabelGroup / 2, generalWidth, 200, {isStatic: true});
-//    console.log(ground);
 
-//
+    mouse = Mouse.create(render.canvas),
+    mouseConstraint = MouseConstraint.create(engine, {
+            mouse: mouse,
+            constraint: {
+                           stiffness: 0.2,
+                           render: {
+                               visible: false
+                           }
+                       }
+    })
+    render.mouse = mouse;
+    World.add(world, mouseConstraint);
     World.add(world, roof);
     World.add(world, leftWall);
     World.add(world, rightWall);
@@ -83,6 +95,10 @@ function addGravity(engine, x, y, factor) {
     engine.world.gravity.y = y;
     engine.world.gravity.scale = factor * 0.00001;
 //    console.log(engine.world.gravity);
+}
+
+function mousefeatures(){
+
 }
 
 //TIFF: MAY NOT WORK
@@ -137,7 +153,8 @@ function addElementToWorld(world, element) {
         matterObject.restitution = 0.025;
 
         World.add(world, matterObject);
-    } else if (element.type === "rect") {
+    } 
+    else if (element.type === "rect") {
         //console.log("Adding rect...");
 
 

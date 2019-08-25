@@ -602,6 +602,8 @@ function positionAndAddGravity(moveNodesCallback, coords, isWall, isPosition){
 
     moveNodesCallback(coords, isWall, isPosition);
 
+
+
     //let tool = $('#gravity')[0];
     let path = $($('#gravity').children()[0]).children()[0].getAttribute("d");
     let entityGroup = getActiveLayer().layer.group().addClass('canvas-tool');
@@ -610,6 +612,7 @@ function positionAndAddGravity(moveNodesCallback, coords, isWall, isPosition){
 
     let toolEntity = getActiveLayer().layer.path(path).attr({"tool": true, fill: getActiveLayer().color});
 
+    
     //toolEntity.move(500, 500);
     toolEntity.move(drawer.width() - w -20, 100)
     var relationAspect = toolEntity.width() / toolEntity.height();
@@ -636,7 +639,7 @@ function positionAndAddGravity(moveNodesCallback, coords, isWall, isPosition){
     setTimeout(function(){
     	addGravityVector(mc, toolEntity, entityGroup)
     	globalToolsOnCanvas.gravity = true;
-    }, 1000);
+    }, 1500);
     
    	addDragEvents(mc, entityGroup, toolEntity, type);
  	addPressEvents(mc, toolEntity, getActiveLayer().layer, type);

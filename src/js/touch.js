@@ -13,6 +13,11 @@ function beginSliding(e) {
     this.node.dy = event.pageY - this.cy();
 
     this.node.setPointerCapture(e.pointerId);
+
+    if (SVG.select('.tippy-popper').members[0] != undefined){
+        this.add(SVG.select('.tippy-popper').members[0])
+    };
+    //console.log(this);
 }
 
 function stopSliding(e) {
@@ -20,12 +25,21 @@ function stopSliding(e) {
 //  console.log(this.cx(),this.cy());
 //  window.draw.circle(5).center(this.cx()-this.node.childDX,this.cy()-this.node.childDY);
     this.node.releasePointerCapture(e.pointerId);
+
+    /*if (SVG.select('.tippy-popper').members[0] != undefined){
+        this.remove(SVG.select('.tippy-popper').members[0])
+    };*/
 }
 
 function slide(event) {
     if (this.node.allowed) {
         let x = event.pageX - this.cx() - this.node.dx;
         let y = event.pageY - this.cy() - this.node.dy;
+
+        if (SVG.select('.tippy-popper').members[0] != undefined){
+            this.add(SVG.select('.tippy-popper').members[0])
+        };
+
         this.dmove(x, y);
         updateEdgesEnds(getElementFromGroup(this, 'circle'), this.cx() - this.childDX, this.cy() - this.childDY);
         this.node.initX = this.cx() - this.childDX;
@@ -39,6 +53,12 @@ function slide(event) {
             //console.log(this.matter.position.x);
             //this.matter.position.y += 5;
         }
+        //console.log(this);
+        //$('.tippy-popper')[0].move(x,y);
+
+        /*if (SVG.select('.tippy-popper').members[0] != undefined){
+            this.add(SVG.select('.tippy-popper').members[0])
+        };*/
 
 
 
@@ -375,6 +395,9 @@ function addTooltipEvents(nodeParent){
     
     var mc = new Hammer(nodeParent.node);
     nodeParent.node.hammer = mc;
+
+    //SVG.select('g#group-Alex').members
+    //console.log(nodeParent);
     mc.get('press').set({time: 200});
 
     let group = null;
@@ -411,16 +434,15 @@ function addTooltipEvents(nodeParent){
 
     authorInfo = nodeParent.nodeData.authorInfo;
     delete authorInfo.id;
-    //console.log(nodeTip)
-    //nodeParent.add(nodeTip)
-    //nodeParent.add(nodeTip);
-
+    
 
     for (var index in authorInfo){
         tooltipText += String(index).charAt(0).toUpperCase() + String(index).slice(1) + ": " + authorInfo[index] + "<br/>";
     }
     nodeTip.setContent(tooltipText);
 
+    //nodeParent.add(nodeTip);
+    //console.log(nodeTip);
 
 
     mc.on('tap', function (ev){
@@ -429,7 +451,7 @@ function addTooltipEvents(nodeParent){
         drawer = getActiveLayer().layer;
         startingPoint = {};
         
-        console.log(tooltipText)
+        //console.log(tooltipText)
 
         //hide all previous rectangles 
         //draw rectangle, fetch attributes
@@ -1062,18 +1084,13 @@ function addToolEvents(tool, type) {
                     }
                     //created with a gravity icon 
                     //compare 'canvas tool with gravity icon'
-
                 }
                 else{
                     console.log(entityGroup)
-
-
-                removeWithAnimation(entityGroup);
-                copyOnCanvas = false;
-                globalToolsOnCanvas.type = false;
+                    removeWithAnimation(entityGroup);
+                    copyOnCanvas = false;
+                    globalToolsOnCanvas.type = false;
                 }
-                
-                //return;
             }
 
             //if ((x > $('#set-tools').outerHeight() + 5) && !copyOnCanvas){
@@ -1153,7 +1170,6 @@ function addToolEvents(tool, type) {
                 })
             }
 
-           
         });
 
         mc.on("panend", function (ev) {
@@ -1168,7 +1184,6 @@ function addToolEvents(tool, type) {
             distanceToTrash_y = Math.abs(activeLayer.trash.rect.cy() - y);
 
         
-
             //console.log(attributeLand)
             if (attributeLand) {
                 var attributeGraphics = getCrossedClassedGraphicObject(getActiveLayer().layer.node, x, y, 'toolable');
@@ -1183,7 +1198,9 @@ function addToolEvents(tool, type) {
                             // IF ITS CONTINUOUS DATA THIS HAS TO CHANGE
                           // blink(labelGraphic);
                         }
-                        console.log(attributeGraphics.width());
+                        console.log(attributeGraphics.parent());
+
+                        //add a handle and create the drag there instead
 
                         addBuilderWallsEvents(attributeGraphics, attributeGraphics.parent());
                         //attributeGraphics
@@ -1193,8 +1210,8 @@ function addToolEvents(tool, type) {
                     else {
                         addBuilderWallsEvents(attributeGraphics, attributeGraphics);
                     }
-
                 }
+
                 else if (type === 'position') {              
                     var direction = attributeGraphics.direction;
 
@@ -1215,6 +1232,7 @@ function addToolEvents(tool, type) {
                                        elementPos(element,newPos,oldPos,direction);
                                     })                                    
                                 }
+                                
                                 else if  (direction === "vertical"){
                                     if(attributeGraphics.isAxis){    
                                         if (clonationMode){                                           
@@ -1523,6 +1541,7 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
 
     hammer.on("panstart", function (ev) {
         startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+
     });
 
     hammer.on("panmove", function (ev) {
@@ -1598,6 +1617,7 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
         }
     });
 
+    //initial creation of walls
     initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis);
 }
 
@@ -1907,6 +1927,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
                     //console.log(targetDropZone.hasAttribute);
                     if (direction !== "trash" && !targetDropZone.hasAttribute){
                         addAttributeValues(attributeName, targetDropZone, x, y, space, drawer, direction, rect,line);
+                        setVisibilityOfAttributeValues(targetDropZone, 1);
                     }
 
                     if (distanceToTrash_x < 150 && distanceToTrash_y < 150){

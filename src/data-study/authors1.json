@@ -1,0 +1,440 @@
+{
+  "nodes": [
+    {
+      "id": "Theo",
+      "papers": 1,
+      "citations": 15,
+      "country": "USA"
+    },
+    {
+      "id": "Tom",
+      "papers": 8,
+      "citations": 6,
+      "country": "Italy"
+    },
+    {
+      "id": "William",
+      "papers": 7,
+      "citations": 3,
+      "country": "Brazil"
+    },
+    {
+      "id": "Hessam",
+      "papers": 1,
+      "citations": 3,
+      "country": "Brazil"
+    },
+    {
+      "id": "Rajani",
+      "papers": 1,
+      "citations": 1,
+      "country": "USA"
+    },
+    {
+      "id": "Xavier",
+      "papers": 2,
+      "citations": 8,
+      "country": "France"
+    },
+    {
+      "id": "Claire",
+      "papers": 1,
+      "citations": 2,
+      "country": "South Korea"
+    },
+    {
+      "id": "Zoe",
+      "papers": 1,
+      "citations": 5,
+      "country": "USA"
+    },
+    {
+      "id": "Gregori",
+      "papers": 7,
+      "citations": 12,
+      "country": "USA"
+    },
+    {
+      "id": "Andrew",
+      "papers": 1,
+      "citations": 1,
+      "country": "Canada"
+    },
+    {
+      "id": "Jeff",
+      "papers": 1,
+      "citations": 5,
+      "country": "Italy"
+    },
+    {
+      "id": "Patrik",
+      "papers": 1,
+      "citations": 8,
+      "country": "South Korea"
+    },
+    {
+      "id": "Nadir",
+      "papers": 1,
+      "citations": 2,
+      "country": "USA"
+    },
+    {
+      "id": "Renard",
+      "papers": 5,
+      "citations": 12,
+      "country": "UK"
+    },
+    {
+      "id": "Jonathan",
+      "papers": 5,
+      "citations": 36,
+      "country": "Italy"
+    },
+    {
+      "id": "Jordan",
+      "papers": 8,
+      "citations": 5,
+      "country": "Germany"
+    },
+    {
+      "id": "Deborah",
+      "papers": 2,
+      "citations": 3,
+      "country": "UK"
+    },
+    {
+      "id": "Marge",
+      "papers": 4,
+      "citations": 11,
+      "country": "China"
+    },
+    {
+      "id": "Megura",
+      "papers": 1,
+      "citations": 3,
+      "country": "USA"
+    },
+    {
+      "id": "Michael",
+      "papers": 2,
+      "citations": 5,
+      "country": "Italy"
+    },
+    {
+      "id": "Kendra",
+      "papers": 1,
+      "citations": 4,
+      "country": "Germany"
+    },
+    {
+      "id": "Juan",
+      "papers": 2,
+      "citations": 5,
+      "country": "Germany"
+    },
+    {
+      "id": "Matteo",
+      "papers": 1,
+      "citations": 3,
+      "country": "Brazil"
+    },
+    {
+      "id": "Chris",
+      "papers": 11,
+      "citations": 4,
+      "country": "France"
+    },
+    {
+      "id": "Elliot",
+      "papers": 6,
+      "citations": 3,
+      "country": "Italy"
+    },
+    {
+      "id": "Serafina",
+      "papers": 2,
+      "citations": 8,
+      "country": "Turkey"
+    },
+    {
+      "id": "Lian",
+      "papers": 5,
+      "citations": 30,
+      "country": "Turkey"
+    },
+    {
+      "id": "Anton",
+      "papers": 1,
+      "citations": 5,
+      "country": "Germany"
+    },
+    {
+      "id": "Anya",
+      "papers": 1,
+      "citations": 3,
+      "country": "Brazil"
+    },
+    {
+      "id": "Augusta",
+      "papers": 11,
+      "citations": 41,
+      "country": "USA"
+    },
+    {
+      "id": "Chen",
+      "papers": 3,
+      "citations": 18,
+      "country": "Germany"
+    },
+    {
+      "id": "Dan",
+      "papers": 3,
+      "citations": 4,
+      "country": "France"
+    },
+    {
+      "id": "Hamza",
+      "papers": 1,
+      "citations": 15,
+      "country": "USA"
+    },
+    {
+      "id": "Terry",
+      "papers": 3,
+      "citations": 10,
+      "country": "Turkey"
+    }
+
+  ],
+
+  "links": [
+    {
+      "source": "Deborah",
+      "target": "Anya"
+    },
+    {
+      "source": "Elliot",
+      "target": "Anya"
+    },
+    {
+      "source": "Hessam",
+      "target": "Anya"
+    },
+    {
+      "source": "Matteo",
+      "target": "Anya"
+    },
+    {
+      "source": "William",
+      "target": "Anya"
+    },
+    {
+      "source": "Chen",
+      "target": "Augusta"
+    },
+    {
+      "source": "Lian",
+      "target": "Augusta"
+    },
+    {
+      "source": "Marge",
+      "target": "Augusta"
+    },
+    {
+      "source": "Marge",
+      "target": "Chen"
+    },
+    {
+      "source": "Kendra",
+      "target": "Chris"
+    },
+    {
+      "source": "Andrew",
+      "target": "Claire"
+    },
+    {
+      "source": "Chris",
+      "target": "Dan"
+    },
+    {
+      "source": "Kendra",
+      "target": "Dan"
+    },
+    {
+      "source": "Deborah",
+      "target": "Elliot"
+    },
+    {
+      "source": "Hessam",
+      "target": "Elliot"
+    },
+    {
+      "source": "Matteo",
+      "target": "Elliot"
+    },
+    {
+      "source": "William",
+      "target": "Elliot"
+    },
+    {
+      "source": "Augusta",
+      "target": "Gregori"
+    },
+    {
+      "source": "Augusta",
+      "target": "Hamza"
+    },
+    {
+      "source": "Augusta",
+      "target": "Terry"
+    },
+    {
+      "source": "Xavier",
+      "target": "Terry"
+    },
+    {
+      "source": "Deborah",
+      "target": "Hessam"
+    },
+    {
+      "source": "Matteo",
+      "target": "Hessam"
+    },
+    {
+      "source": "Michael",
+      "target": "Jeff"
+    },
+    {
+      "source": "Anton",
+      "target": "Jordan"
+    },
+    {
+      "source": "Juan",
+      "target": "Jordan"
+    },
+    {
+      "source": "Zoe",
+      "target": "Jordan"
+    },
+    {
+      "source": "Anton",
+      "target": "Juan"
+    },
+    {
+      "source": "Chen",
+      "target": "Lian"
+    },
+    {
+      "source": "Marge",
+      "target": "Lian"
+    },
+    {
+      "source": "Deborah",
+      "target": "Matteo"
+    },
+    {
+      "source": "Andrew",
+      "target": "Megura"
+    },
+    {
+      "source": "Nadir",
+      "target": "Megura"
+    },
+    {
+      "source": "Patrik",
+      "target": "Megura"
+    },
+    {
+      "source": "Renard",
+      "target": "Megura"
+    },
+    {
+      "source": "Nadir",
+      "target": "Patrik"
+    },
+    {
+      "source": "Megura",
+      "target": "Rajani"
+    },
+    {
+      "source": "Nadir",
+      "target": "Rajani"
+    },
+    {
+      "source": "Patrik",
+      "target": "Rajani"
+    },
+    {
+      "source": "Augusta",
+      "target": "Serafina"
+    },
+    {
+      "source": "Chen",
+      "target": "Serafina"
+    },
+    {
+      "source": "Lian",
+      "target": "Serafina"
+    },
+    {
+      "source": "Marge",
+      "target": "Serafina"
+    },
+    {
+      "source": "Anton",
+      "target": "Tom"
+    },
+    {
+      "source": "Jonathan",
+      "target": "Tom"
+    },
+    {
+      "source": "Jordan",
+      "target": "Tom"
+    },
+    {
+      "source": "Juan",
+      "target": "Tom"
+    },
+    {
+      "source": "Michael",
+      "target": "Tom"
+    },
+    {
+      "source": "Zoe",
+      "target": "Tom"
+    },
+    {
+      "source": "Deborah",
+      "target": "William"
+    },
+    {
+      "source": "Hessam",
+      "target": "William"
+    },
+    {
+      "source": "Matteo",
+      "target": "William"
+    },
+    {
+      "source": "Augusta",
+      "target": "Xavier"
+    },
+    {
+      "source": "Anton",
+      "target": "Zoe"
+    },
+    {
+      "source": "Juan",
+      "target": "Zoe"
+    },
+    {
+      "source": "Theo",
+      "target": "Augusta"
+    },
+    {
+      "source": "Renard",
+      "target": "Deborah"
+    }
+  ]
+}

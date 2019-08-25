@@ -15,13 +15,20 @@ var selectionCount = 0;
 var maxLayersAllowed = 10;
 
 var EDGESHIDDEN = false;
-var GLOBALLABELSHIDDEN = false;
+var LABELSHIDDEN = false;
 
 var globalToolsOnCanvas = {};
 
 
+///STUDY DATASETS
+var datafile = "./data-study/authors1.json";
 
+
+//smallest dataset
 //var datafile = "./data/authors_relations_SC_JD_sample2015_anonymized.json";
+
+//~47 nodes
+//var datafile = "./data/sample_30_authors_test.json";
 
 //var datafile = "./data/authors_relations_SC_JD_sample2015.json";
 //var datafile = "./data/usa_airports.json";
@@ -32,7 +39,7 @@ var globalToolsOnCanvas = {};
 //var datafile = "./data/venezuela_airports.json";
 
 //var datafile = "./data/sample15papers2016.json";//47
-var datafile = "./data/sample_30_authors_test.json";
+
 //var datafile = "./data/americanAuthorsVIS.json.json";
 
 //Scatter plot
@@ -61,10 +68,11 @@ var EDGEGRADIENTS = {};
 
 //var COLORS = ["#1F77B4", "#FF7F0E", "#2CA02C", "#D62728", "#9467BD", "#8C564B", "#E3775E", "#7F7F7F", "#BCBD22", "#17BECF"];
 var COLORS = ['#c6c8cc']
+var HIGHLIGHTCOLOR = '#64b6cc';
 //var COLORS = ['gray']
-//var COLORS = ['#2385ca']
+//var COLORS = ['#2385ca'] //blue
 var STARTERLAYOUTS = ['cluster', 'force', 'bar', 'scatter'];
-var startingLayout = 2; //-1 for random
+var startingLayout = 1; //-1 for random
 
 var starterScatterAxesAttributes = {x: 'Citations', y: 'Papers'};
 var starterBarAxesAttributes = {x: 'Country', y: null};
@@ -301,7 +309,7 @@ function createLayer(layerName, color) {
     //if (LAYERS.members)
     if (Object.keys(LAYERS).length > 1)
         createEdgeGradients();
-    console.log(canvas)
+    //console.log(canvas)
 
     //addEdgeGradients(layerName);
 
@@ -328,12 +336,13 @@ function addDroppingZones(layerName) {
 
     layer.bottom = {
         line: drawer.line(w, 0, drawer.width() - w - 20, 0).move(w, layerHeight - h).attr(lineAttributes),
-        rect: drawer.rect(drawer.width() - w, h).move(w, layerHeight - h).attr(rectAttributes),//.addClass('glow-anim'),
+        rect: drawer.rect(drawer.width(), h).move(0, layerHeight - h).attr(rectAttributes),//.addClass('glow-anim'),
         hasAttribute: false
     };
+
     layer.left = {
         line: drawer.line(0, h, 0, drawer.height() - 40).move(w, 40).attr(lineAttributes),
-        rect: drawer.rect(w, layerHeight - h).move(0, 0).attr(rectAttributes),//.addClass('glow-anim'),
+        rect: drawer.rect(w, layerHeight).move(0, 0).attr(rectAttributes),//.addClass('glow-anim'),
         hasAttribute: false
     };
 
@@ -343,6 +352,8 @@ function addDroppingZones(layerName) {
         rect: drawer.rect(w, "100%").move(drawer.width() - w, 0).attr(rectAttributes),//.addClass('glow-anim'),
         hasAttribute: false
     };
+
+
 
     //resize when it works
     layer.trash = {
@@ -420,6 +431,7 @@ function addMenuEvents(){
 
 
         showHideEdges();
+        //showHideLabels();
 
        // e.srcEvent.stopPropogation();
 
@@ -1085,6 +1097,7 @@ function drawLabel(drawer, id, x, y, graphId, label) {
 function updateHighlight(object) {
 
     var highlight = object.highlight;
+    console.log(highlight)
 
     if (!highlight) {
         return;
@@ -1598,7 +1611,7 @@ function includeSelection(layerName) {
             var circle = getElementFromGroup(object, 'circle');
 
 
-            circle.highlight.attr({stroke: LAYERS[layerName].color});
+            circle.highlight.attr({stroke: HIGHLIGHTCOLOR/*LAYERS[layerName].color*/});
 
 
 
@@ -1859,7 +1872,7 @@ function altForceLayout(g, c) {
                 tx = p.x > generalWidth ? generalWidth : p.x;
                 let ty = p.y < 0 ? 0 : p.y;
                 ty = p.y > generalHeight ? generalHeight : p.y;*/
-                console.log(p.x + " " + p.y)
+                //console.log(p.x + " " + p.y)
 
                 nodeGraphics.parent().translate( p.x - nodeGraphics.cx(), p.y - nodeGraphics.cy());
                 updateEdgesEnds(nodeGraphics, g.directed);
@@ -2187,6 +2200,10 @@ function main() {
         getActiveLayer().layer.select('g.edge').attr({"opacity":0});
         EDGESHIDDEN = true;
 
+        $("#hideLabels").toggleClass('active');
+        getActiveLayer().layer.select('text.node-label').attr({"opacity":0});
+        LABELSHIDDEN = true;
+
        if (STARTERLAYOUTS[startingLayout] === 'bar'){
 
             defaultBarChart(starterBarAxesAttributes, 'horizontal');
@@ -2342,7 +2359,7 @@ function createHighlight(object, animate, hideAfter, color) {
                     .a(r, r, 0, 1, 0, {x: r * 2, y: 0})
                     .a(r, r, 0, 1, 0, {x: -r * 2, y: 0})
                     .attr({
-                        stroke: color,
+                        stroke: HIGHLIGHTCOLOR,
                         fill: 'transparent',
                         'stroke-width': 2,
                         'pointer-events': 'none'
@@ -2365,7 +2382,7 @@ function createHighlight(object, animate, hideAfter, color) {
                     .M({x: coords1[0], y: coords1[1]})
                     .Q({x: coords2[0], y: coords2[1]}, {x: coords2[2], y: coords2[3]})
                     .attr({
-                        stroke: color,
+                        stroke: HIGHLIGHTCOLOR/*color*/,
                         fill: 'transparent',
                         'stroke-width': 3,
                         'pointer-events': 'none'
@@ -2406,6 +2423,7 @@ function createHighlight(object, animate, hideAfter, color) {
 
 
 function setVisibilityOfAttributeValues(droppingZone, opacity, progressive) {
+    
     if (droppingZone.valueLabels) {
         droppingZone.valueLabels.forEach(function (label, index) {
             if (progressive) {
@@ -2425,6 +2443,7 @@ function setVisibilityOfAttributeValues(droppingZone, opacity, progressive) {
 function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, direction, proxy,line) {
 
     let values = getAttributeValues(attributeName);
+    console.log(values)
 //    let values = {min: -102, max: 785};
     
     let activeLayer = getActiveLayer();
@@ -2438,7 +2457,7 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
     let finalY = null;
 
     let labelAttributes = {
-        fill: activeLayer.color,
+        fill: '#000',//activeLayer.color,
         "text-anchor": direction === "horizontal" ? "middle" : "end",
         "alignment-baseline": "hanging",
         "dominant-baseline": "middle",
@@ -2456,7 +2475,8 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
             let d = 50;
             space -= (d * 2);
             x += d;
-        } else {
+        } 
+        else {
             values.reverse();
             space -= 50;
         }
@@ -2465,7 +2485,7 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
 
         values.forEach(function (value, index) {
 
-//            let parts = direction === "horizontal" ? value.match(/.{1,11}/g) : value.match(/.{1,13}/g);
+          //let parts = direction === "horizontal" ? value.match(/.{1,11}/g) : value.match(/.{1,13}/g);
             let parts = direction === "horizontal" ? value.match(/.{1,11}/g) : value.match(/.{1,9}/g);
             if (direction === "horizontal") {
                 finalX = x + (gap * index);
@@ -2480,7 +2500,8 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
             
             if (proxy.isAxis){
                 label = group.text(value);//drawer.text(value);
-            }else{
+            }
+            else{
                 label =  group.text(function (add) {//drawer.text(function (add) {
                 parts.forEach(function (part) {
                     if (direction === "vertical") {
@@ -2502,24 +2523,46 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
 
         });
 
-    } else {
+    } 
+    else {
 
         // this is a continuous data attribute
         let minTick;
         let maxTick;
+        //add 0 value
+        let zeroLabel = group.text('0').attr(labelAttributes);
+        let zeroTick;
         let minLabel = group.text('' + values.min).attr(labelAttributes);
         proxy.values = values;
-        if (direction === "horizontal") {
-            x += nodeRadius;
-            minLabel.move(x, y + 10);
-        } else {
-            minLabel.move(line.x() - 15, activeLayer.bottom.line.y() - minLabel.rbox().h / 2 - nodeRadius);
-        }
 
         let majorTicksAttributes = {stroke: 'black', 'stroke-width': 1.5};
         let minorTicksAttributes = {stroke: 'grey', 'stroke-width': 1};
         let shiftMax = 0;
         let maxLabel = group.text('' + values.max).attr(labelAttributes);
+
+        
+        
+
+        if (direction === "horizontal") {
+            zeroLabel.move(x, y+10);
+            zeroTick = group.line(x, y - 2, x, y + 10).attr(majorTicksAttributes);
+            
+            x += nodeRadius; //add back in later
+            minLabel.move(x, y + 10);
+
+        } 
+        else {
+            zeroLabel.move(line.x() - 15, activeLayer.bottom.line.y() - 10);
+            zeroTick = group.line(line.x(), activeLayer.bottom.line.y(), line.x() - 10, activeLayer.bottom.line.y()).attr(majorTicksAttributes);
+            minLabel.move(line.x() - 15, activeLayer.bottom.line.y() - minLabel.rbox().h / 2 - nodeRadius);
+            
+
+
+        }
+
+        
+
+
         if (direction === "horizontal") {
             finalX = x + space + shiftMax;
             finalY = y + 10;
@@ -2527,6 +2570,8 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
             proxy.values.minPos = x,
             maxTick = group.line(finalX, y - 2, finalX, y + 10).attr(majorTicksAttributes);
             proxy.values.maxPos = finalX;
+
+
         } else {
             finalX = line.x() - 15, y + 10;
             finalY = activeLayer.left.line.y() + nodeRadius;
@@ -2540,6 +2585,9 @@ function addAttributeValues(attributeName, droppingZone, x, y, space, drawer, di
             maxTick = group.line(line.x(), maxLabel.cy(), line.x() - 10, maxLabel.cy()).attr(majorTicksAttributes);
             proxy.values.maxPos = maxLabel.cy();
         }
+
+        droppingZone.valueLabels.push(zeroLabel);
+        droppingZone.valueLabels.push(zeroTick);
 
         droppingZone.valueLabels.push(minLabel);
         droppingZone.valueLabels.push(maxLabel);
@@ -2628,7 +2676,7 @@ function addAttributesAsTools(attributesSet) {
         $("#search-bar-container").before(attrTool);
         // true because everything is discrete now
         addAttributesDraggingEvents($("#" + attribute)[0], attribute, true);
-        console.log($('#' + attribute.toString()));
+        //console.log($('#' + attribute.toString()));
 
         //drawLineFromDatabase($('#' + attribute.toString()));
 
@@ -2652,9 +2700,6 @@ function drawLineFromDatabase(attributeButton, i){
     let db_h = db_button.outerHeight();
     let db_coordinates = {x: db_left + db_w/2, y: db_top + db_h/2}; //absolute coordinates of the center
 
-    console.log(attribute_coordinates);
-    console.log('sl')
-    console.log(db_coordinates);
     let d = document.createElement('div');
 
     //dirty if statement hack to not have liens drawn on the left for some reason
@@ -3091,6 +3136,7 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 if (isProxy){
                     wall1.addClass('proxy');
                     wall1.attr({'stroke': 'black', 'stroke-width': 1.5})
+                    wall1.id('wall-1-proxy-' + direction);
                 }
                 addAttractorToWorld(world, wall1);
                 addDragEvents(new Hammer(wall1.node), wall1, wall1, 'wall', isProxy, graphicObject);
@@ -3107,6 +3153,7 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 if (isProxy){
                     wall2.addClass('proxy');
                     wall2.attr({'stroke': 'black', 'stroke-width': 1.5})
+                    wall2.id('wall-2-proxy-' + direction)
                 }
                 addAttractorToWorld(world, wall2);
                 addDragEvents(new Hammer(wall2.node), wall2, wall2, 'wall', isProxy, graphicObject);
@@ -3133,7 +3180,8 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
 
                 if (isProxy){
                     wall1.addClass('proxy');
-                    wall1.attr({'stroke': 'black', 'stroke-width': 1.5})
+                    wall1.attr({'stroke': 'black', 'stroke-width': 1.5});
+                    wall1.id('wall-1-proxy-' + direction);
                 }
                 addAttractorToWorld(world, wall1);
                 addDragEvents(new Hammer(wall1.node), wall1, wall1, 'wall', isProxy, graphicObject);
@@ -3148,7 +3196,8 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
 
                 if (isProxy){
                     wall2.addClass('proxy');
-                    wall2.attr({'stroke': 'black', 'stroke-width': 1.5})
+                    wall2.attr({'stroke': 'black', 'stroke-width': 1.5});
+                    wall2.id('wall-1-proxy-' + direction)
                 }
                 addAttractorToWorld(world, wall2);
                 addDragEvents(new Hammer(wall2.node), wall2, wall2, 'wall', isProxy, graphicObject);
@@ -3388,36 +3437,80 @@ function addAttributeValueAsAttractor(attributeGraphics, attributeValue, attribu
 
 function initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis){
     
+    //create handles
+    //var handle; = rect(width, height).move();
+    //entityGroup.rect(width, height).move(originXleft, originY).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
+                /*wall1.position = "left"
+                wall1.direction = direction;
+                wall1.wall = true;
+                wall1.previousIncrement = 0;
+                wall1.addClass('wall-1');*/
+
+    let handleW, handleH, handleX, handleY;
+    let handleGroup = getActiveLayer().layer.group();
+    let handle;
+    let handleArrow;
+    let handleRad = 15;
+
     if (orientation === "horizontal") {
 
-            var y = axis.line.cy();
-//            console.log("changing");
-//            console.log(y);
+        var y = axis.line.cy();
+       
+
 
             if ($(attributeGraphics.node).hasClass('proxy')) {
                 attributeGraphics.axis = axis;
-
-//                the proxy thing
-//                change line 797 after demo 
                 var xProxy = attributeGraphics.rbox().cx;// - $("#accordionSidebar").width();
-                buildWall(attributeGraphics, wallSize, 5, [xProxy, y], 'both', insideSpace, direction, true);
+
+                //add handle
+                buildWall(attributeGraphics, wallSize, 25, [xProxy, y], 'both', insideSpace, direction, true);
+                
+
+                //add handle here
+                handleW = SVG.get('wall-2-proxy-horizontal').cx() - SVG.get('wall-1-proxy-horizontal').cx();
+                handleH = wallSize*2;
+                handleX = SVG.get('wall-1-proxy-horizontal').x();
+                handleY = SVG.get('wall-2-proxy-horizontal').y();
+                entityGroup = SVG.get('wall-' + orientation);
+                handleGroup.addClass('wall-horizontal').id('wall-' + orientation + '-handle');
+                
+                handle = handleGroup.rect(handleW, handleH).move(handleX, handleY).fill('black').attr({'stroke': 'black', 'stroke-width': 1.5}).id(orientation+'-handle').addClass('wall-horizontal proxy');
+
+                handleArrow = handleGroup.path("M214.059 377.941H168V134.059h46.059c21.382 0 32.09-25.851 16.971-40.971L144.971 7.029c-9.373-9.373-24.568-9.373-33.941 0L24.971 93.088c-15.119 15.119-4.411 40.971 16.971 40.971H88v243.882H41.941c-21.382 0-32.09 25.851-16.971 40.971l86.059 86.059c9.373 9.373 24.568 9.373 33.941 0l86.059-86.059c15.12-15.119 4.412-40.971-16.97-40.971z")
+                    .addClass('wall-horizontal proxy');
+
+                handleArrow.attr({
+                    fill: 'black',
+                    'transform': 'translate(' +  (handleX + handleW/2 - handleArrow.x()/2) + ", " + (handleY - 11) +  ") scale(.075, .05)"
+                })
+
+
+
+                //handleGroup.circle(handleRad).move(handleX + handleW/2 -handleRad/2, handleY + handleH/2 - handleRad/2).fill('black');
+
+                //handle = rect(y - xProxy, y]
 
                 for (var index in axis.valueLabels) {
 
                     var x = axis.valueLabels[index].cx();
 
                     //BOLD THE TEXT
-//                    boldText(axis.valueLabels[index]);
+                    //boldText(axis.valueLabels[index]);
 
-                    buildWall(axis.valueLabels[index], wallSize, 5, [x, y], 'both', insideSpace, direction);
+                    buildWall(axis.valueLabels[index], wallSize, 25, [x, y], 'both', insideSpace, direction);
                 }
             } else {
-                buildWall(attributeGraphics, wallSize, 5, [attributeGraphics.cx(), y], 'both', insideSpace, direction);
+                //add handle
+                buildWall(attributeGraphics, wallSize, 25, [attributeGraphics.cx(), y], 'both', insideSpace, direction);
             }
         } else if (orientation === "vertical") {
             let x = axis.line.cx();
             var yProxy = attributeGraphics.rbox().cy - 70;
-            buildWall(attributeGraphics, 5, wallSize, [x, yProxy], 'both', insideSpace, direction, true);
+            buildWall(attributeGraphics, 45, wallSize, [x, yProxy], 'both', insideSpace, direction, true);
+
+            //add handle here
+                let handleW = wallSize;//wallSize;SVG.get('wall-2-proxy-horizontal').cx() - SVG.get('wall-1-proxy-horizontal').cx();
+                let handleH = SVG.get('wall-2-proxy-horizontal').cx() - SVG.get('wall-1-proxy-horizontal').cx();
 
             if ($(attributeGraphics.node).hasClass('proxy')) {
                 attributeGraphics.axis = axis;
@@ -3427,10 +3520,12 @@ function initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orient
                     var y = axis.valueLabels[index].cy();
                     //BOLD THE TEXT
 //                    boldText(axis.valueLabels[index]);
-                    buildWall(axis.valueLabels[index], 5, wallSize, [x, y], 'both', insideSpace, direction);
+                    buildWall(axis.valueLabels[index], 45, wallSize, [x, y], 'both', insideSpace, direction);
                 }
-            } else {
-                buildWall(attributeGraphics, 5, wallSize, [x, attributeGraphics.cy()], 'both', insideSpace, direction);
+            } 
+
+            else {
+                buildWall(attributeGraphics, 45, wallSize, [x, attributeGraphics.cy()], 'both', insideSpace, direction);
             }
         }
     }
