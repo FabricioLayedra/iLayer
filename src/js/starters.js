@@ -305,7 +305,7 @@ function moveTemplateNodes(coords, activateWall, activatePosition){
 	        }
 	        console.log(h_attributeGraphics.width());*/
 
-	        addBuilderWallsEvents(attributeGraphics, attributeGraphics.parent());
+	        addBuilderWalls(attributeGraphics, attributeGraphics.parent());
 	        // TODO: build the wall here, right after the wall tool has been added to the proxy
 	        // or to a single attribute value (that's perhaps in another if)
 
@@ -364,7 +364,7 @@ function moveTemplateNodes(coords, activateWall, activatePosition){
 
 	    } 
 	    else {
-	        addBuilderWallsEvents(attributeGraphics, attributeGraphics);
+	        addBuilderWalls(attributeGraphics, attributeGraphics);
 	    }
 
 	}

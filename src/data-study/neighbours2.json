@@ -1,0 +1,400 @@
+{
+	"nodes": [
+  {
+    "id": "Reni",
+    "age": 16,
+    "salary": 1000,
+    "neighbourhood": "Creston"
+  },
+  {
+    "id": "Donna",
+    "age": 18,
+    "salary": 21500,
+    "neighbourhood": "Creston"
+  },
+  {
+    "id": "Aurelia",
+    "age": 18,
+    "salary": 18000,
+    "neighbourhood": "Creston"
+  },
+  {
+    "id": "Jerald",
+    "age": 66,
+    "salary": 29000,
+    "neighbourhood": "Creston"
+  },
+  {
+    "id": "Carson",
+    "age": 23,
+    "salary": 57000,
+    "neighbourhood": "Creston"
+  },
+  {
+    "id": "Ricky",
+    "age": 40,
+    "salary": 32000,
+    "neighbourhood": "Creston"
+  },
+  {
+    "id": "Glenn",
+    "age": 50,
+    "salary": 37000,
+    "neighbourhood": "Creston"
+  },
+  {
+    "id": "Salvador",
+    "age": 34,
+    "salary": 57000,
+    "neighbourhood": "Creston"
+  },
+  {
+    "id": "Frederick",
+    "age": 22,
+    "salary": 100000,
+    "neighbourhood": "Hamptons"
+  },
+  {
+    "id": "Felton",
+    "age": 23,
+    "salary": 90000,
+    "neighbourhood": "Hamptons"
+  },
+  {
+    "id": "Joyce",
+    "age": 27,
+    "salary": 89000,
+    "neighbourhood": "Hamptons"
+  },
+  {
+    "id": "Toney",
+    "age": 29,
+    "salary": 110000,
+    "neighbourhood": "Hamptons"
+  },
+  {
+    "id": "Noah",
+    "age": 29,
+    "salary": 94000,
+    "neighbourhood": "Hamptons"
+  },
+  {
+    "id": "Fanny",
+    "age": 30,
+    "salary": 28000,
+    "neighbourhood": "Hamptons"
+  },
+  {
+    "id": "Jorge",
+    "age": 30,
+    "salary": 41000,
+    "neighbourhood": "Hamptons"
+  },
+  {
+    "id": "June",
+    "age": 32,
+    "salary": 34000,
+    "neighbourhood": "Hamptons"
+  },
+  {
+    "id": "Billy",
+    "age": 33,
+    "salary": 17000,
+    "neighbourhood": "Prom Peak"
+  },
+  {
+    "id": "Ron",
+    "age": 35,
+    "salary": 20000,
+    "neighbourhood": "Prom Peak"
+  },
+  {
+    "id": "Maryann",
+    "age": 34,
+    "salary": 21000,
+    "neighbourhood": "Prom Peak"
+  },
+  {
+    "id": "Gerardo",
+    "age": 29,
+    "salary": 19000,
+    "neighbourhood": "Prom Peak"
+  },
+  {
+    "id": "Felicia",
+    "age": 44,
+    "salary": 78000,
+    "neighbourhood": "Prom Peak"
+  },
+  {
+    "id": "Greg",
+    "age": 29,
+    "salary": 22000,
+    "neighbourhood": "Rosedale"
+  },
+  {
+    "id": "Terese",
+    "age": 55,
+    "salary": 71000,
+    "neighbourhood": "Rosedale"
+  },
+  {
+    "id": "Janie",
+    "age": 31,
+    "salary": 5000,
+    "neighbourhood": "Rosedale"
+  },
+  {
+    "id": "Christopher",
+    "age": 24,
+    "salary": 53000,
+    "neighbourhood": "Rosedale"
+  },
+  {
+    "id": "Anna",
+    "age": 55,
+    "salary": 37000,
+    "neighbourhood": "Rosedale"
+  },
+  {
+    "id": "Daren",
+    "age": 37,
+    "salary": 20000,
+    "neighbourhood": "The Wildes"
+  },
+  {
+    "id": "Sophie",
+    "age": 30,
+    "salary": 27000,
+    "neighbourhood": "The Wildes"
+  },
+  {
+    "id": "Bridget",
+    "age": 49,
+    "salary": 38000,
+    "neighbourhood": "The Wildes"
+  },
+  {
+    "id": "Paulette",
+    "age": 42,
+    "salary": 48100,
+    "neighbourhood": "The Wildes"
+  }
+],
+
+"links": [
+  {
+    "source": "Greg",
+    "target": "Terese"
+  },
+  {
+    "source": "Greg",
+    "target": "Janie"
+  },
+  {
+    "source": "Janie",
+    "target": "Maryann"
+  },
+  {
+    "source": "Janie",
+    "target": "Sophie"
+  },
+  {
+    "source": "Janie",
+    "target": "Bridget"
+  },
+  {
+    "source": "Jorge",
+    "target": "Maryann"
+  },
+  {
+    "source": "Billy",
+    "target": "Ron"
+  },
+  {
+    "source": "Billy",
+    "target": "Maryann"
+  },
+  {
+    "source": "Billy",
+    "target": "Gerardo"
+  },
+  {
+    "source": "Billy",
+    "target": "Daren"
+  },
+  {
+    "source": "Ron",
+    "target": "Maryann"
+  },
+  {
+    "source": "Ron",
+    "target": "Gerardo"
+  },
+  {
+    "source": "Ron",
+    "target": "Daren"
+  },
+  {
+    "source": "Gerardo",
+    "target": "Daren"
+  },
+  {
+    "source": "Ron",
+    "target": "Reni"
+  },
+  {
+    "source": "Sophie",
+    "target": "Bridget"
+  },
+  {
+    "source": "Sophie",
+    "target": "Christopher"
+  },
+  {
+    "source": "Sophie",
+    "target": "Felicia"
+  },
+  {
+    "source": "Sophie",
+    "target": "Paulette"
+  },
+  {
+    "source": "Sophie",
+    "target": "Anna"
+  },
+  {
+    "source": "Bridget",
+    "target": "Christopher"
+  },
+  {
+    "source": "Bridget",
+    "target": "Felicia"
+  },
+  {
+    "source": "Bridget",
+    "target": "Paulette"
+  },
+  {
+    "source": "Bridget",
+    "target": "Anna"
+  },
+  {
+    "source": "Christopher",
+    "target": "Felicia"
+  },
+  {
+    "source": "Christopher",
+    "target": "Paulette"
+  },
+  {
+    "source": "Christopher",
+    "target": "Anna"
+  },
+  {
+    "source": "Paulette",
+    "target": "Anna"
+  },
+  {
+    "source": "Reni",
+    "target": "Donna"
+  },
+  {
+    "source": "Donna",
+    "target": "Jerald"
+  },
+  {
+    "source": "Toney",
+    "target": "Donna"
+  },
+  {
+    "source": "Carson",
+    "target": "Ricky"
+  },
+  {
+    "source": "Ricky",
+    "target": "Glenn"
+  },
+  {
+    "source": "Glenn",
+    "target": "Jerald"
+  },
+  {
+    "source": "Salvador",
+    "target": "Felicia"
+  },
+  {
+    "source": "Frederick",
+    "target": "Felton"
+  },
+  {
+    "source": "Felton",
+    "target": "Donna"
+  },
+  {
+    "source": "Noah",
+    "target": "Joyce"
+  },
+  {
+    "source": "Frederick",
+    "target": "Noah"
+  },
+  {
+    "source": "Maryann",
+    "target": "Fanny"
+  },
+  {
+    "source": "Fanny",
+    "target": "Reni"
+  },
+  {
+    "source": "Jorge",
+    "target": "Janie"
+  },
+  {
+    "source": "June",
+    "target": "Donna"
+  },
+  {
+    "source": "Toney",
+    "target": "Donna"
+  },
+  {
+    "source": "Glenn",
+    "target": "Jorge"
+  },
+  {
+    "source": "Joyce",
+    "target": "Greg"
+  },
+  {
+    "source": "Frederick",
+    "target": "Aurelia"
+  },
+  {
+    "source": "Jorge",
+    "target": "Ricky"
+  },
+  {
+    "source": "Daren",
+    "target": "Paulette"
+  },
+  {
+    "source": "Daren",
+    "target": "Terese"
+  },
+  {
+    "source": "Maryann",
+    "target": "Glenn"
+  },
+  {
+    "source": "Ricky",
+    "target": "Jerald"
+  },
+  {
+    "source": "Frederick",
+    "target": "Janie"
+  }
+]
+
+}

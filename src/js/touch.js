@@ -786,7 +786,8 @@ function moveElements(event, nodeGraphics, child, isProxy, graphicProxy) {
 
 //                        graphicProxy.axis.valueLabels[index].walls[0] = wallX;
                         }
-                    } else if (nodeGraphics.direction === "vertical") {
+                    } 
+                    else if (nodeGraphics.direction === "vertical") {
                         if (nodeGraphics.position === "top") {
                             wall = graphicProxy.axis.valueLabels[index].walls[0];
                             if (!wall.initialY) {
@@ -911,6 +912,7 @@ function addDragEvents(hammer, entityGroup, toolEntity, type, isProxy, graphicPr
             }
             else if (toolEntity.position == 'bottom' || toolEntity.position == 'top'){
                 entityGroup.dmove(0, currentPoint.y - toolEntity.disToCenterY);
+                console.log('moving')
             }
         }
         else{
@@ -1073,6 +1075,9 @@ function addToolEvents(tool, type) {
 
             //already exists, but does not do a smooth transition
             if ($('g#' + svgID.toString()).length > 0){
+
+
+
                 console.log('removing entity group');
 
                 if (entityGroup == undefined || entityGroup == null){
@@ -1202,13 +1207,21 @@ function addToolEvents(tool, type) {
 
                         //add a handle and create the drag there instead
 
-                        addBuilderWallsEvents(attributeGraphics, attributeGraphics.parent());
+                        //add initialization of walls here, then add handle and apply builderWallsEvent to the handle
+
+
+
+
+                        //addBuilderWallsEvents(attributeGraphics, SVG.get('wall-horizontal-handle'))
+                        addBuilderWalls(attributeGraphics, attributeGraphics.parent());
+
+
                         //attributeGraphics
                         // TODO: build the wall here, right after the wall tool has been added to the proxy
                         // or to a single attribute value (that's perhaps in another if)
                     } 
                     else {
-                        addBuilderWallsEvents(attributeGraphics, attributeGraphics);
+                        addBuilderWalls(attributeGraphics, attributeGraphics);
                     }
                 }
 
@@ -1440,6 +1453,8 @@ function addToolEvents(tool, type) {
                     var space = axis.rbox().h;
                     addAttributeValues(attributeName, attributeGraphics, x, y, space, drawer, "vertical", attributeGraphics,axis);
 
+                    console.log('axis triggered')
+
                 }
 
                 entityGroup.remove();
@@ -1493,19 +1508,19 @@ function addToolEvents(tool, type) {
 
 }
 
-function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
+function addBuilderWalls(attributeGraphics, attributeGraphicsParent) {
 
     //Takes the orientation of the values (axis x or y)
     var orientation = attributeGraphics.direction;
 
-    if (!attributeGraphicsParent.hammer) {
+    /*if (!attributeGraphicsParent.hammer) {
         attributeGraphicsParent.hammer = new Hammer(attributeGraphicsParent.node);
     }
 
     var hammer = attributeGraphicsParent.hammer;
 
     hammer.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
-
+*/
     let startingPoint = null;
     let currentPoint = null;
     let height = null;
@@ -1519,27 +1534,83 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
     if (orientation === 'horizontal') {
         axis = getActiveLayer().bottom;
 
-        hammer.on("panup", function (event) {
+        /*hammer.on("panup", function (event) {
             direction = 'up';
         });
 
         hammer.on("pandown", function (event) {
             direction = 'down';
-        });
+        });*/
     } 
     else if (orientation === 'vertical') {
         axis = getActiveLayer().left;
 
-        hammer.on('panleft', function (event) {
+        /*hammer.on('panleft', function (event) {
             direction = 'left';
         });
 
         hammer.on("panright", function (event) {
             direction = 'right';
-        });
+        });*/
+    }
+    initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis);
+
+    let handleW, handleH, handleX, handleY;
+    let handleGroup = getActiveLayer().layer.group();
+    let handle;
+    let handleArrow;
+    let handleRad = 15;
+
+    //add handle here
+
+    if (orientation === 'horizontal'){
+        handleW = SVG.get('wall-2-proxy-horizontal').cx() - SVG.get('wall-1-proxy-horizontal').cx();
+        handleH = wallSize*2;
+        handleX = SVG.get('wall-1-proxy-horizontal').x();
+        handleY = SVG.get('wall-2-proxy-horizontal').y();
+        entityGroup = SVG.get('wall-' + orientation);
+        handleGroup.addClass('wall-' + orientation).id('wall-' + orientation + '-handle');
+        
+        handle = handleGroup.rect(handleW, handleH).move(handleX, handleY).fill('black').attr({'stroke': 'black', 'stroke-width': 1.5}).id(orientation+'-handle').addClass('wall-' + orientation + ' proxy');
+
+        handleArrow = handleGroup.path("M214.059 377.941H168V134.059h46.059c21.382 0 32.09-25.851 16.971-40.971L144.971 7.029c-9.373-9.373-24.568-9.373-33.941 0L24.971 93.088c-15.119 15.119-4.411 40.971 16.971 40.971H88v243.882H41.941c-21.382 0-32.09 25.851-16.971 40.971l86.059 86.059c9.373 9.373 24.568 9.373 33.941 0l86.059-86.059c15.12-15.119 4.412-40.971-16.97-40.971z").addClass('wall-horizontal proxy').id(orientation+'-arrow');
+
+        //handleArrow = handleGroup.path("M352.201 425.775l-79.196 79.196c-9.373 9.373-24.568 9.373-33.941 0l-79.196-79.196c-15.119-15.119-4.411-40.971 16.971-40.97h51.162L228 284H127.196v51.162c0 21.382-25.851 32.09-40.971 16.971L7.029 272.937c-9.373-9.373-9.373-24.569 0-33.941L86.225 159.8c15.119-15.119 40.971-4.411 40.971 16.971V228H228V127.196h-51.23c-21.382 0-32.09-25.851-16.971-40.971l79.196-79.196c9.373-9.373 24.568-9.373 33.941 0l79.196 79.196c15.119 15.119 4.411 40.971-16.971 40.971h-51.162V228h100.804v-51.162c0-21.382 25.851-32.09 40.97-16.971l79.196 79.196c9.373 9.373 9.373 24.569 0 33.941L425.773 352.2c-15.119 15.119-40.971 4.411-40.97-16.971V284H284v100.804h51.23c21.382 0 32.09 25.851 16.971 40.971z").addClass('wall-horizontal proxy').id(orientation+'-arrow');
+
+        handleArrow.attr({
+            fill: 'black',
+            'transform': 'translate(' +  (handleX + handleW/2 - handleArrow.x()/2) + ", " + (handleY - 11) +  ") scale(.075, .05)"
+        })
+        //addBuilderWallsEvents(attributeGraphics, handleGroup); 
     }
 
-    hammer.on("panstart", function (ev) {
+    else if (orientation === 'vertical'){
+        handleW = wallSize*2;
+        handleH = SVG.get('wall-2-proxy-vertical').cy() - SVG.get('wall-1-proxy-vertical').cy() + SVG.get('wall-2-proxy-vertical').height();
+        handleX = SVG.get('wall-1-proxy-vertical').x() + SVG.get('wall-1-proxy-vertical').width();
+        handleY = SVG.get('wall-1-proxy-vertical').y();// + SVG.get('wall-1-proxy-vertical').height();//SVG.get('wall-2-proxy-vertical').y();
+        entityGroup = SVG.get('wall-' + orientation);
+        handleGroup.addClass('wall-' + orientation).id('wall-' + orientation + '-handle');
+        
+        handle = handleGroup.rect(handleW, handleH).move(handleX, handleY).fill('black').attr({'stroke': 'black', 'stroke-width': 1.5}).id(orientation+'-handle').addClass('wall-' + orientation + ' proxy');
+
+        handleArrow = handleGroup.path("M377.941 169.941V216H134.059v-46.059c0-21.382-25.851-32.09-40.971-16.971L7.029 239.029c-9.373 9.373-9.373 24.568 0 33.941l86.059 86.059c15.119 15.119 40.971 4.411 40.971-16.971V296h243.882v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.568 0-33.941l-86.059-86.059c-15.119-15.12-40.971-4.412-40.971 16.97z")
+            .addClass('wall-vertical proxy').id(orientation+'-arrow');
+
+        handleArrow.attr({
+            fill: 'black',
+            'transform': 'translate(' +  (handleX + handleW - handleArrow.x()) + ", " + (handleY - 5) +  ") scale(.05, .075) "
+        })
+
+        handleArrow.dmove(-handleArrow.width()/2, 0)
+    }
+    //addBuilderWallsEvents(attributeGraphics, SVG.get('wall-' + orientation + '-handle'));
+    addBuilderWallsEvents(attributeGraphics, handleGroup);
+    
+    //initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis, hammer);
+
+
+    /*hammer.on("panstart", function (ev) {
         startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
 
     });
@@ -1569,7 +1640,6 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
 
                     //BOLD THE TEXT
                     boldText(axis.valueLabels[index]);
-
                     buildWall(axis.valueLabels[index], wallSize, height, [x, y], 'both', insideSpace, direction);
                 }
             } else {
@@ -1618,7 +1688,138 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent) {
     });
 
     //initial creation of walls
-    initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis);
+    initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis);*/
+}
+
+function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent){
+     //Takes the orientation of the values (axis x or y)
+    var orientation = attributeGraphics.direction;
+
+    if (!attributeGraphicsParent.hammer) {
+        attributeGraphicsParent.hammer = new Hammer(attributeGraphicsParent.node);
+    }
+
+    var hammer = attributeGraphicsParent.hammer;
+    var handle = attributeGraphicsParent;
+
+    hammer.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
+
+    let startingPoint = null;
+    let currentPoint = null;
+    let height = null;
+    let width = null;
+    let direction = null;
+    var axis = null;
+    var wallSize = 1.1;
+    var insideSpace = nodeRadius+10;
+
+
+    if (orientation === 'horizontal') {
+        axis = getActiveLayer().bottom;
+
+        hammer.on("panup", function (event) {
+            direction = 'up';
+        });
+
+        hammer.on("pandown", function (event) {
+            direction = 'down';
+        });
+    } 
+    else if (orientation === 'vertical') {
+        axis = getActiveLayer().left;
+
+        hammer.on('panleft', function (event) {
+            direction = 'left';
+        });
+
+        hammer.on("panright", function (event) {
+            direction = 'right';
+        });
+    }
+    /*initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis);
+    addBuilderWallsEvents(attributeGraphics, SVG.get('wall-horizontal-handle'));*/
+    //initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis, hammer);
+
+
+    hammer.on("panstart", function (ev) {
+        startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+
+    });
+
+    hammer.on("panmove", function (ev) {
+        currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
+        height = -( currentPoint.y - startingPoint.y);
+        width = currentPoint.x - startingPoint.x;
+
+        if (orientation === "horizontal") {
+
+            var y = axis.line.cy();
+
+            if ($(attributeGraphics.node).hasClass('proxy')) {
+                attributeGraphics.axis = axis;
+
+                //the proxy thing
+                //change line 797 after demo 
+                
+                var xProxy = attributeGraphics.rbox().cx;// - $("#accordionSidebar").width();
+                //console.log(xProxy);
+                buildWall(attributeGraphics, wallSize, height, [xProxy, y], 'both', insideSpace, direction, true, handle);
+
+                for (var index in axis.valueLabels) {
+
+                    var x = axis.valueLabels[index].cx();
+
+                    //BOLD THE TEXT
+                    boldText(axis.valueLabels[index]);
+                    buildWall(axis.valueLabels[index], wallSize, height, [x, y], 'both', insideSpace, direction);
+                }
+            } else {
+                buildWall(attributeGraphics, wallSize, height, [attributeGraphics.cx(), y], 'both', insideSpace, direction);
+            }
+        } else if (orientation === "vertical") {
+            let x = axis.line.cx();
+            var yProxy = attributeGraphics.rbox().cy - 70;
+            //console.log(yProxy);
+
+            if ($(attributeGraphics.node).hasClass('proxy')) {
+                attributeGraphics.axis = axis;
+                buildWall(attributeGraphics, width, wallSize, [x, yProxy], 'both', insideSpace, direction, true, handle);
+
+                //the proxy thing
+                for (var index in axis.valueLabels) {
+                    var y = axis.valueLabels[index].cy();
+                    //BOLD THE TEXT
+                    boldText(axis.valueLabels[index]);
+                    buildWall(axis.valueLabels[index], width, wallSize, [x, y], 'both', insideSpace, direction);
+                }
+            } else {
+                buildWall(attributeGraphics, width, wallSize, [x, attributeGraphics.cy()], 'both', insideSpace, direction);
+            }
+        }
+    });
+
+
+    hammer.on("panend", function (ev) {
+        
+        if ($(attributeGraphics.node).hasClass('proxy')) {
+            attributeGraphics.walls[0].previousIncrement = 0;
+
+            for (var index in axis.valueLabels) {
+                unBoldText(axis.valueLabels[index]);
+                axis.valueLabels[index].walls[0].previousIncrement = 0;
+            }
+        } 
+        else {
+            let attributeName = attributeGraphics.attr("attrType");
+            let attributeValue = attributeGraphics.node.textContent;
+            highlightNodesByAttributeValue(attributeValue, attributeName, false);
+            attributeGraphics.walls[0].previousIncrement = 0;
+     
+        }
+    });
+
+    //initial creation of walls
+    //initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis);
 }
 
 //note -- this will fire twice. it's unavoidable with our current setup in hammer 
@@ -1627,7 +1828,7 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
     //console.log(element)
     
     //mc.get('pan').set({direction: Hammer.DIRECTION_ALL, threshold: 5});
-    mc.get('pan').set({enable: true, direction: Hammer.DIRECTION_ALL, threshold: 5});
+    mc.get('pan').set({enable: true, direction: Hammer.DIRECTION_ALL, threshold: 1});
 
     let group = null;
     let rect = null;
@@ -1660,10 +1861,13 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
 
     mc.on("panstart", function (ev) {
 
+        
+        
         drawer = getActiveLayer().layer;
         startingPoint = {x: ev.srcEvent.pageX /*- $("#onSidebar").width()*/, y: ev.srcEvent.pageY - 70};
 
         //for defining labels that are going to be dragged
+        group = drawer.group();
 
         label = drawer.text(attributeName).id('test').attr({
             fill: 'black',
@@ -1695,19 +1899,21 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
 
         rect.values = [];
 
-        group = drawer.group();
+        
         group.add(rect);
         group.add(label);
         group.addClass('toolable proxy attr-' + attributeName);    
 
         console.log(group)
         //}
-
-        
+            
     });
 
 
     mc.on("panmove", function (ev) {
+        
+
+
         currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY - 70};
 
         group.move(currentPoint.x - startingPoint.x, currentPoint.y - startingPoint.y);
@@ -2058,7 +2264,9 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
 
             if (!removed){
                 addPressAttribute(new Hammer(group.node), group, rect, targetDropZone, attributeName, direction);
-                console.log('added press attr')
+                console.log('added press attr');
+
+                /*if Matter*/
             }
             //wow it finally works lol. absolutely needs a new hammer node and the rectangle
 

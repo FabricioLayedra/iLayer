@@ -19,11 +19,19 @@ var LABELSHIDDEN = false;
 
 var globalToolsOnCanvas = {};
 
+var dataFiles = ["./data/sample_30_authors_test.json", "./data-study/authors1.json", 
+"./data-study/authors2.json",
+"./data-study/neighbours1.json",
+"./data-study/neighbours2.json"]
 
 ///STUDY DATASETS
-var datafile = "./data-study/authors1.json";
-
-
+//var datafile = "./data-study/authors1.json";
+//var datafile = "./data-study/authors2.json";
+//var datafile = "./data-study/neighbours1.json";
+//var datafile = "./data-study/neighbours2.json";
+var counter = 1;
+var datafile = dataFiles[counter];
+var layerCounter = 1;
 //smallest dataset
 //var datafile = "./data/authors_relations_SC_JD_sample2015_anonymized.json";
 
@@ -68,7 +76,7 @@ var EDGEGRADIENTS = {};
 
 //var COLORS = ["#1F77B4", "#FF7F0E", "#2CA02C", "#D62728", "#9467BD", "#8C564B", "#E3775E", "#7F7F7F", "#BCBD22", "#17BECF"];
 var COLORS = ['#c6c8cc']
-var HIGHLIGHTCOLOR = '#64b6cc';
+var HIGHLIGHTCOLOR = '#3e474a';
 //var COLORS = ['gray']
 //var COLORS = ['#2385ca'] //blue
 var STARTERLAYOUTS = ['cluster', 'force', 'bar', 'scatter'];
@@ -286,6 +294,7 @@ function createLayer(layerName, color) {
 //    var canvas = document.createElement("div");
     var container = document.getElementById("set-canvases");
     var canvas = createSVG(container, layerName, generalWidth, generalHeight, color);
+
 
     
     canvas.setAttribute("id", "layer-" + layerName);
@@ -726,7 +735,7 @@ function showCoords(event) {
 
 //loads the JSON file and creates the graph using graphLib and adds it to GRAPHS
 function loadGraph(filename, key, directed) {
-    console.log(filename)
+    ;//console.log(filename)
     return $.getJSON(filename).done(function (json) {
         // Creates a new directed graph
         var g = new graphlib.Graph({directed: directed});
@@ -743,7 +752,7 @@ function loadGraph(filename, key, directed) {
             for (var index in keys) {
                 dataInfo[keys[index]] = data[keys[index]];
             }
-//            console.log(dataInfo);
+
             if(data["lon"]==="" || data["lat"]===""){
                 notIncluded.push(format_id(data["id"]));
             }else{
@@ -760,14 +769,15 @@ function loadGraph(filename, key, directed) {
 
         if (Object.keys(GRAPHS).includes(key)) {
             console.log("Request Failed: " + "Data Already Loaded");
-        } else {
+        } 
+        else {
             GRAPHS[key] = g;
         }
-    }).fail(function (jqxhr, textStatus, error) {
-        var err = textStatus + ", " + error;
-        console.log("Request Failed: " + err);
-        return null;
-    });
+        }).fail(function (jqxhr, textStatus, error) {
+            var err = textStatus + ", " + error;
+            console.log("Request Failed: " + err);
+            return null;
+        });
 
 }
 
@@ -776,9 +786,11 @@ function addGraphAsLayer(g, layerName) {
 
 //    var color = addNewLayer(layer_name);
 //    var darkenColor = lightenDarkenColor(color, -10);
-
+    console.log(layerName)
     addNewLayer(layerName);
+
     var color = LAYERS[layerName].color;
+    console.log(color)
     var darkenColor = lightenDarkenColor(color, -10);
 
 //    drawGraph(LAYERS[layer_name].layer, g);
@@ -794,6 +806,31 @@ function addGraphAsLayer(g, layerName) {
 
 //    console.log(svg_id);
     SVG.get(svg_id).select("circle").attr({fill: color, stroke: darkenColor, 'stroke-width': 2});
+
+}
+
+function removeGraph(layer_name, g_name){
+    $('.node').remove();
+    $('.edge').remove();
+
+    delete GRAPHS[name];
+    delete LAYERS[layer_name];
+    delete GRAPHS[g_name];
+
+
+    SELECTION = [];
+    ACTIVETOOLS = {};
+    ACTIVEATTRIBUTES = {};
+    EDGEGRADIENTS = {};
+
+    $('#file').attr({'display': 'block'});
+    $('.attributeTool').parent().remove();
+    $('.database_line').remove();
+
+
+
+
+
 
 }
 
@@ -814,6 +851,8 @@ function drawGraph(layer_name, g) {
     let c = nodeRadius + 8;  //spread 4
 
     // adding to the nodes objects of the graph both the fabric and the matter associated objects
+
+
     nodeKeys.forEach(function (nodeKey) {
 
         var nodeData = g.node(nodeKey);
@@ -924,6 +963,7 @@ function drawGraph(layer_name, g) {
     });
     
     console.log(dataKeys);
+
     
     LAYERS[layer_name].attributes = dataKeys;
 //    console.log("DICTIONARY");
@@ -932,7 +972,6 @@ function drawGraph(layer_name, g) {
 
 
     edges.forEach(function (edge) {
-
         var from = g.node(edge.v);
         var to = g.node(edge.w);
         
@@ -1874,7 +1913,7 @@ function altForceLayout(g, c) {
                 ty = p.y > generalHeight ? generalHeight : p.y;*/
                 //console.log(p.x + " " + p.y)
 
-                nodeGraphics.parent().translate( p.x - nodeGraphics.cx(), p.y - nodeGraphics.cy());
+                nodeGraphics.parent().translate( p.x - nodeGraphics.cx()-25, p.y - nodeGraphics.cy()-25);
                 updateEdgesEnds(nodeGraphics, g.directed);
 
             });
@@ -2078,18 +2117,23 @@ function scaleLayout(g, pxs, pys) {
    }
    console.log(graph.forcelayout());
 }*/
+function removeOldGraphs(name){
+    LAYERS = {};
 
+    delete GRAPHS[name];
+
+}
 /*-----------------------------------MAIN---------------------------------------*/
 
-function main() {
+function main(file) {
     var bodies = [];
     var Composite = Matter.Composite;
+
 
     function render() {
         for (var layer in LAYERS) {
             //        console.log(LAYERS[layer])
             if (LAYERS[layer]["physics-engine"]) {
-//                console.log(bodies);
                 bodies = Composite.allBodies(LAYERS[layer]["physics-engine"].world);
 
                 /*console.log('LAYERS[layer]["physics-engine"].world.gravity.scale');
@@ -2104,54 +2148,15 @@ function main() {
                     if (nodeGraphics) {
 
                         if (!!getElementFromGroup(nodeGraphics, 'circle')) {
-//                     console.log(currentBody.svg);
+
 
                             let newX = currentBody.position.x;
                             let newY = currentBody.position.y;
 
-                            //console.log(newX + " " + newY);
-//                        nodeGraphics.cx(newX-nodeGraphics.initX);
-//                        nodeGraphics.cy(newY-nodeGraphics.initY);
-//                        nodeGraphics.center(,newY-nodeGraphics.initY);
-
                             nodeGraphics.dmove(newX - nodeGraphics.initX, newY - nodeGraphics.initY);
                             nodeGraphics.initX = nodeGraphics.cx() - nodeGraphics.childDX;
                             nodeGraphics.initY = nodeGraphics.cy() - nodeGraphics.childDY;
-                            //console.log(newX);
-                            //console.log(nodeGraphics.initX);
-
-
-//                        console.log(newX-nodeGraphics.initX,newY-nodeGraphics.initY);
-//                        console.log(LAYERS[layer].layer.circle(5).center(newX-nodeGraphics.initX,newY-nodeGraphics.initY));;
-
-//                        if (i===0){
-//                        console.log(newX-nodeGraphics.initX,newY-nodeGraphics.initY);
-//                        console.log(newX-nodeGraphics.initX)
-////                            LAYERS[layer].layer.circle(5).center(nodeGraphics.cx(),nodeGraphics.cy());
-//
-//                        }                        
                             updateEdgesEnds(getElementFromGroup(nodeGraphics, 'circle'), nodeGraphics.cx() - nodeGraphics.childDX, nodeGraphics.cy() - nodeGraphics.childDY);
-
-
-//                        nodeGraphics.cx(newX)
-//                        nodeGraphics.cy(newY);
-
-//                        console.log(nodeGraphics.center());
-
-
-//                        console.log(nodeGraphics.cy());add
-//                        console.log(nodeGraphics.parent().cx());
-//                        console.log(nodeGraphics.parent().cy());
-
-
-//                        console.log(nodeGraphics.parent());
-//                        nodeGraphics.parent().center(newX,newY);
-//                        console.log()
-
-//                        updateEdgesEnds(getElementFromGroup(nodeGraphics,'circle'));
-//                        updateHighlights(nodeGraphics.parent());
-
-
                         }
                     }
                 }
@@ -2162,6 +2167,7 @@ function main() {
     }
     ;
 
+    //lets gravity run
     render();
 
 
@@ -2179,21 +2185,104 @@ function main() {
     //addNonToolEvents();
 
 
+    loadGraph(datafile, datafile, false).then(function () {
+         addGraphAsLayer(GRAPHS[datafile], "1");
+         
+         //        loadGraph(datafile2, "authors2015", false).then(function () {
+         //            addGraphAsLayer(GRAPHS["authors2015"], "2");
+         //
+         //    //        addGraphAsLayer(GRAPHS["authors2016"], "3");
+         //
+         //    //        activateLayer("1");
+         //        });
 
+         //        addGraphAsLayer(GRAPHS["authors2016"], "3");
 
+         activateLayer("1");
+         layerCounter++;
 
+         $("#hideEdges").toggleClass('active');
+         getActiveLayer().layer.select('g.edge').attr({"opacity":0});
+         EDGESHIDDEN = true;
 
-    loadGraph(datafile, "authors2016", false).then(function () {
-        addGraphAsLayer(GRAPHS["authors2016"], "1");
-//        loadGraph(datafile2, "authors2015", false).then(function () {
-//            addGraphAsLayer(GRAPHS["authors2015"], "2");
-//
-//    //        addGraphAsLayer(GRAPHS["authors2016"], "3");
-//
-//    //        activateLayer("1");
-//        });
+         $("#hideLabels").toggleClass('active');
+         getActiveLayer().layer.select('text.node-label').attr({"opacity":0});
+         LABELSHIDDEN = true;
 
-//        addGraphAsLayer(GRAPHS["authors2016"], "3");
+         if (STARTERLAYOUTS[startingLayout] === 'bar'){
+
+             defaultBarChart(starterBarAxesAttributes, 'horizontal');
+         }   
+
+         else if (STARTERLAYOUTS[startingLayout] === 'scatter'){
+             defaultScatterplot(starterScatterAxesAttributes);
+         }
+         //showHideEdges();
+        //addAttractorsToWorld(['affiliation','citations'],100,'affiliation');
+
+     });
+
+    $(document).keyup(function(e){
+        
+        if (e.which == '39'){
+            removeGraph("1", datafile);
+            
+            counter++;
+            counter = counter % dataFiles.length;
+            datafile = dataFiles[counter];
+            console.log(datafile);
+
+            //delete graph
+
+           loadGraph(datafile, datafile, false).then(function () {
+                addGraphAsLayer(GRAPHS[datafile], "1");
+                //        loadGraph(datafile2, "authors2015", false).then(function () {
+                //            addGraphAsLayer(GRAPHS["authors2015"], "2");
+                //
+                //    //        addGraphAsLayer(GRAPHS["authors2016"], "3");
+                //
+                //    //        activateLayer("1");
+                //        });
+
+                //        addGraphAsLayer(GRAPHS["authors2016"], "3");
+
+                activateLayer("1");
+                $("#hideEdges").toggleClass('active');
+                getActiveLayer().layer.select('g.edge').attr({"opacity":0});
+                EDGESHIDDEN = true;
+
+                $("#hideLabels").toggleClass('active');
+                getActiveLayer().layer.select('text.node-label').attr({"opacity":0});
+                LABELSHIDDEN = true;
+
+                if (STARTERLAYOUTS[startingLayout] === 'bar'){
+
+                    defaultBarChart(starterBarAxesAttributes, 'horizontal');
+                }   
+
+                else if (STARTERLAYOUTS[startingLayout] === 'scatter'){
+                    defaultScatterplot(starterScatterAxesAttributes);
+                }
+                //showHideEdges();
+               //addAttractorsToWorld(['affiliation','citations'],100,'affiliation');
+
+            });
+
+            
+        }
+    });
+
+    /*loadGraph(datafile, datafile, false).then(function () {
+        addGraphAsLayer(GRAPHS[datafile], "1");
+        //        loadGraph(datafile2, "authors2015", false).then(function () {
+        //            addGraphAsLayer(GRAPHS["authors2015"], "2");
+        //
+        //    //        addGraphAsLayer(GRAPHS["authors2016"], "3");
+        //
+        //    //        activateLayer("1");
+        //        });
+
+        //        addGraphAsLayer(GRAPHS["authors2016"], "3");
 
         activateLayer("1");
         $("#hideEdges").toggleClass('active');
@@ -2204,7 +2293,7 @@ function main() {
         getActiveLayer().layer.select('text.node-label').attr({"opacity":0});
         LABELSHIDDEN = true;
 
-       if (STARTERLAYOUTS[startingLayout] === 'bar'){
+        if (STARTERLAYOUTS[startingLayout] === 'bar'){
 
             defaultBarChart(starterBarAxesAttributes, 'horizontal');
         }   
@@ -2217,8 +2306,8 @@ function main() {
         //showHideEdges();
 
 
-//        addAttractorsToWorld(['affiliation','citations'],100,'affiliation')
-    });
+       //addAttractorsToWorld(['affiliation','citations'],100,'affiliation')
+    });*/
 
 
 //    loadGraph(datafile2,"authors2015",false).then(function(){
@@ -2242,8 +2331,23 @@ function main() {
 }
 
 $(document).ready(function(){
-    main(); 
+    //listener for keypresses to cycle through data
+    /*$(document).keyup(function(e){
+        console.log(e.which);
+        if (e.which == '39'){
+            console.log('key pressed' + counter);
+            main(datafile);
+            counter = counter++ % dataFiles.length;
+            datafile = dataFiles[counter];
+            console.log(datafile + " " + counter)
+            //console.log('key pressed' + counter);
+        }
+
+    }) */
+   main(counter); 
 });
+
+
 
 /*
 $(function () {
@@ -3100,18 +3204,15 @@ function sortByAttributeWalls(distance, chosen, orientation) {
 
 var crossedPoint = false;
 
-function buildWall(graphicObject, width, height, originPosition, mode, insideSpace, orientation, isProxy) {
+function buildWall(graphicObject, width, height, originPosition, mode, insideSpace, orientation, isProxy, handle) {
     var world = getPhysicsEngine(getActiveLayerName()).world;
     var direction = graphicObject.direction;
     entityGroup = getActiveLayer().layer.group().addClass('wall-' + direction);
-//    console.log(direction);
-    //console.log(graphicObject)
-
 
     if (mode === 'both') {
         if (!graphicObject.walls) {
             if (direction === "horizontal") {
-//                console.log("drawing horizontal");
+
                 
                 let originXleft = originPosition[0] - nodeRadius/1.5;
                 let originXright = originPosition[0] + nodeRadius/1.5 - width;
@@ -3154,10 +3255,16 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                     wall2.addClass('proxy');
                     wall2.attr({'stroke': 'black', 'stroke-width': 1.5})
                     wall2.id('wall-2-proxy-' + direction)
+
+                    if (handle != undefined){
+                        handle.dmove(0, step);
+                    }
                 }
                 addAttractorToWorld(world, wall2);
                 addDragEvents(new Hammer(wall2.node), wall2, wall2, 'wall', isProxy, graphicObject);
                 graphicObject.walls = [wall1, wall2];
+
+
                 
             } 
             else if (direction === 'vertical') {
@@ -3197,12 +3304,16 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 if (isProxy){
                     wall2.addClass('proxy');
                     wall2.attr({'stroke': 'black', 'stroke-width': 1.5});
-                    wall2.id('wall-1-proxy-' + direction)
+                    wall2.id('wall-2-proxy-' + direction)
                 }
+
                 addAttractorToWorld(world, wall2);
                 addDragEvents(new Hammer(wall2.node), wall2, wall2, 'wall', isProxy, graphicObject);
 
                 graphicObject.walls = [wall1, wall2];
+
+                
+
             }
 
         } 
@@ -3227,6 +3338,8 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                     var increment = graphicObject.walls[0].previousIncrement-height;
                     graphicObject.walls[0].previousIncrement = height;
 
+                    console.log(graphicObject.walls[0].height() - increment);
+
                     if (graphicObject.walls[0].height() - increment >= 0){
                         height = graphicObject.walls[0].height() - increment;
                     }
@@ -3234,7 +3347,7 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                     //height = graphicObject.walls[0].height() - increment;
                 }
                 
-                
+                console.log(height);
                 var scale = height / graphicObject.walls[0].height();
 
 
@@ -3254,58 +3367,47 @@ function buildWall(graphicObject, width, height, originPosition, mode, insideSpa
                 //            if (!graphicObject.crossedPoint){
                 wall1.y(wall1.y() - step);
                 wall2.y(wall2.y() - step);
+                console.log(-step);
+                if (handle != undefined){
+                    handle.dmove(0, -step);
+                }
                 //            }
 
 
 
                 Matter.Body.scale(wall1.matter, 1, scale);
                 Matter.Body.scale(wall2.matter, 1, scale);
-                //            
+                           
                 Matter.Body.setPosition(wall1.matter, {x: wall1.cx(), y: wall1.cy()});
 
                 Matter.Body.setPosition(wall2.matter, {x: wall2.cx(), y: wall2.cy()});
             } 
             else if (direction === "vertical") {
-//                console.log("BUILDING WALL");
-//                console.log(width);
-//                console.log(graphicObject.walls[0].width()!=width);
-//                if (graphicObject.walls[0].width()>width){
-                    
-                    if (orientation==="right"){
-                        var increment = width-graphicObject.walls[0].previousIncrement;
-                        graphicObject.walls[0].previousIncrement = width;
-                        width = graphicObject.walls[0].width() + increment;
-                    }else{
-                        var increment = graphicObject.walls[0].previousIncrement-width;
-                        graphicObject.walls[0].previousIncrement = width;
-                        width = graphicObject.walls[0].width() - increment;
-                    }
+                var increment, step = 0;
+                if (orientation==="right"){
+                    increment = width-graphicObject.walls[0].previousIncrement;
+                    graphicObject.walls[0].previousIncrement = width;
+                    width = graphicObject.walls[0].width() + increment;
+                    step = increment;
+                }else{
+                    increment = graphicObject.walls[0].previousIncrement-width;
+                    graphicObject.walls[0].previousIncrement = width;
+                    width = graphicObject.walls[0].width() - increment;
+                    step = -increment;
+                }
 
                 var scale = width / graphicObject.walls[0].width();
-
 
                 var wall1 = graphicObject.walls[0];
                 var wall2 = graphicObject.walls[1];
 
-
                 wall1.width(width);
-//                console.log("height: "+height);
-//                console.log("step: "+step);
-//                if(step<0&&height===0){
-//                    graphicObject.crossedPoint = !graphicObject.crossedPoint ;
-//                }
-//                
-//                if (!graphicObject.crossedPoint){
-//                    wall1.y(wall1.y()-step);
-//                    wall2.y(wall2.y()-step);
-//                }
-
-                //            
-
                 wall2.width(width);
 
-
-
+                console.log(step);
+                if (handle != undefined){    
+                    handle.dmove(step, 0);
+                }
 
                 Matter.Body.scale(wall1.matter, scale, 1);
                 Matter.Body.scale(wall2.matter, scale, 1);
@@ -3435,39 +3537,39 @@ function addAttributeValueAsAttractor(attributeGraphics, attributeValue, attribu
 
 }
 
-function initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis){
+
+
+function initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis, mc){
     
     //create handles
     //var handle; = rect(width, height).move();
     //entityGroup.rect(width, height).move(originXleft, originY).fill('gray').attr({'stroke': 'transparent', 'stroke-width': 20}).back();
-                /*wall1.position = "left"
-                wall1.direction = direction;
-                wall1.wall = true;
-                wall1.previousIncrement = 0;
-                wall1.addClass('wall-1');*/
-
+    /*wall1.position = "left"
+    wall1.direction = direction;
+    wall1.wall = true;
+    wall1.previousIncrement = 0;
+    wall1.addClass('wall-1');*/
+/*
     let handleW, handleH, handleX, handleY;
     let handleGroup = getActiveLayer().layer.group();
     let handle;
     let handleArrow;
-    let handleRad = 15;
+    let handleRad = 15;*/
 
     if (orientation === "horizontal") {
 
         var y = axis.line.cy();
-       
-
 
             if ($(attributeGraphics.node).hasClass('proxy')) {
                 attributeGraphics.axis = axis;
                 var xProxy = attributeGraphics.rbox().cx;// - $("#accordionSidebar").width();
 
                 //add handle
-                buildWall(attributeGraphics, wallSize, 25, [xProxy, y], 'both', insideSpace, direction, true);
+                buildWall(attributeGraphics, wallSize, 40, [xProxy, y], 'both', insideSpace, direction, true);
                 
 
                 //add handle here
-                handleW = SVG.get('wall-2-proxy-horizontal').cx() - SVG.get('wall-1-proxy-horizontal').cx();
+                /*handleW = SVG.get('wall-2-proxy-horizontal').cx() - SVG.get('wall-1-proxy-horizontal').cx();
                 handleH = wallSize*2;
                 handleX = SVG.get('wall-1-proxy-horizontal').x();
                 handleY = SVG.get('wall-2-proxy-horizontal').y();
@@ -3482,8 +3584,10 @@ function initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orient
                 handleArrow.attr({
                     fill: 'black',
                     'transform': 'translate(' +  (handleX + handleW/2 - handleArrow.x()/2) + ", " + (handleY - 11) +  ") scale(.075, .05)"
-                })
+                })*/
 
+                //addDragEvents(mc, handleGroup,  'wall', isProxy)
+                //buildWallEvents()
 
 
                 //handleGroup.circle(handleRad).move(handleX + handleW/2 -handleRad/2, handleY + handleH/2 - handleRad/2).fill('black');
@@ -3497,21 +3601,21 @@ function initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orient
                     //BOLD THE TEXT
                     //boldText(axis.valueLabels[index]);
 
-                    buildWall(axis.valueLabels[index], wallSize, 25, [x, y], 'both', insideSpace, direction);
+                    buildWall(axis.valueLabels[index], wallSize, 40, [x, y], 'both', insideSpace, direction);
                 }
             } else {
                 //add handle
-                buildWall(attributeGraphics, wallSize, 25, [attributeGraphics.cx(), y], 'both', insideSpace, direction);
+                buildWall(attributeGraphics, wallSize, 40, [attributeGraphics.cx(), y], 'both', insideSpace, direction);
             }
         } else if (orientation === "vertical") {
             let x = axis.line.cx();
             var yProxy = attributeGraphics.rbox().cy - 70;
-            buildWall(attributeGraphics, 45, wallSize, [x, yProxy], 'both', insideSpace, direction, true);
+            buildWall(attributeGraphics, 60, wallSize, [x, yProxy], 'both', insideSpace, direction, true);
 
             //add handle here
-                let handleW = wallSize;//wallSize;SVG.get('wall-2-proxy-horizontal').cx() - SVG.get('wall-1-proxy-horizontal').cx();
+                /*let handleW = wallSize;//wallSize;SVG.get('wall-2-proxy-horizontal').cx() - SVG.get('wall-1-proxy-horizontal').cx();
                 let handleH = SVG.get('wall-2-proxy-horizontal').cx() - SVG.get('wall-1-proxy-horizontal').cx();
-
+*/
             if ($(attributeGraphics.node).hasClass('proxy')) {
                 attributeGraphics.axis = axis;
 
@@ -3520,12 +3624,12 @@ function initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orient
                     var y = axis.valueLabels[index].cy();
                     //BOLD THE TEXT
 //                    boldText(axis.valueLabels[index]);
-                    buildWall(axis.valueLabels[index], 45, wallSize, [x, y], 'both', insideSpace, direction);
+                    buildWall(axis.valueLabels[index], 60, wallSize, [x, y], 'both', insideSpace, direction);
                 }
             } 
 
             else {
-                buildWall(attributeGraphics, 45, wallSize, [x, attributeGraphics.cy()], 'both', insideSpace, direction);
+                buildWall(attributeGraphics, 60, wallSize, [x, attributeGraphics.cy()], 'both', insideSpace, direction);
             }
         }
     }

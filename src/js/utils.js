@@ -105,7 +105,7 @@ function disableGlow(object){//, interval){
 function toggleAttributesButtons(dataKeys){
     $("#database").on('click', function (e) {
 
-
+        console.log(dataKeys);
         if ($('#file').css('display') !== 'none'){
             
             $('#file').slideUp('fast', function(){

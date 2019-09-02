@@ -1,0 +1,379 @@
+{
+"nodes": 
+  [
+  {
+    "id": "Mitzi",
+    "age": 18,
+    "salary": 22000,
+    "neighbourhood": "Beaverton"
+  },
+  {
+    "id": "Berta",
+    "age": 52,
+    "salary": 71000,
+    "neighbourhood": "Beaverton"
+  },
+  {
+    "id": "Danille",
+    "age": 77,
+    "salary": 5000,
+    "neighbourhood": "Beaverton"
+  },
+  {
+    "id": "Odessa",
+    "age": 21,
+    "salary": 17000,
+    "neighbourhood": "Calbar"
+  },
+  {
+    "id": "Lyndia",
+    "age": 26,
+    "salary": 20000,
+    "neighbourhood": "Calbar"
+  },
+  {
+    "id": "Ena",
+    "age": 31,
+    "salary": 21000,
+    "neighbourhood": "Calbar"
+  },
+  {
+    "id": "Cheryl",
+    "age": 33,
+    "salary": 19000,
+    "neighbourhood": "Calbar"
+  },
+  {
+    "id": "Marybeth",
+    "age": 45,
+    "salary": 20000,
+    "neighbourhood": "Calbar"
+  },
+  {
+    "id": "Winifred",
+    "age": 40,
+    "salary": 105000,
+    "neighbourhood": "Oceanside"
+  },
+  {
+    "id": "Christy",
+    "age": 45,
+    "salary": 100000,
+    "neighbourhood": "Oceanside"
+  },
+  {
+    "id": "Eldora",
+    "age": 53,
+    "salary": 114000,
+    "neighbourhood": "Oceanside"
+  },
+  {
+    "id": "Cathi",
+    "age": 61,
+    "salary": 112000,
+    "neighbourhood": "Oceanside"
+  },
+  {
+    "id": "Ida",
+    "age": 48,
+    "salary": 130000,
+    "neighbourhood": "Oceanside"
+  },
+  {
+    "id": "Vincent",
+    "age": 53,
+    "salary": 125000,
+    "neighbourhood": "Oceanside"
+  },
+  {
+    "id": "Angelina",
+    "age": 17,
+    "salary": 1000,
+    "neighbourhood": "Sandy Hill"
+  },
+  {
+    "id": "Mandy",
+    "age": 18,
+    "salary": 21500,
+    "neighbourhood": "Sandy Hill"
+  },
+  {
+    "id": "Pricilla",
+    "age": 19,
+    "salary": 18000,
+    "neighbourhood": "Sandy Hill"
+  },
+  {
+    "id": "Kori",
+    "age": 23,
+    "salary": 29000,
+    "neighbourhood": "Sandy Hill"
+  },
+  {
+    "id": "Loise",
+    "age": 24,
+    "salary": 57000,
+    "neighbourhood": "Sandy Hill"
+  },
+  {
+    "id": "Faustino",
+    "age": 27,
+    "salary": 32000,
+    "neighbourhood": "Sandy Hill"
+  },
+  {
+    "id": "Jes",
+    "age": 30,
+    "salary": 37000,
+    "neighbourhood": "Sandy Hill"
+  },
+  {
+    "id": "Rob",
+    "age": 41,
+    "salary": 57000,
+    "neighbourhood": "Sandy Hill"
+  },
+  {
+    "id": "Ingrid",
+    "age": 22,
+    "salary": 49000,
+    "neighbourhood": "Uptown"
+  },
+  {
+    "id": "Erich",
+    "age": 23,
+    "salary": 28000,
+    "neighbourhood": "Uptown"
+  },
+  {
+    "id": "Latonya",
+    "age": 27,
+    "salary": 35000,
+    "neighbourhood": "Uptown"
+  },
+  {
+    "id": "Vanessa",
+    "age": 29,
+    "salary": 34000,
+    "neighbourhood": "Uptown"
+  },
+  {
+    "id": "Illa",
+    "age": 29,
+    "salary": 38000,
+    "neighbourhood": "Uptown"
+  },
+  {
+    "id": "Halina",
+    "age": 30,
+    "salary": 28000,
+    "neighbourhood": "Uptown"
+  },
+  {
+    "id": "Violet",
+    "age": 30,
+    "salary": 41000,
+    "neighbourhood": "Uptown"
+  },
+  {
+    "id": "Forest",
+    "age": 32,
+    "salary": 34000,
+    "neighbourhood": "Uptown"
+  }
+],
+"links": [
+  {
+    "source": "Mitzi",
+    "target": "Berta"
+  },
+  {
+    "source": "Mitzi",
+    "target": "Danille"
+  },
+  {
+    "source": "Danille",
+    "target": "Ena"
+  },
+  {
+    "source": "Danille",
+    "target": "Winifred"
+  },
+  {
+    "source": "Danille",
+    "target": "Christy"
+  },
+  {
+    "source": "Violet",
+    "target": "Ena"
+  },
+  {
+    "source": "Odessa",
+    "target": "Lyndia"
+  },
+  {
+    "source": "Odessa",
+    "target": "Ena"
+  },
+  {
+    "source": "Odessa",
+    "target": "Cheryl"
+  },
+  {
+    "source": "Odessa",
+    "target": "Marybeth"
+  },
+  {
+    "source": "Lyndia",
+    "target": "Ena"
+  },
+  {
+    "source": "Lyndia",
+    "target": "Cheryl"
+  },
+  {
+    "source": "Lyndia",
+    "target": "Marybeth"
+  },
+  {
+    "source": "Cheryl",
+    "target": "Marybeth"
+  },
+  {
+    "source": "Lyndia",
+    "target": "Angelina"
+  },
+  {
+    "source": "Winifred",
+    "target": "Christy"
+  },
+  {
+    "source": "Winifred",
+    "target": "Eldora"
+  },
+  {
+    "source": "Winifred",
+    "target": "Cathi"
+  },
+  {
+    "source": "Winifred",
+    "target": "Ida"
+  },
+  {
+    "source": "Winifred",
+    "target": "Vincent"
+  },
+  {
+    "source": "Christy",
+    "target": "Eldora"
+  },
+  {
+    "source": "Christy",
+    "target": "Cathi"
+  },
+  {
+    "source": "Christy",
+    "target": "Ida"
+  },
+  {
+    "source": "Christy",
+    "target": "Vincent"
+  },
+  {
+    "source": "Eldora",
+    "target": "Cathi"
+  },
+  {
+    "source": "Eldora",
+    "target": "Ida"
+  },
+  {
+    "source": "Eldora",
+    "target": "Vincent"
+  },
+  {
+    "source": "Ida",
+    "target": "Vincent"
+  },
+  {
+    "source": "Angelina",
+    "target": "Mandy"
+  },
+  {
+    "source": "Mandy",
+    "target": "Kori"
+  },
+  {
+    "source": "Pricilla",
+    "target": "Mandy"
+  },
+  {
+    "source": "Loise",
+    "target": "Faustino"
+  },
+  {
+    "source": "Faustino",
+    "target": "Jes"
+  },
+  {
+    "source": "Jes",
+    "target": "Kori"
+  },
+  {
+    "source": "Rob",
+    "target": "Cathi"
+  },
+  {
+    "source": "Ingrid",
+    "target": "Erich"
+  },
+  {
+    "source": "Erich",
+    "target": "Mandy"
+  },
+  {
+    "source": "Vanessa",
+    "target": "Latonya"
+  },
+  {
+    "source": "Ingrid",
+    "target": "Vanessa"
+  },
+  {
+    "source": "Ena",
+    "target": "Halina"
+  },
+  {
+    "source": "Halina",
+    "target": "Angelina"
+  },
+  {
+    "source": "Violet",
+    "target": "Danille"
+  },
+  {
+    "source": "Forest",
+    "target": "Mandy"
+  },
+  {
+    "source": "Illa",
+    "target": "Mandy"
+  },
+  {
+    "source": "Jes",
+    "target": "Violet"
+  },
+  {
+    "source": "Latonya",
+    "target": "Mitzi"
+  },
+  {
+    "source": "Ingrid",
+    "target": "Pricilla"
+  },
+  {
+    "source": "Violet",
+    "target": "Faustino"
+  }
+]
+}
