@@ -1553,6 +1553,7 @@ function addBuilderWalls(attributeGraphics, attributeGraphicsParent) {
             direction = 'right';
         });*/
     }
+
     initializeWalls(attributeGraphics,wallSize,insideSpace,direction,orientation,axis);
 
     let handleW, handleH, handleX, handleY;
@@ -1743,7 +1744,6 @@ function addBuilderWallsEvents(attributeGraphics, attributeGraphicsParent){
 
     hammer.on("panstart", function (ev) {
         startingPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY};
-
     });
 
     hammer.on("panmove", function (ev) {
@@ -1861,8 +1861,6 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
 
     mc.on("panstart", function (ev) {
 
-        
-        
         drawer = getActiveLayer().layer;
         startingPoint = {x: ev.srcEvent.pageX /*- $("#onSidebar").width()*/, y: ev.srcEvent.pageY - 70};
 
@@ -1911,8 +1909,6 @@ function addAttributesDraggingEvents(element, attributeName, isDiscrete, hammer)
 
 
     mc.on("panmove", function (ev) {
-        
-
 
         currentPoint = {x: ev.srcEvent.pageX, y: ev.srcEvent.pageY - 70};
 
